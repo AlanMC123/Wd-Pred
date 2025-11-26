@@ -48,7 +48,7 @@ target_avg_trial.columns = ['target', 'avg_trial']
 total_games = df.groupby('target').size().reset_index(name='total_games')
 
 # 计算失败次数（尝试次数>=6次且未猜中，假设Trial为6表示失败）
-failed_games = df[df['Trial'] >= 6].groupby('target').size().reset_index(name='failed_games')
+failed_games = df[df['Trial'] == 7].groupby('target').size().reset_index(name='failed_games')
 
 # 合并数据
 word_stats = pd.merge(target_avg_trial, total_games, on='target')

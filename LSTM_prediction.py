@@ -15,15 +15,15 @@ import io
 # 0. 用户配置参数 (STRICT CONFIG)
 # ==========================================
 FILE_PATH = 'F:\Codes\wordle_games.csv'
-MAX_ROWS = 2000000 
+MAX_ROWS = 6923127
 LOOK_BACK = 5       
-EPOCHS = 15         
-BATCH_SIZE = 256    
+EPOCHS = 10         
+BATCH_SIZE = 1024    
 PREDICTION_SAMPLE_SIZE = 10 
-VALIDATION_SAMPLE_SIZE = 50000 
+VALIDATION_SAMPLE_SIZE = 100000 
 LARGE_ERROR_THRESHOLD = 1.5 
 EMBEDDING_DIM = 32
-MODEL_SAVE_PATH = 'pred_Model'
+MODEL_SAVE_PATH = 'LSTM_Model'
 
 # ==========================================
 # 1. 数据加载与高级特征工程
@@ -263,7 +263,7 @@ def main():
     
     # 划分训练/验证集
     indices = np.arange(len(y_st))
-    train_idx, val_idx = train_test_split(indices, test_size=0.1, random_state=42)
+    train_idx, val_idx = train_test_split(indices, test_size=0.2, random_state=42)  # 训练集:测试集 = 8:2
     
     # 构建 TF Dataset 辅助函数
     def make_ds(idx):
@@ -314,7 +314,7 @@ def main():
         model = build_context_model(LOOK_BACK, vocab_size, EMBEDDING_DIM)
         
         # 训练
-        print(f"Step 4A: 开始训练 (Epochs={EPOCHS}, Batch={BATCH_SIZE})...")
+        print(f"Step 4: 开始训练 (Epochs={EPOCHS}, Batch={BATCH_SIZE})...")
         model.fit(train_ds, validation_data=val_ds, epochs=EPOCHS, verbose=1)
         
         # 训练完成后保存
@@ -348,15 +348,15 @@ def main():
     # 生成报告的头部和汇总指标
     report = f"""
 ========================================
- 📊 最终验证报告 (Validation Report)
+  LSTM模型验证报告 (Validation Report)
 ========================================
 1. 平均步数误差 (MAE)    : {mae:.4f}
-2. 胜负预测准确率        : {acc:.1%}
-3. 大型误差率 (>{LARGE_ERROR_THRESHOLD}步)  : {np.mean(np.abs(val_labels['output_steps'] - pred_steps) > LARGE_ERROR_THRESHOLD):.1%}
+2. 胜负预测准确率        : {acc:.3%}
+3. 大型误差率 (>{LARGE_ERROR_THRESHOLD}步)  : {np.mean(np.abs(val_labels['output_steps'] - pred_steps) > LARGE_ERROR_THRESHOLD):.3%}
 ========================================
 """
     # 清空 output.txt 并写入全局报告
-    with open("output.txt", "w", encoding="utf-8") as f:
+    with open("outputs/lstm_output.txt", "w", encoding="utf-8") as f:
         f.write(report)
     print(report)
     
