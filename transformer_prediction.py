@@ -4,6 +4,7 @@ import tensorflow as tf
 from tensorflow.keras.models import Model
 from tensorflow.keras.layers import Input, Dense, Dropout, Embedding, Flatten, Concatenate, MultiHeadAttention, LayerNormalization
 from tensorflow.keras.preprocessing.text import Tokenizer
+from tensorflow.keras.callbacks import EarlyStopping
 from sklearn.metrics import mean_absolute_error, mean_squared_error, accuracy_score, roc_auc_score
 from sklearn.model_selection import train_test_split
 from tensorflow.keras.mixed_precision import set_global_policy
@@ -39,7 +40,7 @@ EMBEDDING_DIM = 32   # 词嵌入维度
 EPOCHS = 10         
 BATCH_SIZE = 2048    
 LEARNING_RATE = 0.001 # 学习率
-PATIENCE = 2         # 早停耐心值
+PATIENCE = 4         # 早停耐心值
 
 # 评估配置
 LARGE_ERROR_THRESHOLD = 1.5 
@@ -160,8 +161,8 @@ class TransformerBlock(tf.keras.layers.Layer):
         ffn_output = self.dropout2(ffn_output, training=training)
         return self.layernorm2(out1 + ffn_output)
 
-def build_transformer_model(look_back, vocab_size, embedding_dim, num_heads, key_dim, ff_dim):
-    print(f"Step 3: 构建Transformer神经网络 (Vocab={vocab_size})...")
+def build_transformer_model(look_back, vocab_size, embedding_dim, num_heads, key_dim, ff_dim, transformer_layers=1, dropout_rate=0.3, learning_rate=0.001):
+    print(f"Step 3: 构建Transformer神经网络 (Vocab={vocab_size}, Layers={transformer_layers})...")
     
     # --- Input 1: 玩家历史 (Transformer) ---
     input_hist = Input(shape=(look_back, 2), name='input_history')
@@ -170,11 +171,14 @@ def build_transformer_model(look_back, vocab_size, embedding_dim, num_heads, key
     pos_encoding = Embedding(input_dim=look_back, output_dim=2)(positions)
     pos_encoding = tf.expand_dims(pos_encoding, 0)
     x1 = input_hist + pos_encoding  # 添加位置编码
-    # Transformer 编码器层
-    transformer_block = TransformerBlock(embed_dim=2, num_heads=num_heads, ff_dim=ff_dim)
-    x1 = transformer_block(x1)
+    
+    # 应用多个Transformer层
+    for i in range(transformer_layers):
+        transformer_block = TransformerBlock(embed_dim=2, num_heads=num_heads, ff_dim=ff_dim, rate=dropout_rate)
+        x1 = transformer_block(x1)
+    
     x1 = tf.keras.layers.GlobalAveragePooling1D()(x1)  # 池化为固定长度向量
-    x1 = Dropout(0.3)(x1)
+    x1 = Dropout(dropout_rate)(x1)
     
     # --- Input 2: 单词难度 (Dense) ---
     input_diff = Input(shape=(1,), name='input_difficulty'); 
@@ -193,7 +197,7 @@ def build_transformer_model(look_back, vocab_size, embedding_dim, num_heads, key
     combined = Concatenate()([x1, x2, x3, x4]) # 融合四个分支
     
     z = Dense(64, activation='relu')(combined); 
-    z = Dropout(0.2)(z)
+    z = Dropout(dropout_rate)(z)
     
     # --- 输出层 ---
     out_steps = Dense(1, name='output_steps', dtype='float32')(Dense(32, activation='relu')(z))
@@ -202,7 +206,10 @@ def build_transformer_model(look_back, vocab_size, embedding_dim, num_heads, key
     # 必须更新 inputs 列表
     model = Model(inputs=[input_hist, input_diff, input_word, input_bias], outputs=[out_steps, out_success])
     
-    model.compile(optimizer='adam',
+    # 使用指定的学习率
+    optimizer = tf.keras.optimizers.Adam(learning_rate=learning_rate)
+    
+    model.compile(optimizer=optimizer,
                   loss={'output_steps': 'mse', 'output_success': 'binary_crossentropy'},
                   loss_weights={'output_steps': 1.0, 'output_success': 0.5},
                   metrics={'output_success': 'accuracy'})
@@ -438,14 +445,18 @@ def main(mode='train', user_id=None):
         print("🔄 初始化 WandB 实验记录...")
         wandb.init(project=WANDB_PROJECT, name=WANDB_RUN_NAME, dir='wandb', anonymous='must')
         # 记录超参数
-        config = wandb.config
-        config.look_back = LOOK_BACK
-        config.epochs = EPOCHS
-        config.batch_size = BATCH_SIZE
-        config.embedding_dim = EMBEDDING_DIM
-        config.num_heads = NUM_HEADS
-        config.ff_dim = FF_DIM
-        config.large_error_threshold = LARGE_ERROR_THRESHOLD
+    config = wandb.config
+    config.look_back = LOOK_BACK
+    config.epochs = EPOCHS
+    config.batch_size = BATCH_SIZE
+    config.embedding_dim = EMBEDDING_DIM
+    config.num_heads = NUM_HEADS
+    config.ff_dim = FF_DIM
+    config.transformer_layers = TRANSFORMER_LAYERS
+    config.dropout_rate = DROPOUT_RATE
+    config.learning_rate = LEARNING_RATE
+    config.patience = PATIENCE
+    config.large_error_threshold = LARGE_ERROR_THRESHOLD
         
     # 确保outputs目录存在
     os.makedirs('outputs', exist_ok=True)
@@ -512,12 +523,18 @@ def main(mode='train', user_id=None):
             
     if not is_trained:
         # 构建Transformer模型
-        model = build_transformer_model(LOOK_BACK, vocab_size, EMBEDDING_DIM, NUM_HEADS, KEY_DIM, FF_DIM)
+        model = build_transformer_model(LOOK_BACK, vocab_size, EMBEDDING_DIM, NUM_HEADS, KEY_DIM, FF_DIM, 
+                                       transformer_layers=TRANSFORMER_LAYERS, 
+                                       dropout_rate=DROPOUT_RATE, 
+                                       learning_rate=LEARNING_RATE)
+        
+        # 设置早停回调
+        early_stopping = EarlyStopping(monitor='val_loss', patience=PATIENCE, restore_best_weights=True)
         
         # 训练
-        print(f"Step 4: 开始训练 (Epochs={EPOCHS}, Batch={BATCH_SIZE})...")
+        print(f"Step 4: 开始训练 (Epochs={EPOCHS}, Batch={BATCH_SIZE}, Patience={PATIENCE})...")
         history = model.fit(train_ds, validation_data=val_ds, epochs=EPOCHS, verbose=1,
-                           callbacks=[WandbCallback(save_model=False)])
+                           callbacks=[WandbCallback(save_model=False), early_stopping])
         
         # 绘制并保存Loss曲线
         loss_curve_path = plot_loss_curve(history, 'Transformer', visualization_dir)

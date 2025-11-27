@@ -7,6 +7,7 @@ from tensorflow.keras.preprocessing.text import Tokenizer
 from sklearn.metrics import mean_absolute_error, mean_squared_error, accuracy_score, roc_auc_score
 from sklearn.model_selection import train_test_split
 from tensorflow.keras.mixed_precision import set_global_policy
+from tensorflow.keras.callbacks import EarlyStopping
 import random
 import os
 import io
@@ -26,15 +27,15 @@ LOOK_BACK = 8       # 历史窗口大小
 
 # 模型结构配置
 LSTM_UNITS = 32      # LSTM隐藏单元数
-LSTM_LAYERS = 1      # LSTM层数
-DROPOUT_RATE = 0.35   # Dropout比率
+LSTM_LAYERS = 2      # LSTM层数
+DROPOUT_RATE = 0.3   # Dropout比率
 EMBEDDING_DIM = 32   # 词嵌入维度
 
 # 训练配置
 EPOCHS = 10         
 BATCH_SIZE = 2048    
 LEARNING_RATE = 0.001 # 学习率
-PATIENCE = 3         # 早停耐心值
+PATIENCE = 4         # 早停耐心值
 
 # 评估配置
 LARGE_ERROR_THRESHOLD = 1.5 
@@ -139,7 +140,13 @@ def build_context_model(look_back, vocab_size, embedding_dim):
     
     # --- Input 1: 玩家历史 (LSTM) ---
     input_hist = Input(shape=(look_back, 2), name='input_history')
-    x1 = LSTM(128, return_sequences=False)(input_hist); x1 = Dropout(0.3)(x1)
+    
+    # 根据LSTM_LAYERS参数动态构建多层LSTM
+    x1 = input_hist
+    for i in range(LSTM_LAYERS):
+        return_sequences = (i < LSTM_LAYERS - 1)  # 最后一层不返回序列
+        x1 = LSTM(LSTM_UNITS if i > 0 else 128, return_sequences=return_sequences)(x1)
+        x1 = Dropout(DROPOUT_RATE)(x1)
     
     # --- Input 2: 单词难度 (Dense) ---
     input_diff = Input(shape=(1,), name='input_difficulty'); x2 = Dense(16, activation='relu')(input_diff)
@@ -162,7 +169,10 @@ def build_context_model(look_back, vocab_size, embedding_dim):
     # 必须更新 inputs 列表
     model = Model(inputs=[input_hist, input_diff, input_word, input_bias], outputs=[out_steps, out_success])
     
-    model.compile(optimizer='adam',
+    # 使用指定的学习率创建优化器
+    optimizer = tf.keras.optimizers.Adam(learning_rate=LEARNING_RATE)
+    
+    model.compile(optimizer=optimizer,
                   loss={'output_steps': 'mse', 'output_success': 'binary_crossentropy'},
                   loss_weights={'output_steps': 1.0, 'output_success': 0.5},
                   metrics={'output_success': 'accuracy'})
@@ -476,10 +486,18 @@ def build_and_train_model(X_s, X_d, X_w, X_b, y_st, y_su, train_idx, val_idx, te
         # 构建模型
         model = build_context_model(LOOK_BACK, vocab_size, EMBEDDING_DIM)
         
+        # 创建早停回调
+        early_stopping = EarlyStopping(
+            monitor='val_loss',
+            patience=PATIENCE,
+            restore_best_weights=True,
+            verbose=1
+        )
+        
         # 训练
         print(f"Step 4: 开始训练 (Epochs={EPOCHS}, Batch={BATCH_SIZE})...")
         history = model.fit(train_ds, validation_data=val_ds, epochs=EPOCHS, verbose=1,
-                           callbacks=[WandbCallback(save_model=False)])
+                           callbacks=[WandbCallback(save_model=False), early_stopping])
             
         # 训练完成后保存
         try:
