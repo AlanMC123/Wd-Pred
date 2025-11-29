@@ -27,14 +27,14 @@ LOOK_BACK = 8       # 历史窗口大小
 
 # 模型结构配置
 # Transformer 核心参数
-NUM_HEADS = 4      # 多头注意力的头数
+NUM_HEADS = 6      # 多头注意力的头数
 KEY_DIM = 36       # 键和查询的维度
 FF_DIM = 108        # 前馈网络的维度
 
 # 模型复杂度参数
 TRANSFORMER_LAYERS = 2  # Transformer层的数量
 DROPOUT_RATE = 0.3   # Dropout比率
-EMBEDDING_DIM = 32   # 词嵌入维度
+EMBEDDING_DIM = 64   # 词嵌入维度
 
 # 训练配置
 EPOCHS = 10         
@@ -51,6 +51,10 @@ MODEL_SAVE_PATH = 'Transformer_Model'
 # WandB 配置
 WANDB_PROJECT = 'wordle-prediction'
 WANDB_RUN_NAME = 'transformer-experiment'
+
+# Focal Loss 参数
+FOCAL_LOSS_GAMMA = 2.0  # 聚焦参数
+FOCAL_LOSS_ALPHA = 0.25  # 平衡因子
 
 # ==========================================
 # 1. 数据加载与高级特征工程
@@ -161,6 +165,35 @@ class TransformerBlock(tf.keras.layers.Layer):
         ffn_output = self.dropout2(ffn_output, training=training)
         return self.layernorm2(out1 + ffn_output)
 
+def focal_loss(y_true, y_pred, gamma=FOCAL_LOSS_GAMMA, alpha=FOCAL_LOSS_ALPHA):
+    """
+    自定义Focal Loss实现，用于处理类别不平衡和难易样本问题
+    
+    Args:
+        y_true: 真实标签
+        y_pred: 预测概率
+        gamma: 聚焦参数，控制对难易样本的关注程度，通常为2.0
+        alpha: 平衡因子，控制正负样本的权重，通常为0.25
+    
+    Returns:
+        Focal Loss值
+    """
+    # 确保y_pred在有效范围内，避免log(0)或log(1)
+    epsilon = tf.keras.backend.epsilon()
+    y_pred = tf.clip_by_value(y_pred, epsilon, 1. - epsilon)
+    
+    # 计算交叉熵
+    ce = y_true * tf.math.log(y_pred) + (1 - y_true) * tf.math.log(1 - y_pred)
+    
+    # 计算focal loss的调节因子
+    p_t = y_true * y_pred + (1 - y_true) * (1 - y_pred)
+    alpha_t = y_true * alpha + (1 - y_true) * (1 - alpha)
+    
+    # 计算focal loss
+    focal_loss = -alpha_t * tf.math.pow((1 - p_t), gamma) * ce
+    
+    return tf.reduce_mean(focal_loss)
+
 def build_transformer_model(look_back, vocab_size, embedding_dim, num_heads, key_dim, ff_dim, transformer_layers=1, dropout_rate=0.3, learning_rate=0.001):
     print(f"Step 3: 构建Transformer神经网络 (Vocab={vocab_size}, Layers={transformer_layers})...")
     
@@ -209,10 +242,13 @@ def build_transformer_model(look_back, vocab_size, embedding_dim, num_heads, key
     # 使用指定的学习率
     optimizer = tf.keras.optimizers.Adam(learning_rate=learning_rate)
     
+    # 编译模型，使用Focal Loss替代binary_crossentropy
     model.compile(optimizer=optimizer,
-                  loss={'output_steps': 'mse', 'output_success': 'binary_crossentropy'},
+                  loss={'output_steps': 'mse', 'output_success': focal_loss},
                   loss_weights={'output_steps': 1.0, 'output_success': 0.5},
                   metrics={'output_success': 'accuracy'})
+    
+    print(f"✅ 模型编译完成，使用Focal Loss (gamma={FOCAL_LOSS_GAMMA}, alpha={FOCAL_LOSS_ALPHA})")
     return model
 
 # ==========================================
