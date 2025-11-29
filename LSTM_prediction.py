@@ -4,7 +4,7 @@ import tensorflow as tf
 from tensorflow.keras.models import Model
 from tensorflow.keras.layers import LSTM, Dense, Input, Dropout, Embedding, Flatten, Concatenate
 from tensorflow.keras.preprocessing.text import Tokenizer
-from sklearn.metrics import mean_absolute_error, mean_squared_error, accuracy_score, roc_auc_score
+from sklearn.metrics import mean_absolute_error, mean_squared_error, accuracy_score, roc_auc_score, confusion_matrix, precision_recall_fscore_support
 from sklearn.model_selection import train_test_split
 from tensorflow.keras.mixed_precision import set_global_policy
 from tensorflow.keras.callbacks import EarlyStopping
@@ -14,6 +14,10 @@ import io
 import wandb
 from wandb.keras import WandbCallback
 import matplotlib.pyplot as plt
+
+# WandB全局控制变量
+WANDB_ENABLED = True  # 控制是否启用WandB
+wandb_run = None  # 存储wandb run实例
 plt.rcParams['font.sans-serif'] = ['SimHei']  # 用来正常显示中文标签
 plt.rcParams['axes.unicode_minus'] = False  # 用来正常显示负号
 
@@ -38,7 +42,7 @@ LEARNING_RATE = 0.001 # 学习率
 PATIENCE = 4         # 早停耐心值
 
 # 评估配置
-LARGE_ERROR_THRESHOLD = 1.5 
+LARGE_ERROR_THRESHOLD = 2.0  # 修改为偏差2步
 
 # 其他配置
 MODEL_SAVE_PATH = 'LSTM_Model'
@@ -115,8 +119,13 @@ def create_multi_input_dataset(user_history_map, look_back):
                 X_word_list.append(target_word_id)
                 X_bias_list.append(target_user_bias / 7.0) # 新增
                 
-                # 标签
-                y_steps.append(7.0 if target_trial > 6 else float(target_trial))
+                # 标签 - 修改为分类任务
+                # 确保target_trial在1-7范围内
+                trial_category = min(target_trial, 7)
+                # 创建one-hot编码 (7个类别，对应1-7步)
+                one_hot = np.zeros(7, dtype=np.float32)
+                one_hot[trial_category - 1] = 1.0  # 索引从0开始，步数从1开始
+                y_steps.append(one_hot)
                 y_success.append(1.0 if target_trial <= 6 else 0.0)
             
             valid_players.append(user)
@@ -126,7 +135,7 @@ def create_multi_input_dataset(user_history_map, look_back):
         np.array(X_diff_list, dtype=np.float32),
         np.array(X_word_list, dtype=np.float32),
         np.array(X_bias_list, dtype=np.float32), # 新增输出
-        np.array(y_steps, dtype=np.float32),
+        np.array(y_steps),  # one-hot编码已为float32
         np.array(y_success, dtype=np.float32),
         valid_players
     )
@@ -163,7 +172,8 @@ def build_context_model(look_back, vocab_size, embedding_dim):
     z = Dense(64, activation='relu')(combined); z = Dropout(0.2)(z)
     
     # --- 输出层 ---
-    out_steps = Dense(1, name='output_steps', dtype='float32')(Dense(32, activation='relu')(z))
+    # 修改为7分类任务（1-7步），使用softmax激活函数
+    out_steps = Dense(7, activation='softmax', name='output_steps', dtype='float32')(Dense(32, activation='relu')(z))
     out_success = Dense(1, activation='sigmoid', name='output_success', dtype='float32')(Dense(16, activation='relu')(z))
     
     # 必须更新 inputs 列表
@@ -173,9 +183,9 @@ def build_context_model(look_back, vocab_size, embedding_dim):
     optimizer = tf.keras.optimizers.Adam(learning_rate=LEARNING_RATE)
     
     model.compile(optimizer=optimizer,
-                  loss={'output_steps': 'mse', 'output_success': 'binary_crossentropy'},
+                  loss={'output_steps': 'categorical_crossentropy', 'output_success': 'binary_crossentropy'},
                   loss_weights={'output_steps': 1.0, 'output_success': 0.5},
-                  metrics={'output_success': 'accuracy'})
+                  metrics={'output_steps': ['accuracy'], 'output_success': 'accuracy'})
     return model
 
 # ==========================================
@@ -203,24 +213,23 @@ def prepare_single_inference_input(history_tuples, target_diff, target_word_id, 
     ]
 
 def evaluate_model_and_get_preds(model, val_inputs, val_labels):
-    """进行批量预测，显示进度条，并计算整体指标。"""
+    """进行批量预测，显示进度条，并返回预测结果。"""
     print("\nStep 4: 开始批量预测，显示进度条...")
     
     # 批量预测 (verbose=1 开启进度条)
     predictions = model.predict(val_inputs, batch_size=BATCH_SIZE, verbose=1)
     
-    pred_steps = predictions[0].flatten()
+    # 对于分类任务，predictions[0]是类别概率分布
+    pred_steps_probs = predictions[0]
     pred_success_prob = predictions[1].flatten()
     
-    # 真实标签
-    true_steps = val_labels['output_steps']
+    # 从one-hot编码的真实标签中获取类别索引 (1-7)
+    true_steps_discrete = np.argmax(val_labels['output_steps'], axis=1) + 1  # +1因为索引从0开始，步数从1开始
     
-    # 计算指标
-    pred_steps_clipped = pred_steps.clip(max=7.0)
-    mae = mean_absolute_error(true_steps, pred_steps_clipped)
-    rmse = np.sqrt(mean_squared_error(true_steps, pred_steps_clipped))
+    # 获取预测的类别 (1-7)
+    pred_steps_discrete = np.argmax(pred_steps_probs, axis=1) + 1
     
-    return pred_steps.clip(max=6.99), pred_success_prob, mae, rmse
+    return pred_steps_probs, pred_steps_discrete, true_steps_discrete, pred_success_prob
 
 def perform_validation(model, user_history_map, valid_players, look_back, sample_size, threshold, pred_steps_full):
     print("🔍 开始执行perform_validation函数...")
@@ -235,7 +244,7 @@ def perform_validation(model, user_history_map, valid_players, look_back, sample
     buffer.write(f"\nStep 5: 启动回测验证抽样报告 (样本数={sample_size}, 输出至 outputs/lstm_output.txt)...")
     
     header = f"{'User ID':<10} | {'Bias':<5} | {'Diff':<5} | {'Real':<5} | {'Pred':<5} | {'Err':<5} | {'Status'}"
-    buffer.write("\n" + "-" * 60 + "\n" + header + "\n" + "-" * 60)
+    buffer.write("\n" + "-" * 70 + "\n" + header + "\n" + "-" * 70)
     
     # 确保有足够的用户进行抽样
     if len(eligible) > 0:
@@ -255,16 +264,19 @@ def perform_validation(model, user_history_map, valid_players, look_back, sample
             try:
                 # 临时进行单样本预测以获得该用户的预测值
                 temp_inputs = prepare_single_inference_input(full_hist[-(look_back+1) : -1], t_diff, t_word, t_bias, look_back)
-                p_steps, _ = model.predict(temp_inputs, verbose=0)
+                pred_probs, _ = model.predict(temp_inputs, verbose=0)
                 
-                pred_val = min(p_steps[0][0], 6.99)
-                err = abs(pred_val - real_trial)
+                # 获取预测的类别 (1-7)
+                pred_discrete = np.argmax(pred_probs[0]) + 1  # +1因为索引从0开始，步数从1开始
+                
+                # 计算类别误差
+                err = abs(pred_discrete - real_trial)
                 
                 if err > threshold: large_errors += 1
                 
-                status = "✅" if err < 1.0 else "⚠️"
+                status = "✅" if err == 0 else "⚠️"
                 if err > threshold: status = "❌"
-                line = f"{str(user):<10} | {t_bias:.2f}  | {t_diff:.2f}  | {real_trial:.0f}    | {pred_val:.2f}  | {err:.2f}  | {status}"
+                line = f"{str(user):<10} | {t_bias:.2f}  | {t_diff:.2f}  | {real_trial:.0f}    | {pred_discrete}      | {err}        | {status}"
                 buffer.write(f"\n{line}")
             except Exception as e:
                 print(f"❌ 处理用户 {user} 时出错: {e}")
@@ -289,17 +301,56 @@ def perform_validation(model, user_history_map, valid_players, look_back, sample
     except Exception as e:
         print(f"\n❌ 写入抽样报告失败: {e}")
 
+def plot_confusion_matrix(true_labels, pred_labels, model_name, save_dir):
+    """绘制并保存混淆矩阵"""
+    # 生成混淆矩阵
+    cm = confusion_matrix(true_labels, pred_labels)
+    
+    # 计算每个类别的准确率百分比
+    cm_percent = cm.astype('float') / cm.sum(axis=1)[:, np.newaxis] * 100
+    
+    plt.figure(figsize=(10, 8))
+    plt.imshow(cm_percent, interpolation='nearest', cmap=plt.cm.Blues)
+    plt.title(f'{model_name} 混淆矩阵 (%)')
+    plt.colorbar()
+    
+    # 设置标签
+    classes = list(range(1, 8))
+    tick_marks = np.arange(len(classes))
+    plt.xticks(tick_marks, classes)
+    plt.yticks(tick_marks, classes)
+    
+    # 在混淆矩阵中添加百分比文本
+    fmt = '.1f'
+    thresh = cm_percent.max() / 2.
+    for i in range(cm_percent.shape[0]):
+        for j in range(cm_percent.shape[1]):
+            plt.text(j, i, format(cm_percent[i, j], fmt),
+                    horizontalalignment="center",
+                    color="white" if cm_percent[i, j] > thresh else "black")
+    
+    plt.ylabel('真实步数')
+    plt.xlabel('预测步数')
+    plt.tight_layout()
+    
+    # 保存混淆矩阵
+    save_path = os.path.join(save_dir, f'{model_name}_confusion_matrix.png')
+    plt.savefig(save_path, dpi=300, bbox_inches='tight')
+    plt.close()
+    print(f"✅ 混淆矩阵已保存至: {save_path}")
+    return save_path
+
 
 # ==========================================
 # 4. 主程序 (Main)
 # ==========================================
 
 def plot_loss_curve(history, model_name, save_dir):
-    """绘制并保存Loss曲线"""
-    plt.figure(figsize=(12, 6))
+    """绘制并保存Loss曲线和准确率曲线"""
+    plt.figure(figsize=(14, 10))
     
     # 绘制总损失曲线
-    plt.subplot(1, 2, 1)
+    plt.subplot(2, 2, 1)
     plt.plot(history.history['loss'], label='训练损失')
     plt.plot(history.history['val_loss'], label='验证损失')
     plt.title(f'{model_name} 总损失曲线')
@@ -309,12 +360,34 @@ def plot_loss_curve(history, model_name, save_dir):
     plt.grid(True)
     
     # 绘制步数预测损失曲线
-    plt.subplot(1, 2, 2)
+    plt.subplot(2, 2, 2)
     plt.plot(history.history['output_steps_loss'], label='训练步数损失')
     plt.plot(history.history['val_output_steps_loss'], label='验证步数损失')
     plt.title(f'{model_name} 步数预测损失')
     plt.xlabel('Epoch')
-    plt.ylabel('MSE Loss')
+    plt.ylabel('分类损失 (Categorical Crossentropy)')
+    plt.legend()
+    plt.grid(True)
+    
+    # 绘制步数预测准确率曲线
+    plt.subplot(2, 2, 3)
+    plt.plot(history.history['output_steps_accuracy'], label='训练步数准确率')
+    plt.plot(history.history['val_output_steps_accuracy'], label='验证步数准确率')
+    plt.title(f'{model_name} 步数预测准确率')
+    plt.xlabel('Epoch')
+    plt.ylabel('准确率')
+    plt.ylim(0, 1)
+    plt.legend()
+    plt.grid(True)
+    
+    # 绘制成功预测准确率曲线
+    plt.subplot(2, 2, 4)
+    plt.plot(history.history['output_success_accuracy'], label='训练成功预测准确率')
+    plt.plot(history.history['val_output_success_accuracy'], label='验证成功预测准确率')
+    plt.title(f'{model_name} 成功预测准确率')
+    plt.xlabel('Epoch')
+    plt.ylabel('准确率')
+    plt.ylim(0, 1)
     plt.legend()
     plt.grid(True)
     
@@ -390,10 +463,36 @@ def train_model():
     os.makedirs('outputs', exist_ok=True)
     
     # --- 初始化 WandB ---
-    print("🔄 初始化 WandB 实验记录...")
-    wandb.init(project=WANDB_PROJECT, name=WANDB_RUN_NAME, dir='wandb', anonymous='must')
-    # 记录超参数
-    config = wandb.config
+    global wandb_run
+    if WANDB_ENABLED:
+        print("🔄 初始化 WandB 实验记录...")
+        try:
+            # 使用离线模式避免网络连接问题
+            wandb_run = wandb.init(
+                project=WANDB_PROJECT, 
+                name=WANDB_RUN_NAME, 
+                dir='wandb', 
+                anonymous='must',
+                resume=False,
+                mode='offline',  # 添加离线模式
+                settings=wandb.Settings(
+                    start_method='thread',
+                    disable_git=True,
+                    disable_code=True
+                )
+            )
+            # 记录超参数
+            config = wandb_run.config
+            print("✅ WandB 初始化成功（离线模式）")
+        except Exception as e:
+            print(f"❌ WandB 初始化失败: {str(e)}")
+            print("ℹ️  程序将在不使用 WandB 的情况下继续运行")
+            WANDB_ENABLED = False
+            wandb_run = None
+            config = {}
+    else:
+        print("ℹ️  WandB 已被禁用")
+        config = {}
     config.look_back = LOOK_BACK
     config.epochs = EPOCHS
     config.batch_size = BATCH_SIZE
@@ -496,8 +595,13 @@ def build_and_train_model(X_s, X_d, X_w, X_b, y_st, y_su, train_idx, val_idx, te
         
         # 训练
         print(f"Step 4: 开始训练 (Epochs={EPOCHS}, Batch={BATCH_SIZE})...")
-        history = model.fit(train_ds, validation_data=val_ds, epochs=EPOCHS, verbose=1,
-                           callbacks=[WandbCallback(save_model=False), early_stopping])
+          # 构建回调列表
+          callbacks = [early_stopping]
+          if WANDB_ENABLED and wandb_run is not None:
+              callbacks.append(WandbCallback(save_model=False))
+          
+          history = model.fit(train_ds, validation_data=val_ds, epochs=EPOCHS, verbose=1,
+                            callbacks=callbacks)
             
         # 训练完成后保存
         try:
@@ -509,7 +613,11 @@ def build_and_train_model(X_s, X_d, X_w, X_b, y_st, y_su, train_idx, val_idx, te
         # 绘制并保存Loss曲线
         loss_curve_path = plot_loss_curve(history, 'LSTM', visualization_dir)
         # 记录到WandB
-        wandb.log({'loss_curve': wandb.Image(loss_curve_path)})
+        if WANDB_ENABLED and wandb_run is not None:
+            try:
+                wandb.log({'loss_curve': wandb.Image(loss_curve_path)})
+            except Exception as e:
+                print(f"❌ WandB 日志记录失败: {str(e)}")
         
     # 训练完成后保存
     try:
@@ -537,7 +645,7 @@ def evaluate_model(model, X_s, X_d, X_w, X_b, y_st, y_su, valid_users, user_map,
         'output_success': y_su[val_idx]
     }
 
-    val_pred_steps, val_pred_success_prob, val_mae, val_rmse = evaluate_model_and_get_preds(model, val_inputs, val_labels)
+    val_pred_probs, val_pred_discrete, val_true_discrete, val_pred_success_prob = evaluate_model_and_get_preds(model, val_inputs, val_labels)
 
     # 计算 ACC 和 AUC
     val_true_wins = val_labels['output_success']
@@ -554,6 +662,11 @@ def evaluate_model(model, X_s, X_d, X_w, X_b, y_st, y_su, valid_users, user_map,
     # 计算大型误差率
     val_large_error_rate = np.mean(np.abs(val_labels['output_steps'] - val_pred_steps) > LARGE_ERROR_THRESHOLD)
     
+    # 计算离散预测的精确率、召回率、F1值
+    val_precision, val_recall, val_f1, _ = precision_recall_fscore_support(
+        val_true_discrete, val_pred_discrete, average='macro', zero_division=0
+    )
+    
     # 测试集评估
     test_inputs = {
         'input_history': X_s[test_idx],
@@ -566,7 +679,7 @@ def evaluate_model(model, X_s, X_d, X_w, X_b, y_st, y_su, valid_users, user_map,
         'output_success': y_su[test_idx]
     }
 
-    test_pred_steps, test_pred_success_prob, test_mae, test_rmse = evaluate_model_and_get_preds(model, test_inputs, test_labels)
+    test_pred_probs, test_pred_discrete, test_true_discrete, test_pred_success_prob = evaluate_model_and_get_preds(model, test_inputs, test_labels)
 
     # 计算测试集 ACC 和 AUC
     test_true_wins = test_labels['output_success']
@@ -583,19 +696,30 @@ def evaluate_model(model, X_s, X_d, X_w, X_b, y_st, y_su, valid_users, user_map,
     # 计算测试集大型误差率
     test_large_error_rate = np.mean(np.abs(test_labels['output_steps'] - test_pred_steps) > LARGE_ERROR_THRESHOLD)
     
+    # 计算测试集离散预测的精确率、召回率、F1值
+    test_precision, test_recall, test_f1, _ = precision_recall_fscore_support(
+        test_true_discrete, test_pred_discrete, average='macro', zero_division=0
+    )
+    
     # 记录验证指标到 WandB
-    wandb.log({
-        "val_mae": val_mae,
-        "val_rmse": val_rmse,
-        "val_accuracy": val_acc,
-        "val_auc": val_auc,
-        "val_large_error_rate": val_large_error_rate,
-        "test_mae": test_mae,
-        "test_rmse": test_rmse,
-        "test_accuracy": test_acc,
-        "test_auc": test_auc,
-        "test_large_error_rate": test_large_error_rate
-    })
+    if WANDB_ENABLED and wandb_run is not None:
+        try:
+            wandb.log({
+                "val_accuracy": val_acc,
+                "val_auc": val_auc,
+                "val_large_error_rate": val_large_error_rate,
+                "val_precision": val_precision,
+                "val_recall": val_recall,
+                "val_f1": val_f1,
+                "test_accuracy": test_acc,
+                "test_auc": test_auc,
+                "test_large_error_rate": test_large_error_rate,
+                "test_precision": test_precision,
+                "test_recall": test_recall,
+                "test_f1": test_f1
+            })
+        except Exception as e:
+            print(f"❌ WandB 日志记录失败: {str(e)}")
     
     # 生成报告的头部和汇总指标
     report = f"""
@@ -603,18 +727,20 @@ def evaluate_model(model, X_s, X_d, X_w, X_b, y_st, y_su, valid_users, user_map,
   LSTM模型验证和测试报告
 ========================================
 ---- 验证集指标 ----
-1. 平均步数误差 (MAE)    : {val_mae:.4f}
-2. 均方根误差 (RMSE)     : {val_rmse:.4f}
 3. 胜负预测准确率        : {val_acc:.3%}
 4. ROC曲线下面积 (AUC)   : {val_auc:.4f}
 5. 大型误差率 (>{LARGE_ERROR_THRESHOLD}步)  : {val_large_error_rate:.3%}
+6. 精确率 (Precision)    : {val_precision:.4f}
+7. 召回率 (Recall)       : {val_recall:.4f}
+8. F1值 (F1-Score)       : {val_f1:.4f}
 
 ---- 测试集指标 ----
-1. 平均步数误差 (MAE)    : {test_mae:.4f}
-2. 均方根误差 (RMSE)     : {test_rmse:.4f}
 3. 胜负预测准确率        : {test_acc:.3%}
 4. ROC曲线下面积 (AUC)   : {test_auc:.4f}
 5. 大型误差率 (>{LARGE_ERROR_THRESHOLD}步)  : {test_large_error_rate:.3%}
+6. 精确率 (Precision)    : {test_precision:.4f}
+7. 召回率 (Recall)       : {test_recall:.4f}
+8. F1值 (F1-Score)       : {test_f1:.4f}
 ========================================
 """
     # 清空 output.txt 并写入全局报告
@@ -623,7 +749,6 @@ def evaluate_model(model, X_s, X_d, X_w, X_b, y_st, y_su, valid_users, user_map,
     print(report)
     
     # 调用 perform_validation 进行抽样报告（使用测试集预测结果）
-    # 由于已划分测试集，不再需要VALIDATION_SAMPLE_SIZE参数
     perform_validation(model, user_map, valid_users, LOOK_BACK, 
                        min(10000, len(test_idx)), LARGE_ERROR_THRESHOLD, test_pred_steps)
     
@@ -632,7 +757,19 @@ def evaluate_model(model, X_s, X_d, X_w, X_b, y_st, y_su, valid_users, user_map,
         test_labels['output_steps'], test_pred_steps, 'LSTM', visualization_dir
     )
     # 记录到WandB
-    wandb.log({'prediction_trends': wandb.Image(prediction_trend_path)})
+    if WANDB_ENABLED and wandb_run is not None:
+        try:
+            wandb.log({'prediction_trends': wandb.Image(prediction_trend_path)})
+        except Exception as e:
+            print(f"❌ WandB 日志记录失败: {str(e)}")
+    
+    # 绘制并保存混淆矩阵（使用测试集离散化结果）
+    cm_path = plot_confusion_matrix(test_true_discrete, test_pred_discrete, 'LSTM', visualization_dir)
+    if WANDB_ENABLED and wandb_run is not None:
+        try:
+            wandb.log({'confusion_matrix': wandb.Image(cm_path)})
+        except Exception as e:
+            print(f"❌ WandB 日志记录失败: {str(e)}")
     
     return model
 
@@ -647,11 +784,11 @@ def predict_with_model(model, user_history_map, user_id, look_back):
     look_back: 历史窗口大小
     
     返回:
-    预测的步数和成功概率
+    预测的步数、离散化的预测步数和成功概率
     """
     if user_id not in user_history_map or len(user_history_map[user_id]) < look_back + 1:
         print(f"⚠️ 用户 {user_id} 数据不足，无法进行预测")
-        return None, None
+        return None, None, None
     
     full_hist = user_history_map[user_id]
     # 获取目标数据 (Trial, Difficulty, WordID, UserBias)
@@ -662,7 +799,12 @@ def predict_with_model(model, user_history_map, user_id, look_back):
     inputs = prepare_single_inference_input(full_hist[-(look_back+1) : -1], t_diff, t_word, t_bias, look_back)
     pred_steps, pred_success = model.predict(inputs, verbose=0)
     
-    return min(pred_steps[0][0], 6.99), pred_success[0][0]
+    # 计算离散化的预测值
+    pred_continuous = min(pred_steps[0][0], 6.99)
+    pred_discrete = int(round(pred_continuous))
+    pred_discrete = max(1, min(7, pred_discrete))
+    
+    return pred_continuous, pred_discrete, pred_success[0][0]
 
 def main(mode='train', user_id=None):
     """
@@ -718,12 +860,13 @@ def main(mode='train', user_id=None):
                 return
             
             # 进行预测
-            pred_steps, pred_success = predict_with_model(model, user_map, user_id, LOOK_BACK)
-            if pred_steps is not None:
+            pred_continuous, pred_discrete, pred_success = predict_with_model(model, user_map, user_id, LOOK_BACK)
+            if pred_continuous is not None:
                 print(f"\n用户 {user_id} 的预测结果:")
-                print(f"预测步数: {pred_steps:.2f}")
+                print(f"预测步数(连续): {pred_continuous:.2f}")
+                print(f"预测步数(离散): {pred_discrete}")
                 print(f"成功概率: {pred_success:.2%}")
-                print(f"预测结果: {'成功' if pred_steps <= 6 else '失败'}")
+                print(f"预测结果: {'成功' if pred_continuous <= 6 else '失败'}")
                 
         except Exception as e:
             print(f"❌ 预测过程中出错: {e}")
