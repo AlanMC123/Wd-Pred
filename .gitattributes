@@ -1,2 +1,4 @@
 # Auto detect text files and perform LF normalization
 * text=auto
+# 将所有文件都标记为 Python 语言
+* linguist-language=Python
