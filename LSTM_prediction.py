@@ -224,7 +224,7 @@ def compute_large_error_rate(y_true, y_pred, threshold):
     return np.mean(errors > threshold)
 
 
-def plot_auc_curve(y_true, y_pred, save_path):
+def plot_roc_curve(y_true, y_pred, save_path):
     """Plot ROC AUC curve"""
     fpr, tpr, _ = roc_curve(y_true, y_pred)
     plt.figure(figsize=(8, 6))
@@ -370,8 +370,8 @@ def main_train():
         "input_word_id": X_val[2],
         "input_user_bias": X_val[3]
     }, batch_size=1024, verbose=0)
-    val_auc_curve_path = "visualization/LSTM_validation_auc_curve.png"
-    plot_auc_curve(X_val[5], val_pred_prob.flatten(), val_auc_curve_path)
+    val_roc_curve_path = "visualization/LSTM_validation_roc_curve.png"
+    plot_roc_curve(X_val[5], val_pred_prob.flatten(), val_roc_curve_path)
 
     print("\n=== Test ===")
     test_mae, test_rmse, test_acc, test_auc = evaluate_model(model, X_test)
@@ -383,8 +383,8 @@ def main_train():
         "input_word_id": X_test[2],
         "input_user_bias": X_test[3]
     }, batch_size=1024, verbose=0)
-    test_auc_curve_path = "visualization/LSTM_test_auc_curve.png"
-    plot_auc_curve(X_test[5], test_pred_prob.flatten(), test_auc_curve_path)
+    test_roc_curve_path = "visualization/LSTM_test_roc_curve.png"
+    plot_roc_curve(X_test[5], test_pred_prob.flatten(), test_roc_curve_path)
 
     # --------------------------------------------------------
     # 生成大型误差统计
