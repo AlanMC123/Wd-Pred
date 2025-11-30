@@ -13,8 +13,6 @@ import numpy as np
 import pandas as pd
 import tensorflow as tf
 import matplotlib.pyplot as plt
-import wandb
-# 移除WandbCallback导入，使用自定义回调
 from typing import Dict, Tuple, List
 from tensorflow.keras.layers import (Input, Dense, Dropout, Embedding, Flatten,
                                      LayerNormalization, GlobalAveragePooling1D,
@@ -58,22 +56,9 @@ PATIENCE = 5
 
 REPORT_SAVE_PATH = "outputs/transformer_output.txt"
 
-# 固定随机种子
-SEED = 42
-
 # ==========================================================
 # 工具函数
 # ==========================================================
-
-def set_seed(seed):
-    """设置所有随机种子以确保可重复性"""
-    random.seed(seed)
-    np.random.seed(seed)
-    tf.random.set_seed(seed)
-    os.environ['PYTHONHASHSEED'] = str(seed)
-    # 设置确定性操作
-    os.environ['TF_DETERMINISTIC_OPS'] = '1'
-    os.environ['TF_CUDNN_DETERMINISTIC'] = '1'
 
 def ensure_dirs():
     os.makedirs(os.path.dirname(MODEL_SAVE_PATH) or ".", exist_ok=True)
@@ -319,29 +304,6 @@ def plot_loss(history, save_path):
 # ==========================================================
 
 def main_train():
-    # 设置随机种子确保可重复性
-    set_seed(SEED)
-    
-    # 初始化wandb
-    wandb.init(
-        project="word-difficulty-prediction",
-        name="transformer-model-run",
-        config={
-            "model_type": "Transformer",
-            "look_back": LOOK_BACK,
-            "batch_size": BATCH_SIZE,
-            "epochs": EPOCHS,
-            "learning_rate": LEARNING_RATE,
-            "num_heads": NUM_HEADS,
-            "key_dim": KEY_DIM,
-            "ff_dim": FF_DIM,
-            "transformer_layers": TRANSFORMER_LAYERS,
-            "dropout_rate": DROPOUT_RATE,
-            "embedding_dim": EMBEDDING_DIM,
-            "seed": SEED
-        }
-    )
-    
     ensure_dirs()
 
     # 1. 数据读取
@@ -413,20 +375,7 @@ def main_train():
 
     # 8. 训练
     early = EarlyStopping(monitor="val_loss", patience=PATIENCE, restore_best_weights=True)
-    train_history = model.fit(
-        train_ds, 
-        validation_data=val_ds, 
-        epochs=EPOCHS, 
-        # 创建自定义回调来记录指标而不记录模型图
-        class CustomWandbCallback(tf.keras.callbacks.Callback):
-            def on_epoch_end(self, epoch, logs=None):
-                if logs is not None:
-                    # 记录所有日志指标
-                    for key, value in logs.items():
-                        wandb.log({key: value, 'epoch': epoch})
-        
-        callbacks=[early, CustomWandbCallback()]
-    )
+    train_history = model.fit(train_ds, validation_data=val_ds, epochs=EPOCHS, callbacks=[early])
     
     # 绘制并保存损失曲线
     loss_curve_path = "visualization/Transformer_loss_curve.png"
@@ -437,14 +386,6 @@ def main_train():
 
     print("\n=== Validation ===")
     val_mae, val_rmse, val_acc, val_auc = evaluate_model(model, X_val)
-    
-    # 记录验证集指标到wandb
-    wandb.log({
-        "val_mae": val_mae,
-        "val_rmse": val_rmse,
-        "val_accuracy": val_acc,
-        "val_auc": val_auc
-    })
     
     # 绘制验证集AUC曲线
     val_pred_steps, val_pred_prob = model.predict({
@@ -458,14 +399,6 @@ def main_train():
 
     print("\n=== Test ===")
     test_mae, test_rmse, test_acc, test_auc = evaluate_model(model, X_test)
-    
-    # 记录测试集指标到wandb
-    wandb.log({
-        "test_mae": test_mae,
-        "test_rmse": test_rmse,
-        "test_accuracy": test_acc,
-        "test_auc": test_auc
-    })
     
     # 绘制测试集AUC曲线
     test_pred_steps, test_pred_prob = model.predict({
@@ -529,15 +462,6 @@ def main_train():
 
     print(f"\n📄 Report saved to: {REPORT_SAVE_PATH}")
     print(report)
-    
-    # 记录大型误差率到wandb
-    wandb.log({
-        "val_large_error_rate": val_large_error_rate,
-        "test_large_error_rate": test_large_error_rate
-    })
-    
-    # 结束wandb运行
-    wandb.finish()
 
 
 # 预测模式（按需启用）
