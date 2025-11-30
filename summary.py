@@ -9,7 +9,7 @@ from tensorflow.keras.layers import Embedding, LSTM, Dense
 from tensorflow.keras.preprocessing.sequence import pad_sequences
 from sklearn.model_selection import train_test_split
 
-FILE_PATH = 'F:\Codes\wordle_games.csv'
+FILE_PATH = 'dataset/cleaned_dataset.csv'
 
 # 加载数据
 df = pd.read_csv(FILE_PATH)

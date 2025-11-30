@@ -1,738 +1,520 @@
-import pandas as pd
-import numpy as np
-import tensorflow as tf
-from tensorflow.keras.models import Model
-from tensorflow.keras.layers import LSTM, Dense, Input, Dropout, Embedding, Flatten, Concatenate
-from tensorflow.keras.preprocessing.text import Tokenizer
-from sklearn.metrics import mean_absolute_error, mean_squared_error, accuracy_score, roc_auc_score
-from sklearn.model_selection import train_test_split
-from tensorflow.keras.mixed_precision import set_global_policy
-from tensorflow.keras.callbacks import EarlyStopping
-import random
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+重构版 LSTM 多输入预测脚本（稳定版）
+不需要 CLI 或 parse_args，直接运行即开始训练。
+预测模式可以通过修改 main() 下方的一行开关来启用。
+"""
+
 import os
-import io
-import wandb
-from wandb.keras import WandbCallback
+import json
+import random
+import numpy as np
+import pandas as pd
+import tensorflow as tf
 import matplotlib.pyplot as plt
-plt.rcParams['font.sans-serif'] = ['SimHei']  # 用来正常显示中文标签
-plt.rcParams['axes.unicode_minus'] = False  # 用来正常显示负号
+from typing import Dict, Tuple, List
+from tensorflow.keras.layers import (Input, Dense, Dropout, Embedding, Flatten,
+                                     LSTM, Bidirectional, Concatenate)
+from tensorflow.keras.models import Model
+from tensorflow.keras.callbacks import EarlyStopping
+from tensorflow.keras.preprocessing.text import Tokenizer
+from sklearn.metrics import mean_absolute_error, mean_squared_error, accuracy_score, roc_auc_score, roc_curve
 
-# ==========================================
-# 0. 用户配置参数 (STRICT CONFIG)
-# ==========================================
-# 数据配置
-FILE_PATH = 'dataset/cleaned_dataset.csv'
-MAX_ROWS = 6923127
-LOOK_BACK = 8       # 历史窗口大小
+# ==========================================================
+# 全局配置
+# ==========================================================
 
-# 模型结构配置
-LSTM_UNITS = 32      # LSTM隐藏单元数
-LSTM_LAYERS = 2      # LSTM层数
-DROPOUT_RATE = 0.3   # Dropout比率
-EMBEDDING_DIM = 32   # 词嵌入维度
+TRAIN_FILE = "dataset/train_data.csv"
+VAL_FILE = "dataset/val_data.csv"
+TEST_FILE = "dataset/test_data.csv"
 
-# 训练配置
-EPOCHS = 10         
-BATCH_SIZE = 2048    
-LEARNING_RATE = 0.001 # 学习率
-PATIENCE = 4         # 早停耐心值
+DIFFICULTY_FILE = "dataset/difficulty.csv"
+PLAYER_FILE = "dataset/player_data.csv"
 
-# 评估配置
-LARGE_ERROR_THRESHOLD = 1.5 
+LOOK_BACK = 8
+BATCH_SIZE = 1024
+EPOCHS = 15
+LEARNING_RATE = 0.001
 
-# 其他配置
-MODEL_SAVE_PATH = 'LSTM_Model'
+MODEL_SAVE_PATH = "models/lstm/lstm_model.keras"
+TOKENIZER_PATH = "models/lstm/lstm_tokenizer.json"
 
-# WandB 配置
-WANDB_PROJECT = 'wordle-prediction'
-WANDB_RUN_NAME = 'lstm-experiment'
+# LSTM 架构参数
+LSTM_UNITS = 64
+DROPOUT_RATE = 0.15
+EMBEDDING_DIM = 24
 
-# ==========================================
-# 1. 数据加载与高级特征工程
-# ==========================================
+OOV_TOKEN = "<OOV>"
 
-def process_data_and_extract_features(file_path, nrows):
-    """读取数据，计算单词难度、单词ID、用户平均偏好。"""
-    print("Step 1: 读取数据并构建四特征...")
-    try:
-        df = pd.read_csv(file_path, nrows=nrows, usecols=['Game', 'Trial', 'Username', 'target'])
-        df = df.dropna()
-    except:
-        # 模拟数据... (省略模拟逻辑，见前一个版本)
-        print("⚠️ 文件未找到，请确保 wordle_games.csv 存在。")
-        return {}, 2, None, None 
+LARGE_ERROR_THRESHOLD = 1.5
+PATIENCE = 5
+REPORT_SAVE_PATH = "outputs/lstm_output.txt"
 
-    # --- Feature A & B: 单词难度 (Difficulty) & 单词 ID (Embedding) ---
-    word_stats = df.groupby('target')['Trial'].mean().to_dict()
-    df['word_difficulty'] = df['target'].map(word_stats)
-    tokenizer = Tokenizer(); tokenizer.fit_on_texts(df['target'])
-    df['word_id'] = df['target'].apply(lambda x: tokenizer.texts_to_sequences([x])[0][0])
-    vocab_size = len(tokenizer.word_index) + 1
+# ==========================================================
+# 工具函数
+# ==========================================================
 
-    # --- Feature C: 用户偏好 (User Bias) ---
-    # 计算每个用户的全局平均步数
-    user_stats = df.groupby('Username')['Trial'].mean().to_dict()
-    df['user_bias'] = df['Username'].map(user_stats)
+def ensure_dirs():
+    os.makedirs(os.path.dirname(MODEL_SAVE_PATH) or ".", exist_ok=True)
+    os.makedirs("outputs", exist_ok=True)
+    os.makedirs("models/lstm", exist_ok=True)
+    os.makedirs("visualization", exist_ok=True)
 
-    df = df.sort_values(by=['Username', 'Game'])
-    
-    # 构建复合字典：(Trial, Difficulty, WordID, UserBias)
-    history_map = df.groupby('Username').apply(
-        lambda x: list(zip(x['Trial'], x['word_difficulty'], x['word_id'], x['user_bias']))
-    ).to_dict()
-    
-    return history_map, vocab_size, tokenizer, word_stats
 
-def create_multi_input_dataset(user_history_map, look_back):
-    """构建四输入数据集：X_seq, X_diff, X_word, X_bias."""
-    print("Step 2: 构建四输入样本...")
-    
-    X_seq_list = []
-    X_diff_list = []; X_word_list = []; X_bias_list = []
-    y_steps = []; y_success = []
-    valid_players = []
 
-    for user, history in user_history_map.items():
-        if len(history) > look_back:
-            for i in range(len(history) - look_back):
-                
-                # --- 1. 历史序列特征 (LSTM Input) ---
-                past_trials = [h[0] for h in history[i : i+look_back]]
-                past_arr = np.array(past_trials)
-                std_dev = np.std(past_arr) / 7.0; seq_norm = past_arr / 7.0
-                seq_2d = np.stack([seq_norm, np.full_like(seq_norm, std_dev)], axis=1)
-                
-                # --- 2. 目标信息和用户偏好 (Context Inputs) ---
-                target_game = history[i + look_back]
-                target_trial = target_game[0]
-                target_difficulty = target_game[1]
-                target_word_id = target_game[2]
-                target_user_bias = target_game[3] # 新增
-                
-                # 收集数据
-                X_seq_list.append(seq_2d)
-                X_diff_list.append(target_difficulty / 7.0) 
-                X_word_list.append(target_word_id)
-                X_bias_list.append(target_user_bias / 7.0) # 新增
-                
-                # 标签
-                y_steps.append(7.0 if target_trial > 6 else float(target_trial))
-                y_success.append(1.0 if target_trial <= 6 else 0.0)
-            
-            valid_players.append(user)
+
+
+def safe_read_csv(path, usecols=None):
+    if not os.path.exists(path):
+        raise FileNotFoundError(f"File missing: {path}")
+    return pd.read_csv(path, usecols=usecols)
+
+
+def fit_tokenizer(train_df):
+    tokenizer = Tokenizer(oov_token=OOV_TOKEN, filters='', lower=True)
+    tokenizer.fit_on_texts(train_df["target"].astype(str))
+    with open(TOKENIZER_PATH, "w", encoding="utf-8") as f:
+        json.dump(tokenizer.word_index, f, indent=2)
+    return tokenizer
+
+
+def load_tokenizer():
+    with open(TOKENIZER_PATH, "r", encoding="utf-8") as f:
+        word_index = json.load(f)
+    tk = Tokenizer(oov_token=OOV_TOKEN)
+    tk.word_index = word_index
+    return tk
+
+
+def attach_features(df, tokenizer, diff_map, user_map):
+    df = df.copy()
+    df["target"] = df["target"].astype(str)
+    seqs = tokenizer.texts_to_sequences(df["target"])
+    df["word_id"] = [s[0] if s else 0 for s in seqs]
+    df["word_difficulty"] = df["target"].map(diff_map).fillna(4.0).astype(float)
+    df["user_bias"] = df["Username"].map(user_map).fillna(4.0).astype(float)
+    return df
+
+
+def build_history(df) -> Dict[str, List[Tuple]]:
+    hist = {}
+    df_sorted = df.sort_values(["Username", "Game"])
+    for u, g in df_sorted.groupby("Username", sort=False):
+        hist[u] = [(int(r["Trial"]),
+                    float(r["word_difficulty"]),
+                    int(r["word_id"]),
+                    float(r["user_bias"]))
+                   for _, r in g.iterrows()]
+    return hist
+
+
+def create_samples(history, look_back):
+    X_seq, X_diff, X_wid, X_bias, y_steps, y_succ = [], [], [], [], [], []
+    for user, events in history.items():
+        if len(events) <= look_back:
+            continue
+        for i in range(look_back, len(events)):
+            window = events[i-look_back:i]
+            target = events[i]
+
+            trials = np.array([t[0] for t in window], np.float32)
+            norm = trials / 7.0
+            std = np.std(trials) / 7.0
+
+            seq = np.stack([norm, np.full_like(norm, std)], axis=1)
+            X_seq.append(seq)
+            X_diff.append([target[1] / 7.0])
+            X_wid.append([target[2]])
+            X_bias.append([target[3] / 7.0])
+            y_steps.append(min(float(target[0]), 7.0))
+            y_succ.append(1.0 if target[0] <= 6 else 0.0)
+
+    if not X_seq:
+        return (np.zeros((0, look_back, 2), np.float32),
+                np.zeros((0, 1), np.float32),
+                np.zeros((0, 1), np.int32),
+                np.zeros((0, 1), np.float32),
+                np.zeros((0,), np.float32),
+                np.zeros((0,), np.float32))
 
     return (
-        np.array(X_seq_list, dtype=np.float32),
-        np.array(X_diff_list, dtype=np.float32),
-        np.array(X_word_list, dtype=np.float32),
-        np.array(X_bias_list, dtype=np.float32), # 新增输出
-        np.array(y_steps, dtype=np.float32),
-        np.array(y_success, dtype=np.float32),
-        valid_players
+        np.array(X_seq, np.float32),
+        np.array(X_diff, np.float32),
+        np.array(X_wid, np.int32),
+        np.array(X_bias, np.float32),
+        np.array(y_steps, np.float32),
+        np.array(y_succ, np.float32)
     )
 
-# ==========================================
-# 2. 模型构建 (Multi-Input Four Branch)
-# ==========================================
 
-def build_context_model(look_back, vocab_size, embedding_dim):
-    print(f"Step 3: 构建四输入神经网络 (Vocab={vocab_size})...")
-    
-    # --- Input 1: 玩家历史 (LSTM) ---
-    input_hist = Input(shape=(look_back, 2), name='input_history')
-    
-    # 根据LSTM_LAYERS参数动态构建多层LSTM
-    x1 = input_hist
-    for i in range(LSTM_LAYERS):
-        return_sequences = (i < LSTM_LAYERS - 1)  # 最后一层不返回序列
-        x1 = LSTM(LSTM_UNITS if i > 0 else 128, return_sequences=return_sequences)(x1)
-        x1 = Dropout(DROPOUT_RATE)(x1)
-    
-    # --- Input 2: 单词难度 (Dense) ---
-    input_diff = Input(shape=(1,), name='input_difficulty'); x2 = Dense(16, activation='relu')(input_diff)
-    
-    # --- Input 3: 单词 ID (Embedding) ---
-    input_word = Input(shape=(1,), name='input_word_id'); x3 = Embedding(input_dim=vocab_size, output_dim=embedding_dim, input_length=1)(input_word); x3 = Flatten()(x3)
-    
-    # --- Input 4: 用户偏好 (Dense) ---
-    input_bias = Input(shape=(1,), name='input_user_bias'); x4 = Dense(16, activation='relu')(input_bias) # 新增
-    
-    # --- 融合层 (Concatenate) ---
-    combined = Concatenate()([x1, x2, x3, x4]) # 融合四个分支
-    
-    z = Dense(64, activation='relu')(combined); z = Dropout(0.2)(z)
-    
-    # --- 输出层 ---
-    out_steps = Dense(1, name='output_steps', dtype='float32')(Dense(32, activation='relu')(z))
-    out_success = Dense(1, activation='sigmoid', name='output_success', dtype='float32')(Dense(16, activation='relu')(z))
-    
-    # 必须更新 inputs 列表
-    model = Model(inputs=[input_hist, input_diff, input_word, input_bias], outputs=[out_steps, out_success])
-    
-    # 使用指定的学习率创建优化器
-    optimizer = tf.keras.optimizers.Adam(learning_rate=LEARNING_RATE)
-    
-    model.compile(optimizer=optimizer,
-                  loss={'output_steps': 'mse', 'output_success': 'binary_crossentropy'},
-                  loss_weights={'output_steps': 1.0, 'output_success': 0.5},
-                  metrics={'output_success': 'accuracy'})
+# ==========================================================
+# LSTM 模型
+# ==========================================================
+
+def build_model(look_back, vocab_size):
+    # 历史输入分支
+    h_in = Input((look_back, 2), name="input_history")
+    # 使用双向LSTM处理历史序列
+    x = Bidirectional(LSTM(LSTM_UNITS, return_sequences=True))(h_in)
+    x = Dropout(DROPOUT_RATE)(x)
+    x = Bidirectional(LSTM(LSTM_UNITS // 2))(x)
+    x = Dropout(DROPOUT_RATE)(x)
+
+    # 难度输入分支
+    diff_in = Input((1,), name="input_difficulty")
+    d1 = Dense(16, activation="relu")(diff_in)
+
+    # 单词ID输入分支
+    wid_in = Input((1,), name="input_word_id", dtype="int32")
+    wemb = Flatten()(Embedding(vocab_size, EMBEDDING_DIM)(wid_in))
+
+    # 用户偏置输入分支
+    bias_in = Input((1,), name="input_user_bias")
+    b1 = Dense(16, activation="relu")(bias_in)
+
+    # 合并所有特征
+    z = Concatenate()([x, d1, wemb, b1])
+    z = Dense(64, activation="relu")(z)
+    z = Dropout(DROPOUT_RATE)(z)
+
+    # 输出层
+    out_steps = Dense(1, "linear", name="output_steps")(Dense(32, "relu")(z))
+    out_succ = Dense(1, "sigmoid", name="output_success")(Dense(16, "relu")(z))
+
+    model = Model([h_in, diff_in, wid_in, bias_in], [out_steps, out_succ])
+    model.compile(
+        optimizer=tf.keras.optimizers.Adam(LEARNING_RATE),
+        loss={"output_steps": "mse",
+              "output_success": "binary_crossentropy"},
+        loss_weights={"output_steps": 1.0, "output_success": 0.5},
+        metrics={"output_success": "accuracy"}
+    )
     return model
 
-# ==========================================
-# 3. 验证与回测逻辑 (修正后的版本)
-# ==========================================
 
-def prepare_single_inference_input(history_tuples, target_diff, target_word_id, target_user_bias, look_back):
-    """辅助函数：为单次预测准备四输入张量。"""
-    trials = [h[0] for h in history_tuples]
-    arr = np.array(trials)
-    
-    # 构造 Input 1 (History)
-    std = np.std(arr) / 7.0; norm = arr / 7.0
-    seq_2d = np.stack([norm, np.full_like(norm, std)], axis=1).reshape(1, look_back, 2)
-    # 构造 Input 2, 3, 4 (Context)
-    diff_in = np.array([target_diff / 7.0]).reshape(1, 1)
-    word_in = np.array([target_word_id]).reshape(1, 1)
-    bias_in = np.array([target_user_bias / 7.0]).reshape(1, 1)
-    
-    return [
-        seq_2d.astype(np.float32), 
-        diff_in.astype(np.float32), 
-        word_in.astype(np.float32), 
-        bias_in.astype(np.float32)
-    ]
+# ==========================================================
+# 评估函数
+# ==========================================================
 
-def evaluate_model_and_get_preds(model, val_inputs, val_labels):
-    """进行批量预测，显示进度条，并计算整体指标。"""
-    print("\nStep 4: 开始批量预测，显示进度条...")
-    
-    # 批量预测 (verbose=1 开启进度条)
-    predictions = model.predict(val_inputs, batch_size=BATCH_SIZE, verbose=1)
-    
-    pred_steps = predictions[0].flatten()
-    pred_success_prob = predictions[1].flatten()
-    
-    # 真实标签
-    true_steps = val_labels['output_steps']
-    
-    # 计算指标
-    pred_steps_clipped = pred_steps.clip(max=7.0)
-    mae = mean_absolute_error(true_steps, pred_steps_clipped)
-    rmse = np.sqrt(mean_squared_error(true_steps, pred_steps_clipped))
-    
-    return pred_steps.clip(max=6.99), pred_success_prob, mae, rmse
+def evaluate_model(model, Xs):
+    X_seq, X_diff, X_wid, X_bias, y_steps, y_succ = Xs
+    pred_steps, pred_prob = model.predict({
+        "input_history": X_seq,
+        "input_difficulty": X_diff,
+        "input_word_id": X_wid,
+        "input_user_bias": X_bias
+    }, batch_size=1024, verbose=1)
+    pred_steps = pred_steps.flatten()
+    pred_prob = pred_prob.flatten()
 
-def perform_validation(model, user_history_map, valid_players, look_back, sample_size, threshold, pred_steps_full):
-    print("🔍 开始执行perform_validation函数...")
-    
-    buffer = io.StringIO()
-    
-    eligible = [u for u in valid_players if len(user_history_map[u]) >= look_back + 1]
-    if len(eligible) < sample_size: sample_size = len(eligible)
-    print(f"🔍 符合条件的用户数量: {len(eligible)}, 抽样数量: {sample_size}")
-    
-    # 更新输出路径信息
-    buffer.write(f"\nStep 5: 启动回测验证抽样报告 (样本数={sample_size}, 输出至 outputs/lstm_output.txt)...")
-    
-    header = f"{'User ID':<10} | {'Bias':<5} | {'Diff':<5} | {'Real':<5} | {'Pred':<5} | {'Err':<5} | {'Status'}"
-    buffer.write("\n" + "-" * 60 + "\n" + header + "\n" + "-" * 60)
-    
-    # 确保有足够的用户进行抽样
-    if len(eligible) > 0:
-        report_users = random.sample(eligible, min(10, sample_size))
-        print(f"🔍 已抽取 {len(report_users)} 个用户进行展示")
-        
-        large_errors = 0
-        
-        for i, user in enumerate(report_users):
-            full_hist = user_history_map[user]
-            # 获取目标数据 (Trial, Difficulty, WordID, UserBias)
-            target_data = full_hist[-1]
-            
-            real_trial = float(target_data[0])
-            t_diff = target_data[1]; t_word = target_data[2]; t_bias = target_data[3]
-            
-            try:
-                # 临时进行单样本预测以获得该用户的预测值
-                temp_inputs = prepare_single_inference_input(full_hist[-(look_back+1) : -1], t_diff, t_word, t_bias, look_back)
-                p_steps, _ = model.predict(temp_inputs, verbose=0)
-                
-                pred_val = min(p_steps[0][0], 6.99)
-                err = abs(pred_val - real_trial)
-                
-                if err > threshold: large_errors += 1
-                
-                status = "✅" if err < 1.0 else "⚠️"
-                if err > threshold: status = "❌"
-                line = f"{str(user):<10} | {t_bias:.2f}  | {t_diff:.2f}  | {real_trial:.0f}    | {pred_val:.2f}  | {err:.2f}  | {status}"
-                buffer.write(f"\n{line}")
-            except Exception as e:
-                print(f"❌ 处理用户 {user} 时出错: {e}")
-                buffer.write(f"\n{str(user):<10} | 错误: {str(e)[:20]}...")
-
-        if sample_size > len(report_users):
-            buffer.write(f"\n... (其余 {sample_size - len(report_users)} 条省略)")
-    else:
-        buffer.write("\n⚠️ 没有找到符合条件的用户数据进行抽样")
-        print("⚠️ 没有找到符合条件的用户数据进行抽样")
-    
-    # 打印到控制台
-    report_content = buffer.getvalue()
-    print(report_content)
-    
-    # 写入文件，确保文件存在
+    mae = mean_absolute_error(y_steps, np.clip(pred_steps, 0, 7))
+    rmse = np.sqrt(mean_squared_error(y_steps, np.clip(pred_steps, 0, 7)))
+    acc = accuracy_score(y_succ.astype(int), (pred_prob >= 0.5).astype(int))
     try:
-        os.makedirs('outputs', exist_ok=True)
-        with open("outputs/lstm_output.txt", "a", encoding="utf-8") as f: # 追加到报告
-            f.write(report_content)
-        print("\n✅ 抽样报告已成功导出至 outputs/lstm_output.txt 文件。")
-    except Exception as e:
-        print(f"\n❌ 写入抽样报告失败: {e}")
+        auc = roc_auc_score(y_succ, pred_prob)
+    except:
+        auc = float("nan")
+
+    print(f"MAE={mae:.4f}, RMSE={rmse:.4f}, ACC={acc:.4f}, AUC={auc}")
+    return mae, rmse, acc, auc
+
+def compute_large_error_rate(y_true, y_pred, threshold):
+    errors = np.abs(y_true - y_pred)
+    return np.mean(errors > threshold)
 
 
-# ==========================================
-# 4. 主程序 (Main)
-# ==========================================
+def plot_auc_curve(y_true, y_pred, save_path):
+    """Plot ROC AUC curve"""
+    fpr, tpr, _ = roc_curve(y_true, y_pred)
+    plt.figure(figsize=(8, 6))
+    plt.plot(fpr, tpr, color='blue', lw=2, label=f'ROC curve (AUC = {roc_auc_score(y_true, y_pred):.3f})')
+    plt.plot([0, 1], [0, 1], color='gray', linestyle='--')
+    plt.xlim([0.0, 1.0])
+    plt.ylim([0.0, 1.05])
+    plt.xlabel('False Positive Rate')
+    plt.ylabel('True Positive Rate')
+    plt.title('Receiver Operating Characteristic (ROC) Curve')
+    plt.legend(loc="lower right")
+    plt.grid(True, alpha=0.3)
+    plt.savefig(save_path, dpi=300, bbox_inches='tight')
+    plt.close()
+    print(f"AUC curve saved to: {save_path}")
 
-def plot_loss_curve(history, model_name, save_dir):
-    """绘制并保存Loss曲线"""
+def plot_loss(history, save_path):
+    """Plot training and validation loss curves"""
     plt.figure(figsize=(12, 6))
     
-    # 绘制总损失曲线
+    # Plot total loss
     plt.subplot(1, 2, 1)
-    plt.plot(history.history['loss'], label='训练损失')
-    plt.plot(history.history['val_loss'], label='验证损失')
-    plt.title(f'{model_name} 总损失曲线')
-    plt.xlabel('Epoch')
+    plt.plot(history.history['loss'], label='Training Loss')
+    plt.plot(history.history['val_loss'], label='Validation Loss')
+    plt.title('Training and Validation Loss')
+    plt.xlabel('Epochs')
     plt.ylabel('Loss')
     plt.legend()
-    plt.grid(True)
+    plt.grid(True, alpha=0.3)
     
-    # 绘制步数预测损失曲线
+    # Plot component losses
     plt.subplot(1, 2, 2)
-    plt.plot(history.history['output_steps_loss'], label='训练步数损失')
-    plt.plot(history.history['val_output_steps_loss'], label='验证步数损失')
-    plt.title(f'{model_name} 步数预测损失')
-    plt.xlabel('Epoch')
-    plt.ylabel('MSE Loss')
+    if 'output_steps_loss' in history.history:
+        plt.plot(history.history['output_steps_loss'], label='Training Steps Loss')
+        plt.plot(history.history['val_output_steps_loss'], label='Validation Steps Loss')
+    if 'output_success_loss' in history.history:
+        plt.plot(history.history['output_success_loss'], label='Training Success Loss')
+        plt.plot(history.history['val_output_success_loss'], label='Validation Success Loss')
+    plt.title('Component Losses')
+    plt.xlabel('Epochs')
+    plt.ylabel('Loss')
     plt.legend()
-    plt.grid(True)
+    plt.grid(True, alpha=0.3)
     
     plt.tight_layout()
-    save_path = os.path.join(save_dir, f'{model_name}_loss_curve.png')
     plt.savefig(save_path, dpi=300, bbox_inches='tight')
     plt.close()
-    print(f"✅ Loss曲线已保存至: {save_path}")
-    return save_path
+    print(f"Loss curve saved to: {save_path}")
 
-def plot_prediction_trends(true_steps, pred_steps, model_name, save_dir):
-    """绘制预测结果趋势图"""
-    # 随机选择100个样本进行可视化，避免图过于拥挤
-    if len(true_steps) > 100:
-        indices = np.random.choice(len(true_steps), 100, replace=False)
-        true_sample = true_steps[indices]
-        pred_sample = pred_steps[indices]
-    else:
-        true_sample = true_steps
-        pred_sample = pred_steps
-    
-    # 按真实值排序
-    sorted_indices = np.argsort(true_sample)
-    true_sample_sorted = true_sample[sorted_indices]
-    pred_sample_sorted = pred_sample[sorted_indices]
-    
-    plt.figure(figsize=(12, 6))
-    
-    # 绘制预测值与真实值对比图
-    plt.subplot(1, 2, 1)
-    plt.scatter(true_sample, pred_sample, alpha=0.5, s=50)
-    plt.plot([0, 7], [0, 7], 'r--', lw=2)  # 理想线
-    plt.title(f'{model_name} 预测值 vs 真实值')
-    plt.xlabel('真实步数')
-    plt.ylabel('预测步数')
-    plt.grid(True)
-    plt.xlim(0, 7)
-    plt.ylim(0, 7)
-    
-    # 绘制排序后的预测趋势
-    plt.subplot(1, 2, 2)
-    plt.plot(range(len(true_sample_sorted)), true_sample_sorted, 'b-', label='真实值')
-    plt.plot(range(len(pred_sample_sorted)), pred_sample_sorted, 'r--', label='预测值')
-    plt.title(f'{model_name} 预测趋势')
-    plt.xlabel('样本索引 (按真实值排序)')
-    plt.ylabel('步数')
-    plt.legend()
-    plt.grid(True)
-    
-    plt.tight_layout()
-    save_path = os.path.join(save_dir, f'{model_name}_prediction_trends.png')
-    plt.savefig(save_path, dpi=300, bbox_inches='tight')
-    plt.close()
-    print(f"✅ 预测趋势图已保存至: {save_path}")
-    return save_path
 
-def train_model():
-    """
-    训练模型函数
-    """
-    # --- GPU 设置 ---
-    gpus = tf.config.list_physical_devices('GPU')
-    if gpus:
-        try:
-            for gpu in gpus: tf.config.experimental.set_memory_growth(gpu, True)
-            set_global_policy('mixed_float16')
-            print("✅ GPU 加速已开启 (Mixed Float16)")
-        except: pass
-    
-    # 确保可视化文件夹存在
-    visualization_dir = 'visualization'
-    os.makedirs(visualization_dir, exist_ok=True)
-    os.makedirs('outputs', exist_ok=True)
-    
-    # --- 初始化 WandB ---
-    print("🔄 初始化 WandB 实验记录...")
-    wandb.init(project=WANDB_PROJECT, name=WANDB_RUN_NAME, dir='wandb', anonymous='must')
-    # 记录超参数
-    config = wandb.config
-    config.look_back = LOOK_BACK
-    config.epochs = EPOCHS
-    config.batch_size = BATCH_SIZE
-    config.embedding_dim = EMBEDDING_DIM
-    config.large_error_threshold = LARGE_ERROR_THRESHOLD
-        
-    # 1. 数据处理
-    user_map, vocab_size, _, _ = process_data_and_extract_features(FILE_PATH, MAX_ROWS)
-    if not user_map: return None, None, None, None, None, None, None, None
+# ==========================================================
+# 主程序（无需 parse_args）
+# ==========================================================
 
-    # 2. 数据集构建
-    X_s, X_d, X_w, X_b, y_st, y_su, valid_users = create_multi_input_dataset(user_map, LOOK_BACK)
-    
-    # 划分训练/验证/测试集 = 7:1:2
-    indices = np.arange(len(y_st))
-    # 先划分训练集和剩余数据
-    train_idx, temp_idx = train_test_split(indices, test_size=0.3, random_state=42)
-    # 再从剩余数据中划分验证集和测试集
-    val_idx, test_idx = train_test_split(temp_idx, test_size=2/3, random_state=42)  # 1:2
-    
-    print(f"数据集划分：训练集 {len(train_idx)}, 验证集 {len(val_idx)}, 测试集 {len(test_idx)}")
-    
-    return (X_s, X_d, X_w, X_b, y_st, y_su, valid_users, train_idx, val_idx, test_idx, 
-            vocab_size, user_map, visualization_dir, config)
-    
-def build_and_train_model(X_s, X_d, X_w, X_b, y_st, y_su, train_idx, val_idx, test_idx, 
-                          vocab_size, visualization_dir, config):
-    """
-    构建并训练模型
-    """
-    # 构建 TF Dataset 辅助函数
-    def make_ds(idx):
-        return tf.data.Dataset.from_tensor_slices((
-            {
-                'input_history': X_s[idx],
-                'input_difficulty': X_d[idx],
-                'input_word_id': X_w[idx],
-                'input_user_bias': X_b[idx]
-            },
-            {
-                'output_steps': y_st[idx],
-                'output_success': y_su[idx]
-            }
-        )).shuffle(20000).batch(BATCH_SIZE).prefetch(tf.data.AUTOTUNE)
-        
-    train_ds = make_ds(train_idx)
-    # val_ds 用于模型评估，不需要 shuffle
+def main_train():
+    ensure_dirs()
+
+    # 1. 数据读取
+    train_df = safe_read_csv(TRAIN_FILE, usecols=["Game", "Trial", "Username", "target"])
+    val_df = safe_read_csv(VAL_FILE, usecols=["Game", "Trial", "Username", "target"])
+    test_df = safe_read_csv(TEST_FILE, usecols=["Game", "Trial", "Username", "target"])
+
+    # 2. 难度/用户水平
+    diff_map = {}
+    user_map = {}
+    if os.path.exists(DIFFICULTY_FILE):
+        ddf = pd.read_csv(DIFFICULTY_FILE)
+        diff_map = dict(zip(ddf["word"], ddf["avg_trial"]))
+    if os.path.exists(PLAYER_FILE):
+        pdf = pd.read_csv(PLAYER_FILE)
+        user_map = dict(zip(pdf["Username"], pdf["avg_trial"]))
+
+    # 3. Tokenizer（train-only）
+    tokenizer = fit_tokenizer(train_df)
+
+    train_df = attach_features(train_df, tokenizer, diff_map, user_map)
+    val_df = attach_features(val_df, tokenizer, diff_map, user_map)
+    test_df = attach_features(test_df, tokenizer, diff_map, user_map)
+
+    # 4. Build histories
+    hist_train = build_history(train_df)
+    hist_val = build_history(val_df)
+    hist_test = build_history(test_df)
+
+    # 5. Sliding samples
+    X_train = create_samples(hist_train, LOOK_BACK)
+    X_val = create_samples(hist_val, LOOK_BACK)
+    X_test = create_samples(hist_test, LOOK_BACK)
+
+    print(f"Train={len(X_train[0])}, Val={len(X_val[0])}, Test={len(X_test[0])}")
+
+    vocab_size = len(tokenizer.word_index) + 1
+
+    # 6. Model
+    model = build_model(LOOK_BACK, vocab_size)
+    model.summary()
+
+    # 7. TF dataset
+    train_ds = tf.data.Dataset.from_tensor_slices((
+        {
+            "input_history": X_train[0],
+            "input_difficulty": X_train[1],
+            "input_word_id": X_train[2],
+            "input_user_bias": X_train[3]
+        },
+        {
+            "output_steps": X_train[4],
+            "output_success": X_train[5]
+        }
+    )).shuffle(20000).batch(BATCH_SIZE).prefetch(tf.data.AUTOTUNE)
+
     val_ds = tf.data.Dataset.from_tensor_slices((
-            {
-                'input_history': X_s[val_idx],
-                'input_difficulty': X_d[val_idx],
-                'input_word_id': X_w[val_idx],
-                'input_user_bias': X_b[val_idx]
-            },
-            {
-                'output_steps': y_st[val_idx],
-                'output_success': y_su[val_idx]
-            }
-        )).batch(BATCH_SIZE).prefetch(tf.data.AUTOTUNE)
-    
-    # 测试集也不需要shuffle
-    test_ds = tf.data.Dataset.from_tensor_slices((
-            {
-                'input_history': X_s[test_idx],
-                'input_difficulty': X_d[test_idx],
-                'input_word_id': X_w[test_idx],
-                'input_user_bias': X_b[test_idx]
-            },
-            {
-                'output_steps': y_st[test_idx],
-                'output_success': y_su[test_idx]
-            }
-        )).batch(BATCH_SIZE).prefetch(tf.data.AUTOTUNE)
-    
-    # 3. 模型构建与训练/加载
-    is_trained = False
-    model = None
-    
-    if os.path.exists(MODEL_SAVE_PATH):
-        print(f"Step 3: 检测到已保存模型 {MODEL_SAVE_PATH}，尝试加载...")
-        try:
-            model = tf.keras.models.load_model(MODEL_SAVE_PATH)
-            print("✅ 模型加载成功，跳过训练。")
-            is_trained = True
-        except Exception as e:
-            print(f"❌ 模型加载失败: {e}. 将重新构建并训练模型。")
-            is_trained = False
-            
-    if not is_trained:
-        # 构建模型
-        model = build_context_model(LOOK_BACK, vocab_size, EMBEDDING_DIM)
-        
-        # 创建早停回调
-        early_stopping = EarlyStopping(
-            monitor='val_loss',
-            patience=PATIENCE,
-            restore_best_weights=True,
-            verbose=1
-        )
-        
-        # 训练
-        print(f"Step 4: 开始训练 (Epochs={EPOCHS}, Batch={BATCH_SIZE})...")
-        history = model.fit(train_ds, validation_data=val_ds, epochs=EPOCHS, verbose=1,
-                           callbacks=[WandbCallback(save_model=False), early_stopping])
-            
-        # 训练完成后保存
-        try:
-            model.save(MODEL_SAVE_PATH)
-            print(f"\n✅ 模型已成功保存到文件夹: {MODEL_SAVE_PATH}")
-        except Exception as save_e:
-            print(f"\n❌ 模型保存失败: {save_e}")
-        
-        # 绘制并保存Loss曲线
-        loss_curve_path = plot_loss_curve(history, 'LSTM', visualization_dir)
-        # 记录到WandB
-        wandb.log({'loss_curve': wandb.Image(loss_curve_path)})
-        
-    # 训练完成后保存
-    try:
-        model.save(MODEL_SAVE_PATH)
-        print(f"\n✅ 模型已成功保存到文件夹: {MODEL_SAVE_PATH}")
-    except Exception as save_e:
-        print(f"\n❌ 模型保存失败: {save_e}")
-        
-    return model, val_idx, test_idx
-        
-def evaluate_model(model, X_s, X_d, X_w, X_b, y_st, y_su, valid_users, user_map, 
-                  val_idx, test_idx, visualization_dir, config):
-    """
-    评估模型在验证集和测试集上的表现
-    """
-    # 验证集评估
-    val_inputs = {
-        'input_history': X_s[val_idx],
-        'input_difficulty': X_d[val_idx],
-        'input_word_id': X_w[val_idx],
-        'input_user_bias': X_b[val_idx]
-    }
-    val_labels = {
-        'output_steps': y_st[val_idx],
-        'output_success': y_su[val_idx]
-    }
+        {
+            "input_history": X_val[0],
+            "input_difficulty": X_val[1],
+            "input_word_id": X_val[2],
+            "input_user_bias": X_val[3]
+        },
+        {
+            "output_steps": X_val[4],
+            "output_success": X_val[5]
+        }
+    )).batch(BATCH_SIZE).prefetch(tf.data.AUTOTUNE)
 
-    val_pred_steps, val_pred_success_prob, val_mae, val_rmse = evaluate_model_and_get_preds(model, val_inputs, val_labels)
+    # 8. 训练
+    early = EarlyStopping(monitor="val_loss", patience=PATIENCE, restore_best_weights=True)
+    train_history = model.fit(train_ds, validation_data=val_ds, epochs=EPOCHS, callbacks=[early])
+    
+    # 绘制并保存损失曲线
+    loss_curve_path = "visualization/LSTM_loss_curve.png"
+    plot_loss(train_history, loss_curve_path)
 
-    # 计算 ACC 和 AUC
-    val_true_wins = val_labels['output_success']
-    val_pred_wins = (val_pred_success_prob >= 0.5).astype(int)
-    val_acc = accuracy_score(val_true_wins, val_pred_wins)
-    
-    # 计算 AUC
-    try:
-        val_auc = roc_auc_score(val_true_wins, val_pred_success_prob)
-    except ValueError:
-        print("⚠️ AUC 计算失败，可能是因为正负样本不平衡或仅有单一类别")
-        val_auc = 0.5  # 默认值
-    
-    # 计算大型误差率
-    val_large_error_rate = np.mean(np.abs(val_labels['output_steps'] - val_pred_steps) > LARGE_ERROR_THRESHOLD)
-    
-    # 测试集评估
-    test_inputs = {
-        'input_history': X_s[test_idx],
-        'input_difficulty': X_d[test_idx],
-        'input_word_id': X_w[test_idx],
-        'input_user_bias': X_b[test_idx]
-    }
-    test_labels = {
-        'output_steps': y_st[test_idx],
-        'output_success': y_su[test_idx]
-    }
+    model.save(MODEL_SAVE_PATH)
+    print(f"Model saved to {MODEL_SAVE_PATH}")
 
-    test_pred_steps, test_pred_success_prob, test_mae, test_rmse = evaluate_model_and_get_preds(model, test_inputs, test_labels)
+    print("\n=== Validation ===")
+    val_mae, val_rmse, val_acc, val_auc = evaluate_model(model, X_val)
+    
+    # 绘制验证集AUC曲线
+    val_pred_steps, val_pred_prob = model.predict({
+        "input_history": X_val[0],
+        "input_difficulty": X_val[1],
+        "input_word_id": X_val[2],
+        "input_user_bias": X_val[3]
+    }, batch_size=1024, verbose=0)
+    val_auc_curve_path = "visualization/LSTM_validation_auc_curve.png"
+    plot_auc_curve(X_val[5], val_pred_prob.flatten(), val_auc_curve_path)
 
-    # 计算测试集 ACC 和 AUC
-    test_true_wins = test_labels['output_success']
-    test_pred_wins = (test_pred_success_prob >= 0.5).astype(int)
-    test_acc = accuracy_score(test_true_wins, test_pred_wins)
+    print("\n=== Test ===")
+    test_mae, test_rmse, test_acc, test_auc = evaluate_model(model, X_test)
     
-    # 计算测试集 AUC
-    try:
-        test_auc = roc_auc_score(test_true_wins, test_pred_success_prob)
-    except ValueError:
-        print("⚠️ 测试集 AUC 计算失败，可能是因为正负样本不平衡或仅有单一类别")
-        test_auc = 0.5  # 默认值
-    
-    # 计算测试集大型误差率
-    test_large_error_rate = np.mean(np.abs(test_labels['output_steps'] - test_pred_steps) > LARGE_ERROR_THRESHOLD)
-    
-    # 记录验证指标到 WandB
-    wandb.log({
-        "val_mae": val_mae,
-        "val_rmse": val_rmse,
-        "val_accuracy": val_acc,
-        "val_auc": val_auc,
-        "val_large_error_rate": val_large_error_rate,
-        "test_mae": test_mae,
-        "test_rmse": test_rmse,
-        "test_accuracy": test_acc,
-        "test_auc": test_auc,
-        "test_large_error_rate": test_large_error_rate
-    })
-    
-    # 生成报告的头部和汇总指标
+    # 绘制测试集AUC曲线
+    test_pred_steps, test_pred_prob = model.predict({
+        "input_history": X_test[0],
+        "input_difficulty": X_test[1],
+        "input_word_id": X_test[2],
+        "input_user_bias": X_test[3]
+    }, batch_size=1024, verbose=0)
+    test_auc_curve_path = "visualization/LSTM_test_auc_curve.png"
+    plot_auc_curve(X_test[5], test_pred_prob.flatten(), test_auc_curve_path)
+
+    # --------------------------------------------------------
+    # 生成大型误差统计
+    # --------------------------------------------------------
+    val_pred_steps, _ = model.predict({
+        "input_history": X_val[0],
+        "input_difficulty": X_val[1],
+        "input_word_id": X_val[2],
+        "input_user_bias": X_val[3]
+    }, batch_size=1024, verbose=0)
+    val_pred_steps = val_pred_steps.flatten()
+    val_large_error_rate = compute_large_error_rate(X_val[4], np.clip(val_pred_steps, 0, 7), LARGE_ERROR_THRESHOLD)
+
+    test_pred_steps, _ = model.predict({
+        "input_history": X_test[0],
+        "input_difficulty": X_test[1],
+        "input_word_id": X_test[2],
+        "input_user_bias": X_test[3]
+    }, batch_size=1024, verbose=0)
+    test_pred_steps = test_pred_steps.flatten()
+    test_large_error_rate = compute_large_error_rate(X_test[4], np.clip(test_pred_steps, 0, 7), LARGE_ERROR_THRESHOLD)
+
+    # --------------------------------------------------------
+    # 格式化报告
+    # --------------------------------------------------------
     report = f"""
 ========================================
-  LSTM模型验证和测试报告
+ LSTM Model Validation and Test Report 
 ========================================
----- 验证集指标 ----
-1. 平均步数误差 (MAE)    : {val_mae:.4f}
-2. 均方根误差 (RMSE)     : {val_rmse:.4f}
-3. 胜负预测准确率        : {val_acc:.3%}
-4. ROC曲线下面积 (AUC)   : {val_auc:.4f}
-5. 大型误差率 (>{LARGE_ERROR_THRESHOLD}步)  : {val_large_error_rate:.3%}
+---- Validation Set Metrics ----
+1. Mean Absolute Error (MAE)    : {val_mae:.4f}
+2. Root Mean Squared Error (RMSE)     : {val_rmse:.4f}
+3. Win/Loss Prediction Accuracy        : {val_acc:.3%}
+4. Area Under ROC Curve (AUC)   : {val_auc:.4f}
+5. Large Error Rate (>{LARGE_ERROR_THRESHOLD} steps)  : {val_large_error_rate:.3%}
 
----- 测试集指标 ----
-1. 平均步数误差 (MAE)    : {test_mae:.4f}
-2. 均方根误差 (RMSE)     : {test_rmse:.4f}
-3. 胜负预测准确率        : {test_acc:.3%}
-4. ROC曲线下面积 (AUC)   : {test_auc:.4f}
-5. 大型误差率 (>{LARGE_ERROR_THRESHOLD}步)  : {test_large_error_rate:.3%}
+---- Test Set Metrics ----
+1. Mean Absolute Error (MAE)    : {test_mae:.4f}
+2. Root Mean Squared Error (RMSE)     : {test_rmse:.4f}
+3. Win/Loss Prediction Accuracy        : {test_acc:.3%}
+4. Area Under ROC Curve (AUC)   : {test_auc:.4f}
+5. Large Error Rate (>{LARGE_ERROR_THRESHOLD} steps)  : {test_large_error_rate:.3%}
 ========================================
 """
-    # 清空 output.txt 并写入全局报告
-    with open("outputs/lstm_output.txt", "w", encoding="utf-8") as f:
+
+    # --------------------------------------------------------
+    # 保存到文件
+    # --------------------------------------------------------
+    with open(REPORT_SAVE_PATH, "w", encoding="utf-8") as f:
         f.write(report)
+
+    print(f"\n📄 Report saved to: {REPORT_SAVE_PATH}")
     print(report)
-    
-    # 调用 perform_validation 进行抽样报告（使用测试集预测结果）
-    # 由于已划分测试集，不再需要VALIDATION_SAMPLE_SIZE参数
-    perform_validation(model, user_map, valid_users, LOOK_BACK, 
-                       min(10000, len(test_idx)), LARGE_ERROR_THRESHOLD, test_pred_steps)
-    
-    # 绘制并保存预测趋势图（使用测试集结果）
-    prediction_trend_path = plot_prediction_trends(
-        test_labels['output_steps'], test_pred_steps, 'LSTM', visualization_dir
-    )
-    # 记录到WandB
-    wandb.log({'prediction_trends': wandb.Image(prediction_trend_path)})
-    
-    return model
 
-def predict_with_model(model, user_history_map, user_id, look_back):
-    """
-    使用训练好的模型进行预测
-    
-    参数:
-    model: 训练好的模型
-    user_history_map: 用户历史数据映射
-    user_id: 要预测的用户ID
-    look_back: 历史窗口大小
-    
-    返回:
-    预测的步数和成功概率
-    """
-    if user_id not in user_history_map or len(user_history_map[user_id]) < look_back + 1:
-        print(f"⚠️ 用户 {user_id} 数据不足，无法进行预测")
-        return None, None
-    
-    full_hist = user_history_map[user_id]
-    # 获取目标数据 (Trial, Difficulty, WordID, UserBias)
-    target_data = full_hist[-1]
-    t_diff = target_data[1]; t_word = target_data[2]; t_bias = target_data[3]
-    
-    # 准备输入数据
-    inputs = prepare_single_inference_input(full_hist[-(look_back+1) : -1], t_diff, t_word, t_bias, look_back)
-    pred_steps, pred_success = model.predict(inputs, verbose=0)
-    
-    return min(pred_steps[0][0], 6.99), pred_success[0][0]
 
-def main(mode='train', user_id=None):
-    """
-    主函数
-    
-    参数:
-    mode: 'train' 或 'predict'
-    user_id: 当mode为'predict'时，指定要预测的用户ID
-    """
-    if mode == 'train':
-        # 训练模式
-        data = train_model()
-        if data[0] is None:  # 数据加载失败
-            return
-        
-        X_s, X_d, X_w, X_b, y_st, y_su, valid_users, train_idx, val_idx, test_idx, \
-        vocab_size, user_map, visualization_dir, config = data
-        
-        model, val_idx, test_idx = build_and_train_model(
-            X_s, X_d, X_w, X_b, y_st, y_su, train_idx, val_idx, test_idx,
-            vocab_size, visualization_dir, config
-        )
-        
-        evaluate_model(
-            model, X_s, X_d, X_w, X_b, y_st, y_su, valid_users, user_map,
-            val_idx, test_idx, visualization_dir, config
-        )
-        
-        # 完成 WandB 实验记录
-        wandb.finish()
-        print("✅ WandB 实验记录已完成")
-        print(f"✅ 所有可视化结果已保存至: {visualization_dir}")
-        
-    elif mode == 'predict':
-        # 预测模式
-        if not user_id:
-            print("❌ 预测模式需要指定 user_id 参数")
-            return
-        
-        # 加载模型
-        if not os.path.exists(MODEL_SAVE_PATH):
-            print(f"❌ 未找到模型文件: {MODEL_SAVE_PATH}")
-            return
-        
-        try:
-            model = tf.keras.models.load_model(MODEL_SAVE_PATH)
-            print("✅ 模型加载成功")
-            
-            # 加载数据进行预测
-            user_map, _, _, _ = process_data_and_extract_features(FILE_PATH, MAX_ROWS)
-            if not user_map:
-                print("❌ 数据加载失败")
-                return
-            
-            # 进行预测
-            pred_steps, pred_success = predict_with_model(model, user_map, user_id, LOOK_BACK)
-            if pred_steps is not None:
-                print(f"\n用户 {user_id} 的预测结果:")
-                print(f"预测步数: {pred_steps:.2f}")
-                print(f"成功概率: {pred_success:.2%}")
-                print(f"预测结果: {'成功' if pred_steps <= 6 else '失败'}")
-                
-        except Exception as e:
-            print(f"❌ 预测过程中出错: {e}")
+# 预测模式（按需启用）
+def main_predict(user_id):
+    if not os.path.exists(MODEL_SAVE_PATH):
+        raise FileNotFoundError("请先训练模型。")
+
+    model = tf.keras.models.load_model(MODEL_SAVE_PATH)
+
+    tokenizer = load_tokenizer()
+
+    df = safe_read_csv(TRAIN_FILE, usecols=["Game", "Trial", "Username", "target"])
+    diff_map = {}
+    user_map = {}
+    if os.path.exists(DIFFICULTY_FILE):
+        ddf = pd.read_csv(DIFFICULTY_FILE)
+        diff_map = dict(zip(ddf["word"], ddf["avg_trial"]))
+    if os.path.exists(PLAYER_FILE):
+        pdf = pd.read_csv(PLAYER_FILE)
+        user_map = dict(zip(pdf["Username"], pdf["avg_trial"]))
+
+    df = attach_features(df, tokenizer, diff_map, user_map)
+    hist = build_history(df)
+
+    if user_id not in hist:
+        print(f"用户 {user_id} 无记录")
+        return
+
+    events = hist[user_id]
+    if len(events) < 1:
+        print("历史不足")
+        return
+
+    # 准备输入
+    if len(events) < LOOK_BACK:
+        avg = np.mean([e[0] for e in events])
+        pad = [(avg, 4.0, 0, 4.0)] * (LOOK_BACK - len(events))
+        window = pad + events
     else:
-        print(f"❌ 未知模式: {mode}，请使用 'train' 或 'predict'")
+        window = events[-LOOK_BACK:]
 
+    trials = np.array([w[0] for w in window], np.float32)
+    seq = np.stack([trials/7.0, np.full_like(trials, np.std(trials)/7.0)], axis=1)
+    seq = seq.reshape(1, LOOK_BACK, 2)
+
+    last = events[-1]
+    diff = np.array([[last[1] / 7.0]], np.float32)
+    wid = np.array([[last[2]]], np.int32)
+    bias = np.array([[last[3] / 7.0]], np.float32)
+
+    p_steps, p_prob = model.predict({
+        "input_history": seq,
+        "input_difficulty": diff,
+        "input_word_id": wid,
+        "input_user_bias": bias
+    }, verbose=0)
+
+    print(f"预测步数: {float(np.clip(p_steps, 0, 6.99)):.2f}")
+    print(f"成功概率: {float(p_prob):.3f}")
+
+
+# ==========================================================
+# 程序启动入口（只需要改这几行即可控制 train 或 predict）
+# ==========================================================
 if __name__ == "__main__":
-    # 确保必要的文件夹存在
-    os.makedirs('wandb', exist_ok=True)
-    os.makedirs('visualization', exist_ok=True)
-    os.makedirs('outputs', exist_ok=True)
-    main()
+    # 检测模型是否存在，如果存在则直接进行预测
+    if os.path.exists(MODEL_SAVE_PATH) and os.path.exists(TOKENIZER_PATH):
+        print("检测到已存在模型，直接进行预测...")
+        USER_TO_PREDICT = "Alice"  # 若要预测，填用户 ID
+        main_predict(USER_TO_PREDICT)
+    else:
+        # 运行模式
+        RUN_MODE = "train"     # "train" 或 "predict"
+        USER_TO_PREDICT = "Alice"  # 若要预测，填用户 ID
+        
+        if RUN_MODE == "train":
+            print("未检测到模型或tokenizer，开始训练模型...")
+            main_train()
+        else:
+            main_predict(USER_TO_PREDICT)

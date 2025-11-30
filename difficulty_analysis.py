@@ -4,7 +4,7 @@ import matplotlib.ticker as ticker
 import os
 import csv
 
-FILE_PATH = 'F:\Codes\wordle_games.csv'
+FILE_PATH = 'dataset/cleaned_dataset.csv'
 
 # 设置字体为微软雅黑
 plt.rcParams['font.sans-serif'] = ['Microsoft YaHei']
