@@ -3,16 +3,16 @@
  LSTM Model Validation and Test Report 
 ========================================
 ---- Validation Set Metrics ----
-1. Mean Absolute Error (MAE)    : 0.8202
-2. Root Mean Squared Error (RMSE)     : 1.0213
-3. Win/Loss Prediction Accuracy        : 97.497%
-4. Area Under ROC Curve (AUC)   : 0.8243
-5. Large Error Rate (>1.5 steps)  : 14.156%
+1. Mean Absolute Error (MAE)    : 0.8619
+2. Root Mean Squared Error (RMSE)     : 1.0691
+3. Win/Loss Prediction Accuracy        : 97.191%
+4. Area Under ROC Curve (AUC)   : 0.1469
+5. Large Error Rate (>1.5 steps)  : 16.005%
 
 ---- Test Set Metrics ----
-1. Mean Absolute Error (MAE)    : 0.8417
-2. Root Mean Squared Error (RMSE)     : 1.0456
-3. Win/Loss Prediction Accuracy        : 97.657%
-4. Area Under ROC Curve (AUC)   : 0.8222
-5. Large Error Rate (>1.5 steps)  : 15.426%
+1. Mean Absolute Error (MAE)    : 0.9056
+2. Root Mean Squared Error (RMSE)     : 1.1238
+3. Win/Loss Prediction Accuracy        : 97.524%
+4. Area Under ROC Curve (AUC)   : 0.2376
+5. Large Error Rate (>1.5 steps)  : 18.073%
 ========================================

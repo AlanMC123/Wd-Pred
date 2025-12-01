@@ -3,7 +3,8 @@ import numpy as np
 import os
 import concurrent.futures
 import time
-from sklearn.model_selection import train_test_split
+# 移除 train_test_split，因为我们将使用自定义的基于时间的切分逻辑
+# from sklearn.model_selection import train_test_split 
 import random
 
 # 固定随机种子以确保结果可复现
@@ -35,10 +36,10 @@ class MultiThreadedDataProcessor:
     
     def load_and_split_dataset(self):
         """
-        加载并分割数据集为训练集、验证集和测试集
-        使用固定种子42，比例为7:1:2
+        加载并分割数据集为训练集、验证集和测试集 (按时间序列切分)
+        比例为7:1:2，确保训练集数据时间上早于测试集数据
         """
-        print("Step 1: 加载并分割数据集...")
+        print("Step 1: 加载并按时间顺序切分数据集 (Train: 70%, Val: 10%, Test: 20%)...")
         start_time = time.time()
         
         if not os.path.exists(self.input_file):
@@ -48,38 +49,55 @@ class MultiThreadedDataProcessor:
         df = pd.read_csv(self.input_file)
         print(f"  原始数据总行数: {len(df)}")
         
-        # 按用户分组并按游戏编号排序，确保时间顺序
-        df = df.sort_values(by=['Username', 'Game'])
+        # 1. 关键步骤：按用户分组并按游戏编号（时间顺序）排序
+        # 确保每个用户内部的记录是按时间递增的
+        df = df.sort_values(by=['Username', 'Game']).reset_index(drop=True)
         
-        # 首先分割出训练集(70%)和剩余部分(30%)
-        train_data, temp_data = train_test_split(
-            df, 
-            test_size=0.3, 
-            random_state=42, 
-            stratify=df['Username']  # 保持用户分布平衡
-        )
+        train_list = []
+        val_list = []
+        test_list = []
         
-        # 从剩余部分中分割出验证集(10%)和测试集(20%)
-        val_data, test_data = train_test_split(
-            temp_data, 
-            test_size=2/3,  # 20% / 30% = 2/3
-            random_state=42, 
-            stratify=temp_data['Username']
-        )
+        # 2. 对每个用户进行时间序列切分
+        for username, group in df.groupby('Username'):
+            total_count = len(group)
+            
+            # 计算切分点
+            train_end = int(total_count * 0.7)
+            val_end = train_end + int(total_count * 0.1) 
+            
+            # 为了确保所有记录都被分配，最后的测试集部分取剩余的所有记录
+            # 这样实际比例会非常接近 7:1:2，且不会丢失任何数据
+            
+            # 切分：由于group已经按时间排序，按索引切分即为按时间切分
+            train_part = group.iloc[:train_end]
+            val_part = group.iloc[train_end:val_end]
+            test_part = group.iloc[val_end:]
+            
+            train_list.append(train_part)
+            val_list.append(val_part)
+            test_list.append(test_part)
+            
+        # 3. 合并所有用户的切分结果
+        train_data = pd.concat(train_list)
+        val_data = pd.concat(val_list)
+        test_data = pd.concat(test_list)
         
-        # 保存分割后的数据集
+        # 4. 保存分割后的数据集
         train_data.to_csv(self.train_file, index=False)
         val_data.to_csv(self.val_file, index=False)
         test_data.to_csv(self.test_file, index=False)
         
-        print(f"  数据集分割完成:")
-        print(f"    训练集: {len(train_data)} 条记录 ({len(train_data)/len(df)*100:.1f}%)")
-        print(f"    验证集: {len(val_data)} 条记录 ({len(val_data)/len(df)*100:.1f}%)")
-        print(f"    测试集: {len(test_data)} 条记录 ({len(test_data)/len(df)*100:.1f}%)")
+        # 验证比例
+        total_len = len(df)
+        print(f"  数据集分割完成 (按时间顺序):")
+        print(f"    训练集: {len(train_data)} 条记录 ({len(train_data)/total_len*100:.1f}%)")
+        print(f"    验证集: {len(val_data)} 条记录 ({len(val_data)/total_len*100:.1f}%)")
+        print(f"    测试集: {len(test_data)} 条记录 ({len(test_data)/total_len*100:.1f}%)")
         print(f"  耗时: {time.time() - start_time:.2f} 秒")
         
         return train_data, val_data, test_data
     
+    # 以下方法 (calculate_word_difficulty 和 calculate_player_stats) 保持不变
     def calculate_word_difficulty(self, train_data):
         """
         计算每个单词的平均猜测步数，并保存到difficulty.csv

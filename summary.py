@@ -28,11 +28,9 @@ print(df.describe())
 
 # 检查Game列的唯一值
 print('\\nGame列的唯一值数量：', df['Game'].nunique())
-print('Game列的前10个唯一值：', df['Game'].unique()[:10])
 
 # 检查target列的唯一值
 print('\\nTarget列的唯一值数量：', df['target'].nunique())
-print('Target列的前10个唯一值：', df['target'].unique()[:10])
 
 # 检查processed_text列的结构
 print('\\nprocessed_text列的前5行：')
@@ -40,7 +38,6 @@ print(df['processed_text'].head())
 
 # 检查processed_text列的长度分布
 print('\\nprocessed_text列的长度统计：')
-print(df['processed_text'].apply(len).describe())
 
 # 检查Trial列的分布
 print('\\nTrial列的分布：')
@@ -48,7 +45,6 @@ print(df['Trial'].value_counts())
 
 # 检查Username列的分布
 print('\\nUsername列的唯一值数量：', df['Username'].nunique())
-print('Username列的前10个唯一值：', df['Username'].unique()[:10])
 
 # 查看一个完整的游戏记录示例
 print('\\n一个完整的游戏记录示例：')
