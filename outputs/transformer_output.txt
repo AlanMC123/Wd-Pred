@@ -3,16 +3,16 @@
  Transformer Guess Sequence Model Report
 ========================================
 ---- Validation Set Metrics ----
-1. Mean Absolute Error (MAE)    : 0.8565
-2. Root Mean Squared Error (RMSE)     : 1.0590
-3. Win/Loss Prediction Accuracy        : 97.285%
-4. Area Under ROC Curve (AUC)   : 0.8684
-5. Large Error Rate (>1.5 steps)  : 15.593%
+1. Mean Absolute Error (MAE)    : 0.8555
+2. Root Mean Squared Error (RMSE)     : 1.0569
+3. Win/Loss Prediction Accuracy        : 97.295%
+4. Area Under ROC Curve (AUC)   : 0.8688
+5. Large Error Rate (>1.5 steps)  : 15.623%
 
 ---- Test Set Metrics ----
-1. Mean Absolute Error (MAE)    : 0.8239
-2. Root Mean Squared Error (RMSE)     : 1.0296
-3. Win/Loss Prediction Accuracy        : 97.335%
-4. Area Under ROC Curve (AUC)   : 0.8823
-5. Large Error Rate (>1.5 steps)  : 14.029%
+1. Mean Absolute Error (MAE)    : 0.8219
+2. Root Mean Squared Error (RMSE)     : 1.0277
+3. Win/Loss Prediction Accuracy        : 97.319%
+4. Area Under ROC Curve (AUC)   : 0.8829
+5. Large Error Rate (>1.5 steps)  : 14.093%
 ========================================

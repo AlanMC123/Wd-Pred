@@ -23,6 +23,7 @@ from tensorflow.keras.models import Model
 from tensorflow.keras.callbacks import EarlyStopping, Callback
 from tensorflow.keras.preprocessing.text import Tokenizer
 from sklearn.metrics import mean_absolute_error, mean_squared_error, accuracy_score, roc_auc_score, roc_curve
+from predict import plot_roc_curve, plot_scatter
 from tensorflow.keras.regularizers import l2 # 引入 L2 正则化
 
 
@@ -34,6 +35,7 @@ TRAIN_FILE = "dataset/train_data.csv"
 VAL_FILE = "dataset/val_data.csv"
 TEST_FILE = "dataset/test_data.csv"
 PLAYER_FILE = "dataset/player_data.csv" 
+DIFFICULTY_FILE = "dataset/difficulty_data.csv"
 
 MODEL_SAVE_PATH = "models/lstm/lstm_model.keras"
 TOKENIZER_PATH = "models/lstm/lstm_tokenizer.json"
@@ -69,7 +71,7 @@ SEED = 42
 
 # Wordle固定参数
 MAX_TRIES = 6
-GRID_SEQ_FEAT_DIM = 4 # 绿色、黄色、灰色计数 + 尝试次数归一化
+GRID_SEQ_FEAT_DIM = 8 # 与Transformer一致：3个累积颜色特征 + 5个位置绿色特征
 
 def set_seed(seed):
     """设置所有随机种子以确保可重复性"""
@@ -99,55 +101,63 @@ def parse_grid_sequence(grid_cell):
     """
     将 grid 列表转换为一个时间序列特征矩阵。
     返回形状为 (MAX_TRIES, GRID_SEQ_FEAT_DIM) 的浮点矩阵。
+    与Transformer模型使用相同的8维累积特征：
+    1. 累积绿色方块数（归一化）
+    2. 累积黄色方块数（归一化）
+    3. 累积灰色方块数（归一化）
+    4-8. 每个位置累积绿色方块数（归一化）
     """
+    default_seq = np.zeros((MAX_TRIES, GRID_SEQ_FEAT_DIM), dtype=np.float32)
     if pd.isna(grid_cell):
-        # 无法解析时返回全零序列
-        return np.zeros((MAX_TRIES, GRID_SEQ_FEAT_DIM), dtype=np.float32)
-
-    # 解析网格列表
-    if isinstance(grid_cell, (list, tuple)):
-        grid_list = list(grid_cell)
-    else:
-        try:
+        return default_seq
+    try:
+        if isinstance(grid_cell, (list, tuple)):
+            grid_list = list(grid_cell)
+        else:
             grid_list = ast.literal_eval(grid_cell)
             if not isinstance(grid_list, (list, tuple)):
                 grid_list = [grid_list]
             grid_list = [str(r) for r in grid_list if isinstance(r, (str, bytes))]
-        except Exception:
-            return np.zeros((MAX_TRIES, GRID_SEQ_FEAT_DIM), dtype=np.float32)
+    except Exception:
+        return default_seq
 
     num_rows = len(grid_list)
-    seq_features = []
-    
-    # 序列特征提取
+    cumulative_greens = 0
+    cumulative_yellows = 0
+    cumulative_grays = 0
+    cumulative_pos_green_counts = np.zeros(5, dtype=np.float32)
+    feature_sequence = np.zeros((MAX_TRIES, GRID_SEQ_FEAT_DIM), dtype=np.float32)
+    norm_base_cells = float(MAX_TRIES * 5)
+    norm_base_rows = float(MAX_TRIES)
+
     for t in range(MAX_TRIES):
-        feat = np.zeros(GRID_SEQ_FEAT_DIM, dtype=np.float32)
-        greens = 0
-        yellows = 0
-        grays = 0
-        
-        # 如果是有效的尝试
         if t < num_rows:
             row = grid_list[t]
+            greens_t, yellows_t, grays_t = 0, 0, 0
+            pos_green_counts_t = np.zeros(5, dtype=np.float32)
             if isinstance(row, str) and len(row) == 5:
-                for ch in row:
+                for i, ch in enumerate(row):
                     if ch == "🟩":
-                        greens += 1
+                        greens_t += 1
+                        pos_green_counts_t[i] += 1.0
                     elif ch == "🟨":
-                        yellows += 1
+                        yellows_t += 1
                     elif ch == "⬜" or ch == "⬛":
-                        grays += 1
-            
-            # 特征 0-2: 颜色数量归一化 (除以 5)
-            feat[0] = greens / 5.0
-            feat[1] = yellows / 5.0
-            feat[2] = grays / 5.0
-            # 特征 3: 尝试次数归一化 (除以 6)
-            feat[3] = (t + 1) / float(MAX_TRIES) 
-        
-        seq_features.append(feat)
+                        grays_t += 1
+            cumulative_greens += greens_t
+            cumulative_yellows += yellows_t
+            cumulative_grays += grays_t
+            cumulative_pos_green_counts += pos_green_counts_t
 
-    return np.array(seq_features, dtype=np.float32)
+        feat = np.zeros(GRID_SEQ_FEAT_DIM, dtype=np.float32)
+        feat[0] = cumulative_greens / norm_base_cells
+        feat[1] = cumulative_yellows / norm_base_cells
+        feat[2] = cumulative_grays / norm_base_cells
+        for i in range(5):
+            feat[3 + i] = cumulative_pos_green_counts[i] / norm_base_rows
+        feature_sequence[t] = feat
+
+    return feature_sequence
 
 
 # --------------------------
@@ -168,18 +178,19 @@ def load_tokenizer():
     return tk
 
 # --------------------------
-# 特征附加（去除单词难度和 grid 统计）
+# 特征附加（添加单词难度）
 # --------------------------
-def attach_features(df, tokenizer, user_map):
+def attach_features(df, tokenizer, user_map, diff_map):
     df = df.copy()
     df["target"] = df["target"].astype(str)
     # 单词 id
     seqs = tokenizer.texts_to_sequences(df["target"])
     df["word_id"] = [s[0] if s else 0 for s in seqs]
-    # df["word_difficulty"] 已移除
+    # 添加单词难度
+    df["word_difficulty"] = df["target"].map(diff_map).fillna(4.0).astype(float)
     df["user_bias"] = df["Username"].map(user_map).fillna(4.0).astype(float)
 
-    # 解析 grid 序列（grid_feat 已移除）
+    # 解析 grid 序列
     if "processed_text" in df.columns:
         df["grid_seq"] = df["processed_text"].apply(parse_grid_sequence)
     else:
@@ -227,26 +238,26 @@ def focal_loss(gamma=2.0, alpha=0.25):
 
 
 # --------------------------
-# 历史建表（去除单词难度和 grid 统计）
+# 历史建表（添加单词难度）
 # --------------------------
 def build_history(df) -> Dict[str, List[Tuple]]:
     hist = {}
     df_sorted = df.sort_values(["Username", "Game"])
     for u, g in df_sorted.groupby("Username", sort=False):
-        # 历史记录 tuple 结构改变：(Trial, word_id, user_bias, grid_seq)
+        # 历史记录 tuple 结构：(Trial, word_id, user_bias, word_difficulty, grid_seq)
         hist[u] = [(int(r["Trial"]),
                     int(r["word_id"]),           # 索引 1
                     float(r["user_bias"]),       # 索引 2
-                    np.array(r["grid_seq"], dtype=np.float32))   # 索引 3
+                    float(r["word_difficulty"]), # 索引 3
+                    np.array(r["grid_seq"], dtype=np.float32))   # 索引 4
                    for _, r in g.iterrows()]
     return hist
 
 # --------------------------
-# 滑窗生成样本（去除单词难度和 grid 统计）
+# 滑窗生成样本（添加单词难度）
 # --------------------------
 def create_samples(history, look_back):
-    # X_diff 和 X_grid 已移除
-    X_seq, X_wid, X_bias, X_grid_seq, y_steps, y_succ = [], [], [], [], [], []
+    X_seq, X_wid, X_bias, X_diff, X_grid_seq, y_steps, y_succ = [], [], [], [], [], [], []
     for _, events in history.items():
         if len(events) <= look_back:
             continue
@@ -260,12 +271,14 @@ def create_samples(history, look_back):
 
             seq = np.stack([norm, np.full_like(norm, std)], axis=1)
             X_seq.append(seq)
-            # 单词 ID: target[1] (原 target[2])
+            # 单词 ID
             X_wid.append([target[1]])
-            # 用户偏置: target[2] (原 target[3])
+            # 用户偏置
             X_bias.append([target[2] / 7.0])
-            # 序列特征: target[3] (原 target[5])
-            X_grid_seq.append(target[3]) 
+            # 单词难度
+            X_diff.append([target[3] / 7.0])
+            # 序列特征
+            X_grid_seq.append(target[4]) 
 
             y_steps.append(min(float(target[0]), 7.0))
             y_succ.append(1.0 if target[0] <= 6 else 0.0)
@@ -273,6 +286,7 @@ def create_samples(history, look_back):
     if not X_seq:
         return (np.zeros((0, look_back, 2), np.float32),
                 np.zeros((0, 1), np.int32),
+                np.zeros((0, 1), np.float32),
                 np.zeros((0, 1), np.float32),
                 np.zeros((0, MAX_TRIES, GRID_SEQ_FEAT_DIM), np.float32), 
                 np.zeros((0,), np.float32),
@@ -282,13 +296,14 @@ def create_samples(history, look_back):
         np.array(X_seq, np.float32),
         np.array(X_wid, np.int32),
         np.array(X_bias, np.float32),
+        np.array(X_diff, np.float32),
         np.array(X_grid_seq, np.float32),
         np.array(y_steps, np.float32),
         np.array(y_succ, np.float32)
     )
 
 # ==========================================================
-# LSTM 模型（移除难度和 grid 统计输入）
+# LSTM 模型（添加单词难度输入）
 # ==========================================================
 def build_model(look_back, vocab_size):
     # 历史输入分支
@@ -304,14 +319,18 @@ def build_model(look_back, vocab_size):
     bias_in = Input((1,), name="input_user_bias")
     b1 = Dense(16, activation="relu", kernel_regularizer=l2(L2_REG_FACTOR))(bias_in)
 
+    # 单词难度
+    diff_in = Input((1,), name="input_difficulty")
+    d1 = Dense(16, activation="relu", kernel_regularizer=l2(L2_REG_FACTOR))(diff_in)
+
     # Wordle 序列特征
     grid_seq_in = Input((MAX_TRIES, GRID_SEQ_FEAT_DIM), name="input_grid_sequence")
     g_seq = LSTM(LSTM_UNITS // 4, kernel_regularizer=l2(L2_REG_FACTOR))(grid_seq_in)
     g_seq = Dropout(DROPOUT_RATE)(g_seq)
     g2 = Dense(16, activation="relu", kernel_regularizer=l2(L2_REG_FACTOR))(g_seq)
 
-    # 合并特征 (d1 和 g1 已移除)
-    z = Concatenate()([x, wemb, b1, g2])
+    # 合并特征
+    z = Concatenate()([x, wemb, b1, d1, g2])
     z = Dense(64, activation="relu", kernel_regularizer=l2(L2_REG_FACTOR))(z)
     z = Dropout(DROPOUT_RATE)(z)
 
@@ -324,9 +343,9 @@ def build_model(look_back, vocab_size):
     succ = Dense(32, activation="relu", kernel_regularizer=l2(L2_REG_FACTOR))(succ)
     out_succ = Dense(1, activation="sigmoid", name="output_success")(succ)
 
-    # 编译 (移除 diff_in 和 grid_in)
+    # 编译
     model = Model(
-        [h_in, wid_in, bias_in, grid_seq_in],
+        [h_in, wid_in, bias_in, diff_in, grid_seq_in],
         [out_steps, out_succ]
     )
 
@@ -345,30 +364,17 @@ def build_model(look_back, vocab_size):
     return model
 
 # ==========================================================
-# 评估函数 (移除难度和 grid 统计输入)
+# 评估函数 (添加单词难度输入)
 # ==========================================================
-def calculate_auc(y_true, prob):
-    """
-    自动修复倒置 AUC：返回正向最大 AUC。
-    """
-    try:
-        auc1 = roc_auc_score(y_true, prob)
-        auc2 = roc_auc_score(y_true, -prob)
-        return max(auc1, auc2)
-    except:
-        return float("nan")
-
-
 def evaluate_model(model, Xs):
-    # Xs 结构: (seq, wid, bias, grid_seq, y_steps, y_succ)
-    X_seq, X_wid, X_bias, X_grid_seq, y_steps, y_succ = Xs
+    # Xs 结构: (seq, wid, bias, diff, grid_seq, y_steps, y_succ)
+    X_seq, X_wid, X_bias, X_diff, X_grid_seq, y_steps, y_succ = Xs
 
     pred_steps, pred_prob = model.predict({
         "input_history": X_seq,
-        # "input_difficulty" 已移除
         "input_word_id": X_wid,
         "input_user_bias": X_bias,
-        # "input_grid_stat" 已移除
+        "input_difficulty": X_diff,
         "input_grid_sequence": X_grid_seq
     }, batch_size=1024, verbose=1)
 
@@ -379,7 +385,10 @@ def evaluate_model(model, Xs):
     rmse = np.sqrt(mean_squared_error(y_steps, np.clip(pred_steps, 0, 7)))
     acc = accuracy_score(y_succ.astype(int), (pred_prob >= 0.5).astype(int))
 
-    auc = calculate_auc(y_succ, pred_prob)
+    # 使用从predict.py导入的calculate_auc_best函数
+    from predict import calculate_auc_best
+    auc_value, _, _ = calculate_auc_best(y_succ, pred_prob)
+    auc = auc_value
 
     print(f"MAE={mae:.4f}, RMSE={rmse:.4f}, ACC={acc:.4f}, AUC={auc:.4f}")
     return mae, rmse, acc, auc
@@ -388,35 +397,6 @@ def evaluate_model(model, Xs):
 def compute_large_error_rate(y_true, y_pred, threshold):
     errors = np.abs(y_true - y_pred)
     return np.mean(errors > threshold)
-
-def plot_roc_curve(y_true, prob, save_path):
-    # 方向校正
-    auc1 = roc_auc_score(y_true, prob)
-    auc2 = roc_auc_score(y_true, -prob)
-
-    if auc2 > auc1:
-        prob = -prob
-        auc = auc2
-    else:
-        auc = auc1
-
-    fpr, tpr, _ = roc_curve(y_true, prob)
-
-    plt.figure(figsize=(8, 6))
-    plt.plot(fpr, tpr, lw=2, label=f'ROC Curve (AUC = {auc:.3f})')
-    plt.plot([0, 1], [0, 1], linestyle='--')
-    plt.xlim([0.0, 1.0])
-    plt.ylim([0.0, 1.05])
-    plt.xlabel('False Positive Rate')
-    plt.ylabel('True Positive Rate')
-    plt.title('ROC Curve')
-    plt.legend(loc="lower right")
-    plt.grid(True, alpha=0.3)
-    plt.savefig(save_path, dpi=300, bbox_inches='tight')
-    plt.close()
-
-    print(f"AUC curve saved to: {save_path}")
-
 
 def plot_loss(history, save_path_base):
     # 确保保存路径是文件夹，以便保存多个文件
@@ -530,19 +510,26 @@ def main_train():
     val_df = safe_read_csv(VAL_FILE, usecols=use_cols_list)
     test_df = safe_read_csv(TEST_FILE, usecols=use_cols_list)
 
-    # 2. 难度/用户水平 (难度部分已移除)
+    # 2. 难度/用户水平
     user_map = {}
     if os.path.exists(PLAYER_FILE):
         pdf = pd.read_csv(PLAYER_FILE)
         user_map = dict(zip(pdf["Username"], pdf["avg_trial"]))
+    
+    # 加载单词难度数据
+    diff_map = {}
+    if os.path.exists(DIFFICULTY_FILE):
+        df_diff = pd.read_csv(DIFFICULTY_FILE)
+        # 使用平均尝试次数作为难度值
+        diff_map = dict(zip(df_diff["word"], df_diff["avg_trial"]))
 
     # 3. Tokenizer（train-only）
     tokenizer = fit_tokenizer(train_df)
 
-    # 4. 附加特征 (diff_map 已移除)
-    train_df = attach_features(train_df, tokenizer, user_map)
-    val_df = attach_features(val_df, tokenizer, user_map)
-    test_df = attach_features(test_df, tokenizer, user_map)
+    # 4. 附加特征
+    train_df = attach_features(train_df, tokenizer, user_map, diff_map)
+    val_df = attach_features(val_df, tokenizer, user_map, diff_map)
+    test_df = attach_features(test_df, tokenizer, user_map, diff_map)
 
     # 5. Build histories
     hist_train = build_history(train_df)
@@ -567,30 +554,28 @@ def main_train():
     train_ds = tf.data.Dataset.from_tensor_slices((
         {
             "input_history": X_train[0],
-            # "input_difficulty" 已移除
             "input_word_id": X_train[1],
             "input_user_bias": X_train[2],
-            # "input_grid_stat" 已移除
-            "input_grid_sequence": X_train[3]
+            "input_difficulty": X_train[3],
+            "input_grid_sequence": X_train[4]
         },
         {
-            "output_steps": X_train[4],
-            "output_success": X_train[5]
+            "output_steps": X_train[5],
+            "output_success": X_train[6]
         }
     )).shuffle(20000).batch(BATCH_SIZE).prefetch(tf.data.AUTOTUNE)
 
     val_ds = tf.data.Dataset.from_tensor_slices((
         {
             "input_history": X_val[0],
-            # "input_difficulty" 已移除
             "input_word_id": X_val[1],
             "input_user_bias": X_val[2],
-            # "input_grid_stat" 已移除
-            "input_grid_sequence": X_val[3]
+            "input_difficulty": X_val[3],
+            "input_grid_sequence": X_val[4]
         },
         {
-            "output_steps": X_val[4],
-            "output_success": X_val[5]
+            "output_steps": X_val[5],
+            "output_success": X_val[6]
         }
     )).batch(BATCH_SIZE).prefetch(tf.data.AUTOTUNE)
 
@@ -619,7 +604,7 @@ def main_train():
 
     # 验证评估
     print("\n=== Validation ===")
-    # X_val 结构: (seq, wid, bias, grid_seq, y_steps, y_succ)
+    # X_val 结构: (seq, wid, bias, diff, grid_seq, y_steps, y_succ)
     val_mae, val_rmse, val_acc, val_auc = evaluate_model(model, X_val)
 
     # 记录验证集指标到wandb
@@ -633,16 +618,20 @@ def main_train():
     # 绘制验证集AUC曲线
     val_pred_steps, val_pred_prob = model.predict({
         "input_history": X_val[0],
-        # "input_difficulty" 已移除
         "input_word_id": X_val[1],
         "input_user_bias": X_val[2],
-        # "input_grid_stat" 已移除
-        "input_grid_sequence": X_val[3]
+        "input_difficulty": X_val[3],
+        "input_grid_sequence": X_val[4]
     }, batch_size=1024, verbose=0)
     val_roc_curve_path = "visualization/LSTM_validation_roc_curve.png"
-    plot_roc_curve(X_val[5], val_pred_prob.flatten(), val_roc_curve_path)
+    plot_roc_curve(X_val[6], val_pred_prob.flatten(), val_roc_curve_path)
+    
+    # Plot validation scatter plot
+    val_scatter_path = "visualization/LSTM_validation_scatter.png"
+    plot_scatter(X_val[5], np.clip(val_pred_steps.flatten(), 0, 7), val_scatter_path, model_name="LSTM")
+    
     try:
-        wandb.log({"validation_roc_curve": wandb.Image(val_roc_curve_path)})
+        wandb.log({"validation_roc_curve": wandb.Image(val_roc_curve_path), "validation_scatter": wandb.Image(val_scatter_path)})
     except Exception:
         pass
 
@@ -660,16 +649,20 @@ def main_train():
     # 绘制测试集AUC曲线
     test_pred_steps, test_pred_prob = model.predict({
         "input_history": X_test[0],
-        # "input_difficulty" 已移除
         "input_word_id": X_test[1],
         "input_user_bias": X_test[2],
-        # "input_grid_stat" 已移除
-        "input_grid_sequence": X_test[3]
+        "input_difficulty": X_test[3],
+        "input_grid_sequence": X_test[4]
     }, batch_size=1024, verbose=0)
     test_roc_curve_path = "visualization/LSTM_test_roc_curve.png"
-    plot_roc_curve(X_test[5], test_pred_prob.flatten(), test_roc_curve_path)
+    plot_roc_curve(X_test[6], test_pred_prob.flatten(), test_roc_curve_path)
+    
+    # Plot test scatter plot
+    test_scatter_path = "visualization/LSTM_test_scatter.png"
+    plot_scatter(X_test[5], np.clip(test_pred_steps.flatten(), 0, 7), test_scatter_path, model_name="LSTM")
+    
     try:
-        wandb.log({"test_roc_curve": wandb.Image(test_roc_curve_path)})
+        wandb.log({"test_roc_curve": wandb.Image(test_roc_curve_path), "test_scatter": wandb.Image(test_scatter_path)})
     except Exception:
         pass
 
@@ -678,19 +671,21 @@ def main_train():
         "input_history": X_val[0],
         "input_word_id": X_val[1],
         "input_user_bias": X_val[2],
-        "input_grid_sequence": X_val[3]
+        "input_difficulty": X_val[3],
+        "input_grid_sequence": X_val[4]
     }, batch_size=1024, verbose=0)
     val_pred_steps = val_pred_steps.flatten()
-    val_large_error_rate = compute_large_error_rate(X_val[4], np.clip(val_pred_steps, 0, 7), LARGE_ERROR_THRESHOLD)
+    val_large_error_rate = compute_large_error_rate(X_val[5], np.clip(val_pred_steps, 0, 7), LARGE_ERROR_THRESHOLD)
 
     test_pred_steps, _ = model.predict({
         "input_history": X_test[0],
         "input_word_id": X_test[1],
         "input_user_bias": X_test[2],
-        "input_grid_sequence": X_test[3]
+        "input_difficulty": X_test[3],
+        "input_grid_sequence": X_test[4]
     }, batch_size=1024, verbose=0)
     test_pred_steps = test_pred_steps.flatten()
-    test_large_error_rate = compute_large_error_rate(X_test[4], np.clip(test_pred_steps, 0, 7), LARGE_ERROR_THRESHOLD)
+    test_large_error_rate = compute_large_error_rate(X_test[5], np.clip(test_pred_steps, 0, 7), LARGE_ERROR_THRESHOLD)
 
     # 格式化报告
     report = f"""
@@ -726,74 +721,6 @@ def main_train():
 
     # 结束 wandb 运行
     wandb.finish()
-
-# 预测模式（移除难度和 grid 统计输入）
-def main_predict(user_id):
-    if not os.path.exists(MODEL_SAVE_PATH):
-        raise FileNotFoundError("请先训练模型。")
-
-    # 必须使用 custom_objects 加载模型以识别 Focal Loss
-    model = tf.keras.models.load_model(
-        MODEL_SAVE_PATH, 
-        custom_objects={
-            'focal_loss(gamma=2.0,alpha=0.25)': focal_loss(alpha=FOCAL_LOSS_ALPHA, gamma=FOCAL_LOSS_GAMMA)
-        }
-    )
-    tokenizer = load_tokenizer()
-
-    df = safe_read_csv(TRAIN_FILE, usecols=["Game", "Trial", "Username", "target", "processed_text"])
-    # diff_map 已移除
-    user_map = {}
-    if os.path.exists(PLAYER_FILE):
-        pdf = pd.read_csv(PLAYER_FILE)
-        user_map = dict(zip(pdf["Username"], pdf["avg_trial"]))
-
-    # attach_features 签名改变
-    df = attach_features(df, tokenizer, user_map) 
-    hist = build_history(df)
-
-    if user_id not in hist:
-        print(f"用户 {user_id} 无记录")
-        return
-
-    events = hist[user_id]
-    if len(events) < 1:
-        print("历史不足")
-        return
-
-    # 准备输入
-    if len(events) < LOOK_BACK:
-        avg = np.mean([e[0] for e in events])
-        # 填充 tuple 长度需要匹配 build_history 中的 4 个元素
-        # (Trial, word_id, user_bias, grid_seq)
-        pad_event = (avg, 0, 4.0, np.zeros((MAX_TRIES, GRID_SEQ_FEAT_DIM), dtype=np.float32))
-        pad = [pad_event] * (LOOK_BACK - len(events))
-        window = pad + events
-    else:
-        window = events[-LOOK_BACK:]
-
-    trials = np.array([w[0] for w in window], np.float32)
-    seq = np.stack([trials/7.0, np.full_like(trials, np.std(trials)/7.0)], axis=1)
-    seq = seq.reshape(1, LOOK_BACK, 2)
-
-    last = events[-1]
-    # diff 已移除
-    wid = np.array([[last[1]]], np.int32) # word_id 现在是索引 1
-    bias = np.array([[last[2] / 7.0]], np.float32) # user_bias 现在是索引 2
-    # grid_stat 已移除
-    grid_seq = last[3].reshape(1, MAX_TRIES, GRID_SEQ_FEAT_DIM) # grid_seq 现在是索引 3
-
-    p_steps, p_prob = model.predict({
-        "input_history": seq,
-        # "input_difficulty" 已移除
-        "input_word_id": wid,
-        "input_user_bias": bias,
-        # "input_grid_stat" 已移除
-        "input_grid_sequence": grid_seq
-    }, verbose=0)
-
-    print(f"预测步数: {float(np.clip(p_steps, 0, 6.99)):.2f}")
-    print(f"成功概率: {float(p_prob):.3f}")
 
 # ==========================================================
 # 启动入口

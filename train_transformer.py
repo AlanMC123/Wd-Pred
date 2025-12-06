@@ -25,6 +25,7 @@ from tensorflow.keras.models import Model
 from tensorflow.keras.callbacks import EarlyStopping, Callback
 from tensorflow.keras.preprocessing.text import Tokenizer
 from sklearn.metrics import mean_absolute_error, mean_squared_error, accuracy_score, roc_auc_score, roc_curve, precision_recall_curve, f1_score
+from predict import plot_roc_curve, plot_scatter
 
 # ==========================================================
 # Global config (kept same as original, adjust paths if needed)
@@ -163,13 +164,15 @@ def load_tokenizer():
 # --------------------------
 # attach features
 # --------------------------
-def attach_features(df, tokenizer, diff_map, user_map):
+def attach_features(df, tokenizer, user_map, diff_map):
     df = df.copy()
     df["target"] = df["target"].astype(str)
     seqs = tokenizer.texts_to_sequences(df["target"])
     df["word_id"] = [s[0] if s else 0 for s in seqs]
-    df["word_difficulty"] = df["target"].map(diff_map).fillna(4.0).astype(float)
     df["user_bias"] = df["Username"].map(user_map).fillna(4.0).astype(float)
+    
+    # 添加单词难度特征
+    df["word_difficulty"] = df["target"].map(diff_map).fillna(4.0).astype(float)
 
     if "processed_text" in df.columns:
         df["guess_seq_feat"] = df["processed_text"].apply(encode_guess_sequence)
@@ -185,15 +188,15 @@ def build_history(df) -> Dict[str, List[Tuple]]:
     df_sorted = df.sort_values(["Username", "Game"])
     for u, g in df_sorted.groupby("Username", sort=False):
         hist[u] = [(int(r["Trial"]),
-                    float(r["word_difficulty"]),
                     int(r["word_id"]),
                     float(r["user_bias"]),
+                    float(r["word_difficulty"]),
                     np.array(r["guess_seq_feat"], dtype=np.float32))
                    for _, r in g.iterrows()]
     return hist
 
 def create_samples(history, look_back):
-    X_seq, X_diff, X_wid, X_bias, X_guess_seq, y_steps, y_succ = [], [], [], [], [], [], []
+    X_seq, X_wid, X_bias, X_diff, X_guess_seq, y_steps, y_succ = [], [], [], [], [], [], []
     for user, events in history.items():
         if len(events) <= look_back:
             continue
@@ -207,9 +210,9 @@ def create_samples(history, look_back):
             seq = np.stack([norm, np.full_like(norm, std)], axis=1)
             X_seq.append(seq)
 
-            X_diff.append([target[1] / 7.0])
-            X_wid.append([target[2]])
-            X_bias.append([target[3] / 7.0])
+            X_wid.append([target[1]])
+            X_bias.append([target[2] / 7.0])
+            X_diff.append([target[3] / 7.0])
 
             # use last window's guess sequence as feature for predicting next event
             X_guess_seq.append(window[-1][4])
@@ -218,19 +221,21 @@ def create_samples(history, look_back):
             y_succ.append(1.0 if target[0] <= 6 else 0.0)
 
     if not X_seq:
-        return (np.zeros((0, look_back, 2), np.float32),
-                np.zeros((0, 1), np.float32),
-                np.zeros((0, 1), np.int32),
-                np.zeros((0, 1), np.float32),
-                np.zeros((0, MAX_TRIES, GRID_FEAT_LEN), np.float32),
-                np.zeros((0,), np.float32),
-                np.zeros((0,), np.float32))
+        return (
+            np.zeros((0, look_back, 2), np.float32),
+            np.zeros((0, 1), np.int32),
+            np.zeros((0, 1), np.float32),
+            np.zeros((0, 1), np.float32),
+            np.zeros((0, MAX_TRIES, GRID_FEAT_LEN), np.float32),
+            np.zeros((0,), np.float32),
+            np.zeros((0,), np.float32)
+        )
 
     return (
         np.array(X_seq, np.float32),
-        np.array(X_diff, np.float32),
         np.array(X_wid, np.int32),
         np.array(X_bias, np.float32),
+        np.array(X_diff, np.float32),
         np.array(X_guess_seq, np.float32),
         np.array(y_steps, np.float32),
         np.array(y_succ, np.float32)
@@ -304,15 +309,17 @@ def build_model(look_back, vocab_size, project_dim=PROJECT_DIM, num_heads=NUM_HE
     g = Dropout(dropout_rate)(g)
 
     # other inputs
-    diff_in = Input((1,), name="input_difficulty")
-    d1 = Dense(16, activation="relu")(diff_in)
     wid_in = Input((1,), name="input_word_id", dtype="int32")
     wemb = Flatten()(Embedding(vocab_size, EMBEDDING_DIM)(wid_in))
     bias_in = Input((1,), name="input_user_bias")
     b1 = Dense(16, activation="relu")(bias_in)
+    
+    # 单词难度输入
+    diff_in = Input((1,), name="input_difficulty")
+    d1 = Dense(16, activation="relu")(diff_in)
 
     # merge
-    z = Concatenate()([x, d1, wemb, b1, g])
+    z = Concatenate()([x, wemb, b1, d1, g])
     z = Dense(64, activation="relu")(z)
     z = Dropout(dropout_rate)(z)
 
@@ -327,9 +334,9 @@ def build_model(look_back, vocab_size, project_dim=PROJECT_DIM, num_heads=NUM_HE
     succ = Dense(32, activation="relu")(succ)
     succ = Dropout(0.2)(succ)
     out_succ = Dense(1, activation="sigmoid", name="output_success")(succ)
-    # -------------------------------
+    # -----------------------------------------------
 
-    model = Model([h_in, diff_in, wid_in, bias_in, guess_seq_in], [out_steps, out_succ])
+    model = Model([h_in, wid_in, bias_in, diff_in, guess_seq_in], [out_steps, out_succ])
     model.compile(
         optimizer=tf.keras.optimizers.Adam(LEARNING_RATE),
         # --- 更改为 MSE ---
@@ -342,32 +349,6 @@ def build_model(look_back, vocab_size, project_dim=PROJECT_DIM, num_heads=NUM_HE
 # ==========================================================
 # Evaluation helpers with AUC direction handling
 # ==========================================================
-def calculate_auc_best(y_true, prob):
-    """
-    Compute AUC for prob and -prob; return (best_auc, used_prob, inverted_flag)
-    """
-    try:
-        auc_pos = roc_auc_score(y_true, prob)
-    except Exception:
-        auc_pos = float("nan")
-    try:
-        auc_neg = roc_auc_score(y_true, -prob)
-    except Exception:
-        auc_neg = float("nan")
-
-    # Choose the larger valid AUC
-    if np.isnan(auc_pos) and np.isnan(auc_neg):
-        return float("nan"), prob, False
-    if np.isnan(auc_pos):
-        return auc_neg, -prob, True
-    if np.isnan(auc_neg):
-        return auc_pos, prob, False
-
-    if auc_neg > auc_pos:
-        return auc_neg, -prob, True
-    else:
-        return auc_pos, prob, False
-
 def find_best_threshold(y_true, prob):
     """
     找到最大化 F1 Score 的最佳分类阈值。
@@ -388,12 +369,12 @@ def find_best_threshold(y_true, prob):
     return best_threshold
 
 def evaluate_model(model, Xs):
-    X_seq, X_diff, X_wid, X_bias, X_guess_seq, y_steps, y_succ = Xs
+    X_seq, X_wid, X_bias, X_diff, X_guess_seq, y_steps, y_succ = Xs
     pred_steps, pred_prob = model.predict({
         "input_history": X_seq,
-        "input_difficulty": X_diff,
         "input_word_id": X_wid,
         "input_user_bias": X_bias,
+        "input_difficulty": X_diff,
         "input_guess_sequence": X_guess_seq
     }, batch_size=1024, verbose=1)
 
@@ -405,6 +386,7 @@ def evaluate_model(model, Xs):
     naive_acc = accuracy_score(y_succ.astype(int), (pred_prob >= 0.5).astype(int))
 
     # AUC best (保留 AUC 自动修正逻辑)
+    from predict import calculate_auc_best
     auc, used_prob, inverted = calculate_auc_best(y_succ, pred_prob)
     
     # --- 修正: 自动寻找最佳阈值并用其计算准确率 ---
@@ -430,29 +412,6 @@ def evaluate_model(model, Xs):
 def compute_large_error_rate(y_true, y_pred, threshold):
     errors = np.abs(y_true - y_pred)
     return np.mean(errors > threshold)
-
-def plot_roc_curve(y_true, prob, save_path):
-    """
-    Plot ROC but automatically detect whether prob should be negated.
-    """
-    auc, used_prob, inverted = calculate_auc_best(y_true, prob)
-    if inverted:
-        print("⚠️ ROC plotting: detected better AUC with -prob, using -prob for ROC plot (model output likely inverted).")
-    # compute curve
-    fpr, tpr, _ = roc_curve(y_true, used_prob)
-    plt.figure(figsize=(8, 6))
-    plt.plot(fpr, tpr, lw=2, label=f'ROC curve (AUC = {auc:.3f})')
-    plt.plot([0, 1], [0, 1], linestyle='--')
-    plt.xlim([0.0, 1.0])
-    plt.ylim([0.0, 1.05])
-    plt.xlabel('False Positive Rate')
-    plt.ylabel('True Positive Rate')
-    plt.title('Receiver Operating Characteristic (ROC) Curve')
-    plt.legend(loc="lower right")
-    plt.grid(True, alpha=0.3)
-    plt.savefig(save_path, dpi=300, bbox_inches='tight')
-    plt.close()
-    print(f"AUC curve saved to: {save_path}")
 
 def plot_loss(history, save_path_base):
     # 确保保存路径是文件夹，以便保存多个文件
@@ -494,7 +453,7 @@ def plot_loss(history, save_path_base):
     plt.savefig(steps_loss_path, dpi=300, bbox_inches='tight')
     plt.close()
     print(f"Steps Loss curve saved to: {steps_loss_path}")
-
+    
     # -------------------
     # 图 3: Success Loss (分类任务 - Binary Crossentropy)
     # -------------------
@@ -565,20 +524,23 @@ def main_train():
     val_df = safe_read_csv(VAL_FILE, usecols=use_cols_list)
     test_df = safe_read_csv(TEST_FILE, usecols=use_cols_list)
 
-    diff_map = {}
     user_map = {}
-    if os.path.exists(DIFFICULTY_FILE):
-        ddf = pd.read_csv(DIFFICULTY_FILE)
-        diff_map = dict(zip(ddf["word"], ddf["avg_trial"]))
     if os.path.exists(PLAYER_FILE):
         pdf = pd.read_csv(PLAYER_FILE)
         user_map = dict(zip(pdf["Username"], pdf["avg_trial"]))
+    
+    # 加载单词难度数据
+    diff_map = {}
+    if os.path.exists(DIFFICULTY_FILE):
+        df_diff = pd.read_csv(DIFFICULTY_FILE)
+        # 使用平均尝试次数作为难度值
+        diff_map = dict(zip(df_diff["word"], df_diff["avg_trial"]))
 
     tokenizer = fit_tokenizer(train_df)
 
-    train_df = attach_features(train_df, tokenizer, diff_map, user_map)
-    val_df = attach_features(val_df, tokenizer, diff_map, user_map)
-    test_df = attach_features(test_df, tokenizer, diff_map, user_map)
+    train_df = attach_features(train_df, tokenizer, user_map, diff_map)
+    val_df = attach_features(val_df, tokenizer, user_map, diff_map)
+    test_df = attach_features(test_df, tokenizer, user_map, diff_map)
 
     hist_train = build_history(train_df)
     hist_val = build_history(val_df)
@@ -597,9 +559,9 @@ def main_train():
     train_ds = tf.data.Dataset.from_tensor_slices((
         {
             "input_history": X_train[0],
-            "input_difficulty": X_train[1],
-            "input_word_id": X_train[2],
-            "input_user_bias": X_train[3],
+            "input_word_id": X_train[1],
+            "input_user_bias": X_train[2],
+            "input_difficulty": X_train[3],
             "input_guess_sequence": X_train[4]
         },
         {
@@ -611,9 +573,9 @@ def main_train():
     val_ds = tf.data.Dataset.from_tensor_slices((
         {
             "input_history": X_val[0],
-            "input_difficulty": X_val[1],
-            "input_word_id": X_val[2],
-            "input_user_bias": X_val[3],
+            "input_word_id": X_val[1],
+            "input_user_bias": X_val[2],
+            "input_difficulty": X_val[3],
             "input_guess_sequence": X_val[4]
         },
         {
@@ -642,13 +604,19 @@ def main_train():
     wandb.log({"val_mae": val_mae, "val_rmse": val_rmse, "val_accuracy": val_acc, "val_auc": val_auc})
 
     val_pred_steps, val_pred_prob = model.predict({
-        "input_history": X_val[0], "input_difficulty": X_val[1], "input_word_id": X_val[2],
-        "input_user_bias": X_val[3], "input_guess_sequence": X_val[4]
+        "input_history": X_val[0], "input_word_id": X_val[1],
+        "input_user_bias": X_val[2], "input_difficulty": X_val[3],
+        "input_guess_sequence": X_val[4]
     }, batch_size=1024, verbose=0)
     val_roc_curve_path = "visualization/Transformer_validation_roc_curve.png"
     plot_roc_curve(X_val[6], val_pred_prob.flatten(), val_roc_curve_path)
+    
+    # Plot validation scatter plot
+    val_scatter_path = "visualization/Transformer_validation_scatter.png"
+    plot_scatter(X_val[5], np.clip(val_pred_steps.flatten(), 0, 7), val_scatter_path, model_name="Transformer")
+    
     try:
-        wandb.log({"validation_roc_curve": wandb.Image(val_roc_curve_path)})
+        wandb.log({"validation_roc_curve": wandb.Image(val_roc_curve_path), "validation_scatter": wandb.Image(val_scatter_path)})
     except Exception:
         pass
 
@@ -658,13 +626,19 @@ def main_train():
     wandb.log({"test_mae": test_mae, "test_rmse": test_rmse, "test_accuracy": test_acc, "test_auc": test_auc})
 
     test_pred_steps, test_pred_prob = model.predict({
-        "input_history": X_test[0], "input_difficulty": X_test[1], "input_word_id": X_test[2],
-        "input_user_bias": X_test[3], "input_guess_sequence": X_test[4]
+        "input_history": X_test[0], "input_word_id": X_test[1],
+        "input_user_bias": X_test[2], "input_difficulty": X_test[3],
+        "input_guess_sequence": X_test[4]
     }, batch_size=1024, verbose=0)
     test_roc_curve_path = "visualization/Transformer_test_roc_curve.png"
     plot_roc_curve(X_test[6], test_pred_prob.flatten(), test_roc_curve_path)
+    
+    # Plot test scatter plot
+    test_scatter_path = "visualization/Transformer_test_scatter.png"
+    plot_scatter(X_test[5], np.clip(test_pred_steps.flatten(), 0, 7), test_scatter_path, model_name="Transformer")
+    
     try:
-        wandb.log({"test_roc_curve": wandb.Image(test_roc_curve_path)})
+        wandb.log({"test_roc_curve": wandb.Image(test_roc_curve_path), "test_scatter": wandb.Image(test_scatter_path)})
     except Exception:
         pass
 
@@ -700,63 +674,6 @@ def main_train():
     print(report)
     wandb.log({"val_large_error_rate": val_large_error_rate, "test_large_error_rate": test_large_error_rate})
     wandb.finish()
-
-def main_predict(user_id):
-    if not os.path.exists(MODEL_SAVE_PATH):
-        raise FileNotFoundError("请先训练模型。")
-    model = tf.keras.models.load_model(MODEL_SAVE_PATH, custom_objects={'TransformerBlock': TransformerBlock})
-    tokenizer = load_tokenizer()
-
-    df = safe_read_csv(TRAIN_FILE, usecols=["Game", "Trial", "Username", "target", "processed_text"])
-    diff_map = {}
-    user_map = {}
-    if os.path.exists(DIFFICULTY_FILE):
-        ddf = pd.read_csv(DIFFICULTY_FILE)
-        diff_map = dict(zip(ddf["word"], ddf["avg_trial"]))
-    if os.path.exists(PLAYER_FILE):
-        pdf = pd.read_csv(PLAYER_FILE)
-        user_map = dict(zip(pdf["Username"], pdf["avg_trial"]))
-
-    df = attach_features(df, tokenizer, diff_map, user_map)
-    hist = build_history(df)
-
-    if user_id not in hist:
-        print(f"用户 {user_id} 无记录")
-        return
-
-    events = hist[user_id]
-    if len(events) < 1:
-        print("历史不足")
-        return
-
-    if len(events) < LOOK_BACK:
-        avg = np.mean([e[0] for e in events])
-        pad_guess_seq = np.zeros((MAX_TRIES, GRID_FEAT_LEN), dtype=np.float32)
-        pad = [(avg, 4.0, 0, 4.0, pad_guess_seq)] * (LOOK_BACK - len(events))
-        window = pad + events
-    else:
-        window = events[-LOOK_BACK:]
-
-    trials = np.array([w[0] for w in window], np.float32)
-    seq = np.stack([trials/7.0, np.full_like(trials, np.std(trials)/7.0)], axis=1)
-    seq = seq.reshape(1, LOOK_BACK, 2)
-
-    last = events[-1]
-    diff = np.array([[last[1] / 7.0]], np.float32)
-    wid = np.array([[last[2]]], np.int32)
-    bias = np.array([[last[3] / 7.0]], np.float32)
-    guess_seq = last[4].reshape(1, MAX_TRIES, GRID_FEAT_LEN)
-
-    p_steps, p_prob = model.predict({
-        "input_history": seq,
-        "input_difficulty": diff,
-        "input_word_id": wid,
-        "input_user_bias": bias,
-        "input_guess_sequence": guess_seq
-    }, verbose=0)
-
-    print(f"预测步数: {float(np.clip(p_steps, 0, 6.99)):.2f}")
-    print(f"成功概率: {float(p_prob):.3f}")
 
 if __name__ == "__main__":
     main_train()

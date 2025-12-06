@@ -3,8 +3,7 @@ import numpy as np
 import os
 import concurrent.futures
 import time
-# 导入StratifiedShuffleSplit用于分层抽样
-from sklearn.model_selection import StratifiedShuffleSplit
+from sklearn.model_selection import StratifiedShuffleSplit  # 用于分层抽样
 import random
 
 # 固定随机种子以确保结果可复现
@@ -50,9 +49,7 @@ class MultiThreadedDataProcessor:
 
         df = pd.read_csv(self.input_file)
 
-        # ====== 关键修改 1: 创建分层依据列 'success' ======
-        # Trial <= 6 视为成功 (1)， Trial > 6 或 NaN 视为失败 (0)
-        # 确保 Trial 列是整数类型 (如果它不是)
+        # 确保 Trial 列是整数类型
         df['Trial'] = pd.to_numeric(df['Trial'], errors='coerce').fillna(7).astype(int)
         df['success'] = (df['Trial'] <= 6).astype(int)
         
@@ -64,10 +61,8 @@ class MultiThreadedDataProcessor:
         X = df.drop(columns=['success'])
         y = df['success']
         
-        # ----------------------------------------------------
         # 第一次分割: 训练集 (Train) vs. 临时集 (Temp: Val + Test)
-        # ----------------------------------------------------
-        # StratifiedShuffleSplit确保 y (success/failure) 的比例在 train 和 temp 中保持一致
+        # 确保 y (success/failure) 的比例在 train 和 temp 中保持一致
         sss_temp = StratifiedShuffleSplit(n_splits=1, test_size=test_size, random_state=42)
         
         for train_index, temp_index in sss_temp.split(X, y):
@@ -76,9 +71,7 @@ class MultiThreadedDataProcessor:
             
         print(f"    训练集大小: {len(train_data)}")
         
-        # ----------------------------------------------------
         # 第二次分割: 验证集 (Val) vs. 测试集 (Test)
-        # ----------------------------------------------------
         # Val 占 Temp 的 val_size 比例
         # 重新定义分层变量 for Temp set
         X_temp = temp_data.drop(columns=['success'])
@@ -112,8 +105,6 @@ class MultiThreadedDataProcessor:
         
         print(f"    验证集大小: {len(val_data)}")
         print(f"    测试集大小: {len(test_data)}")
-
-        # ====== 关键修改 2: 检查和保存分割结果 ======
         
         # 移除 'success' 辅助列
         train_data = train_data.drop(columns=['success'])
@@ -134,7 +125,6 @@ class MultiThreadedDataProcessor:
         print(f"\n    耗时: {time.time() - start_time:.2f} 秒")
         return train_data, val_data, test_data
     
-    # 以下方法 (calculate_word_difficulty 和 calculate_player_stats) 保持不变
     def calculate_word_difficulty(self, train_data):
         """
         计算每个单词的平均猜测步数，并保存到difficulty.csv
@@ -180,7 +170,7 @@ class MultiThreadedDataProcessor:
                 progress = min((i + batch_size) / total_words * 100, 100)
                 print(f"    进度: {progress:.1f}% ({i + batch_size}/{total_words})")
         
-        # 创建单词难度DataFrame
+        # 创建单词难度 DataFrame
         difficulty_df = pd.DataFrame(word_results)
         
         # 按平均猜测步数排序（步数越多难度越大）
@@ -218,7 +208,7 @@ class MultiThreadedDataProcessor:
             
             # 计算用户统计指标
             avg_trial = trials.mean()
-            failure_rate = np.mean(trials > 6)  # 步数>6表示失败
+            failure_rate = np.mean(trials > 6)  # 步数>6表示失败（数据集中步数为7表示失败）
             trial_variance = trials.var()
             total_games = len(user_data)
             success_count = len(user_data[user_data['Trial'] <= 6])
