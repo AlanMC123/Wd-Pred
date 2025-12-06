@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-\n
 """
 重构版 LSTM 多输入预测脚本（去除冗余统计特征和单词难度）
 直接运行即开始训练（默认 RUN_MODE="train"）。
@@ -41,12 +41,12 @@ REPORT_SAVE_PATH = "outputs/lstm_output.txt"
 
 LOOK_BACK = 5
 BATCH_SIZE = 1024
-EPOCHS = 25
-LEARNING_RATE = 0.0005
+EPOCHS = 40
+LEARNING_RATE = 0.0005 # **最后调整：微调学习率**
 
 # LSTM 架构参数
 LSTM_UNITS = 56
-DROPOUT_RATE = 0.35
+DROPOUT_RATE = 0.45 
 EMBEDDING_DIM = 24
 
 OOV_TOKEN = "<OOV>"
@@ -55,14 +55,14 @@ LARGE_ERROR_THRESHOLD = 1.5
 PATIENCE = 4
 
 LOSS_WEIGHTS = {
-            "output_steps": 0.5,
+            "output_steps": 0.8, 
             "output_success": 1
         }
 # Focal Loss 超参数
 FOCAL_LOSS_ALPHA = 0.25
 FOCAL_LOSS_GAMMA = 2.0
 # L2 正则化系数
-L2_REG_FACTOR = 0.00075
+L2_REG_FACTOR = 0.001 
 
 # 固定随机种子
 SEED = 42
@@ -319,9 +319,9 @@ def build_model(look_back, vocab_size):
     out_steps = Dense(1, "linear", name="output_steps")(Dense(32, "relu", kernel_regularizer=l2(L2_REG_FACTOR))(z))
 
     # success head
-    succ = Dense(32, activation="relu", kernel_regularizer=l2(L2_REG_FACTOR))(z)
-    succ = Dropout(0.3)(succ)
-    succ = Dense(16, activation="relu", kernel_regularizer=l2(L2_REG_FACTOR))(succ)
+    succ = Dense(64, activation="relu", kernel_regularizer=l2(L2_REG_FACTOR))(z)
+    succ = Dropout(0.45)(succ) # <--- 關鍵修改：從 0.3 調整為 0.45
+    succ = Dense(32, activation="relu", kernel_regularizer=l2(L2_REG_FACTOR))(succ)
     out_succ = Dense(1, activation="sigmoid", name="output_success")(succ)
 
     # 编译 (移除 diff_in 和 grid_in)
@@ -418,39 +418,65 @@ def plot_roc_curve(y_true, prob, save_path):
     print(f"AUC curve saved to: {save_path}")
 
 
-def plot_loss(history, save_path):
-    plt.figure(figsize=(12, 6))
-    # Plot total loss
-    plt.subplot(1, 2, 1)
-    plt.plot(history.history['loss'], label='Training Loss')
+def plot_loss(history, save_path_base):
+    # 确保保存路径是文件夹，以便保存多个文件
+    save_dir = os.path.dirname(save_path_base) or "."
+    
+    # -------------------
+    # 图 1: Training and Validation Loss (总损失 - 保持不变)
+    # -------------------
+    plt.figure(figsize=(6, 6))
+    plt.plot(history.history['loss'], label='Training Total Loss')
     if 'val_loss' in history.history:
-        plt.plot(history.history['val_loss'], label='Validation Loss')
-    plt.title('Training and Validation Loss')
+        plt.plot(history.history['val_loss'], label='Validation Total Loss')
+    plt.title('Training and Validation Total Loss (Weighted)')
     plt.xlabel('Epochs')
     plt.ylabel('Loss')
     plt.legend()
     plt.grid(True, alpha=0.3)
-
-    # Plot component losses
-    plt.subplot(1, 2, 2)
+    plt.tight_layout()
+    total_loss_path = os.path.join(save_dir, "LSTM_total_loss_curve.png")
+    plt.savefig(total_loss_path, dpi=300, bbox_inches='tight')
+    plt.close()
+    print(f"Total Loss curve saved to: {total_loss_path}")
+    
+    # -------------------
+    # 图 2: Steps Loss (回归任务 - MAE)
+    # -------------------
+    plt.figure(figsize=(6, 6))
     if 'output_steps_loss' in history.history:
         plt.plot(history.history['output_steps_loss'], label='Training Steps Loss')
         if 'val_output_steps_loss' in history.history:
             plt.plot(history.history['val_output_steps_loss'], label='Validation Steps Loss')
+    plt.title('Steps Prediction Component Loss (MAE)')
+    plt.xlabel('Epochs')
+    plt.ylabel('Loss (MAE)')
+    plt.legend()
+    plt.grid(True, alpha=0.3)
+    plt.tight_layout()
+    steps_loss_path = os.path.join(save_dir, "LSTM_steps_loss_curve.png")
+    plt.savefig(steps_loss_path, dpi=300, bbox_inches='tight')
+    plt.close()
+    print(f"Steps Loss curve saved to: {steps_loss_path}")
+
+    # -------------------
+    # 图 3: Success Loss (分类任务 - Binary Crossentropy)
+    # -------------------
+    plt.figure(figsize=(6, 6))
     if 'output_success_loss' in history.history:
         plt.plot(history.history['output_success_loss'], label='Training Success Loss')
         if 'val_output_success_loss' in history.history:
             plt.plot(history.history['val_output_success_loss'], label='Validation Success Loss')
-    plt.title('Component Losses')
+    plt.title('Success Prediction Component Loss (Binary Crossentropy)')
     plt.xlabel('Epochs')
-    plt.ylabel('Loss')
+    plt.ylabel('Loss (BCE)')
     plt.legend()
     plt.grid(True, alpha=0.3)
-
     plt.tight_layout()
-    plt.savefig(save_path, dpi=300, bbox_inches='tight')
+    success_loss_path = os.path.join(save_dir, "LSTM_success_loss_curve.png")
+    plt.savefig(success_loss_path, dpi=300, bbox_inches='tight')
     plt.close()
-    print(f"Loss curve saved to: {save_path}")
+    print(f"Success Loss curve saved to: {success_loss_path}")
 
 # ==========================================================
 # WandB-safe Keras Callback
@@ -670,7 +696,6 @@ def main_train():
     report = f"""
 ========================================
  LSTM Model Validation and Test Report 
- (Simplified Features)
 ========================================
 ---- Validation Set Metrics ----
 1. Mean Absolute Error (MAE)    : {val_mae:.4f}

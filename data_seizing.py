@@ -106,4 +106,4 @@ def clean_dataset(percentage):
     return output_file
 
 if __name__ == "__main__":
-    clean_dataset(1/20)
+    clean_dataset(1/10)

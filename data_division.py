@@ -3,8 +3,8 @@ import numpy as np
 import os
 import concurrent.futures
 import time
-# 移除 train_test_split，因为我们将使用自定义的基于时间的切分逻辑
-# from sklearn.model_selection import train_test_split 
+# 导入StratifiedShuffleSplit用于分层抽样
+from sklearn.model_selection import StratifiedShuffleSplit
 import random
 
 # 固定随机种子以确保结果可复现
@@ -34,67 +34,104 @@ class MultiThreadedDataProcessor:
             os.makedirs(dataset_dir)
             print(f"创建目录: {dataset_dir}")
     
-    def load_and_split_dataset(self):
+    def load_and_split_dataset(self, test_size=0.2, val_size=0.25):
         """
-        加载并分割数据集为训练集、验证集和测试集 (按时间序列切分)
-        比例为7:1:2，确保训练集数据时间上早于测试集数据
+        加载数据集，创建 'success' 标志，并使用分层抽样进行三路分割。
+        
+        Args:
+            test_size: 最终测试集占总数据的比例 (e.g., 20%).
+            val_size: 验证集占剩余数据的比例 (e.g., 25% of 80% is 20%).
         """
-        print("Step 1: 加载并按时间顺序切分数据集 (Train: 70%, Val: 10%, Test: 20%)...")
         start_time = time.time()
-        
+        print(f"1. 加载和分割数据集 ({self.input_file})...")
+
         if not os.path.exists(self.input_file):
-            raise FileNotFoundError(f"找不到清理后的数据集: {self.input_file}")
-        
-        # 读取数据集
+            raise FileNotFoundError(f"输入文件缺失: {self.input_file}")
+
         df = pd.read_csv(self.input_file)
-        print(f"  原始数据总行数: {len(df)}")
+
+        # ====== 关键修改 1: 创建分层依据列 'success' ======
+        # Trial <= 6 视为成功 (1)， Trial > 6 或 NaN 视为失败 (0)
+        # 确保 Trial 列是整数类型 (如果它不是)
+        df['Trial'] = pd.to_numeric(df['Trial'], errors='coerce').fillna(7).astype(int)
+        df['success'] = (df['Trial'] <= 6).astype(int)
         
-        # 1. 关键步骤：按用户分组并按游戏编号（时间顺序）排序
-        # 确保每个用户内部的记录是按时间递增的
-        df = df.sort_values(by=['Username', 'Game']).reset_index(drop=True)
+        # 记录原始数据中的比例
+        original_success_rate = df['success'].mean()
+        print(f"    原始数据成功率 (Trial<=6): {original_success_rate:.2%}")
         
-        train_list = []
-        val_list = []
-        test_list = []
+        # 定义分层变量
+        X = df.drop(columns=['success'])
+        y = df['success']
         
-        # 2. 对每个用户进行时间序列切分
-        for username, group in df.groupby('Username'):
-            total_count = len(group)
-            
-            # 计算切分点
-            train_end = int(total_count * 0.7)
-            val_end = train_end + int(total_count * 0.1) 
-            
-            # 为了确保所有记录都被分配，最后的测试集部分取剩余的所有记录
-            # 这样实际比例会非常接近 7:1:2，且不会丢失任何数据
-            
-            # 切分：由于group已经按时间排序，按索引切分即为按时间切分
-            train_part = group.iloc[:train_end]
-            val_part = group.iloc[train_end:val_end]
-            test_part = group.iloc[val_end:]
-            
-            train_list.append(train_part)
-            val_list.append(val_part)
-            test_list.append(test_part)
-            
-        # 3. 合并所有用户的切分结果
-        train_data = pd.concat(train_list)
-        val_data = pd.concat(val_list)
-        test_data = pd.concat(test_list)
+        # ----------------------------------------------------
+        # 第一次分割: 训练集 (Train) vs. 临时集 (Temp: Val + Test)
+        # ----------------------------------------------------
+        # StratifiedShuffleSplit确保 y (success/failure) 的比例在 train 和 temp 中保持一致
+        sss_temp = StratifiedShuffleSplit(n_splits=1, test_size=test_size, random_state=42)
         
-        # 4. 保存分割后的数据集
+        for train_index, temp_index in sss_temp.split(X, y):
+            train_data = df.iloc[train_index]
+            temp_data = df.iloc[temp_index]
+            
+        print(f"    训练集大小: {len(train_data)}")
+        
+        # ----------------------------------------------------
+        # 第二次分割: 验证集 (Val) vs. 测试集 (Test)
+        # ----------------------------------------------------
+        # Val 占 Temp 的 val_size 比例
+        # 重新定义分层变量 for Temp set
+        X_temp = temp_data.drop(columns=['success'])
+        y_temp = temp_data['success']
+        
+        # 调整 val_size 比例，使其是 temp_data 的一部分
+        # test_size=0.2, val_size=0.25 (占剩余 80% 的 25%，即总体的 20%)
+        # 如果 test_size 和 val_size 设定为 0.2，那么 val_size 应该是 0.5 (temp_data 的一半)
+        
+        sss_val_test = StratifiedShuffleSplit(
+            n_splits=1, 
+            test_size=val_size / (1 - test_size), # 确保 val_size 是相对于剩余数据的比例
+            random_state=42
+        )
+        
+        # 检查并确保 val_size / (1 - test_size) 不超过 1
+        val_test_ratio = val_size / (1 - test_size)
+        if val_test_ratio >= 1.0:
+            print("警告: 验证集和测试集的比例设置不合理，将使用 50/50 划分。")
+            val_test_ratio = 0.5
+            
+        sss_val_test = StratifiedShuffleSplit(
+            n_splits=1, 
+            test_size=val_test_ratio, 
+            random_state=42
+        )
+
+        for val_index, test_index in sss_val_test.split(X_temp, y_temp):
+            val_data = temp_data.iloc[val_index]
+            test_data = temp_data.iloc[test_index]
+        
+        print(f"    验证集大小: {len(val_data)}")
+        print(f"    测试集大小: {len(test_data)}")
+
+        # ====== 关键修改 2: 检查和保存分割结果 ======
+        
+        # 移除 'success' 辅助列
+        train_data = train_data.drop(columns=['success'])
+        val_data = val_data.drop(columns=['success'])
+        test_data = test_data.drop(columns=['success'])
+
         train_data.to_csv(self.train_file, index=False)
         val_data.to_csv(self.val_file, index=False)
         test_data.to_csv(self.test_file, index=False)
         
         # 验证比例
-        total_len = len(df)
-        print(f"  数据集分割完成 (按时间顺序):")
-        print(f"    训练集: {len(train_data)} 条记录 ({len(train_data)/total_len*100:.1f}%)")
-        print(f"    验证集: {len(val_data)} 条记录 ({len(val_data)/total_len*100:.1f}%)")
-        print(f"    测试集: {len(test_data)} 条记录 ({len(test_data)/total_len*100:.1f}%)")
-        print(f"  耗时: {time.time() - start_time:.2f} 秒")
-        
+        print("\n    验证分割集的成功率:")
+        print(f"      训练集成功率: {(train_data['Trial'] <= 6).mean():.2%}")
+        print(f"      验证集成功率: {(val_data['Trial'] <= 6).mean():.2%}")
+        print(f"      测试集成功率: {(test_data['Trial'] <= 6).mean():.2%}")
+
+
+        print(f"\n    耗时: {time.time() - start_time:.2f} 秒")
         return train_data, val_data, test_data
     
     # 以下方法 (calculate_word_difficulty 和 calculate_player_stats) 保持不变

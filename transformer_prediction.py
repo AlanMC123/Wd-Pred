@@ -39,17 +39,17 @@ PLAYER_FILE = "dataset/player_data.csv"
 
 LOOK_BACK = 5
 BATCH_SIZE = 1024
-EPOCHS = 20
-LEARNING_RATE = 0.0005
+EPOCHS = 30
+LEARNING_RATE = 0.0002
 
 MODEL_SAVE_PATH = "models/transformer/transformer_model.keras"
 TOKENIZER_PATH = "models/transformer/transformer_tokenizer.json"
 
-PROJECT_DIM = 24
-NUM_HEADS = 4
-FF_DIM = 24
+PROJECT_DIM = 16
+NUM_HEADS = 6
+FF_DIM = 16
 TRANSFORMER_LAYERS = 1
-DROPOUT_RATE = 0.35
+DROPOUT_RATE = 0.45
 EMBEDDING_DIM = 16
 
 LOSS_WEIGHTS = {"output_steps": 0.2, "output_success": 1.0}
@@ -57,10 +57,10 @@ LOSS_WEIGHTS = {"output_steps": 0.2, "output_success": 1.0}
 OOV_TOKEN = "<OOV>"
 
 LARGE_ERROR_THRESHOLD = 1.5
-PATIENCE = 5
+PATIENCE = 3
 REPORT_SAVE_PATH = "outputs/transformer_output.txt"
 
-SEED = 2009
+SEED = 42
 
 MAX_TRIES = 6
 GRID_FEAT_LEN = 8
@@ -240,14 +240,19 @@ def create_samples(history, look_back):
 # Transformer block
 # ==========================================================
 class TransformerBlock(tf.keras.layers.Layer):
-    def __init__(self, embed_dim, num_heads, ff_dim, rate=0.1):
-        super(TransformerBlock, self).__init__()
+    def __init__(self, embed_dim, num_heads, ff_dim, rate=0.1, **kwargs):
+        super(TransformerBlock, self).__init__(**kwargs)
+        self.embed_dim = embed_dim
+        self.num_heads = num_heads
+        self.ff_dim = ff_dim
+        self.rate = rate
         self.att = MultiHeadAttention(num_heads=num_heads, key_dim=embed_dim)
         self.ffn = tf.keras.Sequential([Dense(ff_dim, activation="relu"), Dense(embed_dim),])
         self.layernorm1 = LayerNormalization(epsilon=1e-6)
         self.layernorm2 = LayerNormalization(epsilon=1e-6)
         self.dropout1 = Dropout(rate)
         self.dropout2 = Dropout(rate)
+    
     def call(self, inputs, training=None):
         attn_output = self.att(inputs, inputs)
         attn_output = self.dropout1(attn_output, training=training)
@@ -255,6 +260,20 @@ class TransformerBlock(tf.keras.layers.Layer):
         ffn_output = self.ffn(out1)
         ffn_output = self.dropout2(ffn_output, training=training)
         return self.layernorm2(out1 + ffn_output)
+    
+    def get_config(self):
+        config = super(TransformerBlock, self).get_config()
+        config.update({
+            'embed_dim': self.embed_dim,
+            'num_heads': self.num_heads,
+            'ff_dim': self.ff_dim,
+            'rate': self.rate,
+        })
+        return config
+    
+    @classmethod
+    def from_config(cls, config):
+        return cls(**config)
 
 # ==========================================================
 # Build model (modified success head and loss_weights)
@@ -297,9 +316,11 @@ def build_model(look_back, vocab_size, project_dim=PROJECT_DIM, num_heads=NUM_HE
     z = Dense(64, activation="relu")(z)
     z = Dropout(dropout_rate)(z)
 
-    # outputs: steps (regression) and success (classification)
-    out_steps = Dense(1, "linear", name="output_steps")(Dense(32, "relu")(z))
-
+    # --- Regression Head (新增 Dropout) ---
+    steps = Dense(32, "relu")(z)
+    steps = Dropout(0.2)(steps) # 新增 Steps Head Dropout
+    out_steps = Dense(1, "linear", name="output_steps")(steps)
+    
     # ---- stronger success head ----
     succ = Dense(64, activation="relu")(z)
     succ = Dropout(0.3)(succ)
@@ -311,8 +332,8 @@ def build_model(look_back, vocab_size, project_dim=PROJECT_DIM, num_heads=NUM_HE
     model = Model([h_in, diff_in, wid_in, bias_in, guess_seq_in], [out_steps, out_succ])
     model.compile(
         optimizer=tf.keras.optimizers.Adam(LEARNING_RATE),
-        loss={"output_steps": "mae", "output_success": "binary_crossentropy"},
-        # Increase success weight to avoid being dominated by regression head
+        # --- 更改为 MSE ---
+        loss={"output_steps": "mse", "output_success": "binary_crossentropy"},
         loss_weights = LOSS_WEIGHTS,
         metrics={"output_success": "accuracy"}
     )
@@ -433,37 +454,65 @@ def plot_roc_curve(y_true, prob, save_path):
     plt.close()
     print(f"AUC curve saved to: {save_path}")
 
-def plot_loss(history, save_path):
-    plt.figure(figsize=(12, 6))
-    plt.subplot(1, 2, 1)
-    plt.plot(history.history['loss'], label='Training Loss')
+def plot_loss(history, save_path_base):
+    # 确保保存路径是文件夹，以便保存多个文件
+    save_dir = os.path.dirname(save_path_base) or "."
+    
+    # -------------------
+    # 图 1: Training and Validation Loss (总损失 - 保持不变)
+    # -------------------
+    plt.figure(figsize=(6, 6))
+    plt.plot(history.history['loss'], label='Training Total Loss')
     if 'val_loss' in history.history:
-        plt.plot(history.history['val_loss'], label='Validation Loss')
-    plt.title('Training and Validation Loss')
+        plt.plot(history.history['val_loss'], label='Validation Total Loss')
+    plt.title('Training and Validation Total Loss (Weighted)')
     plt.xlabel('Epochs')
     plt.ylabel('Loss')
     plt.legend()
     plt.grid(True, alpha=0.3)
-
-    plt.subplot(1, 2, 2)
+    plt.tight_layout()
+    total_loss_path = os.path.join(save_dir, "Transformer_total_loss_curve.png")
+    plt.savefig(total_loss_path, dpi=300, bbox_inches='tight')
+    plt.close()
+    print(f"Total Loss curve saved to: {total_loss_path}")
+    
+    # -------------------
+    # 图 2: Steps Loss (回归任务 - MAE)
+    # -------------------
+    plt.figure(figsize=(6, 6))
     if 'output_steps_loss' in history.history:
         plt.plot(history.history['output_steps_loss'], label='Training Steps Loss')
         if 'val_output_steps_loss' in history.history:
             plt.plot(history.history['val_output_steps_loss'], label='Validation Steps Loss')
+    plt.title('Steps Prediction Component Loss (MAE)')
+    plt.xlabel('Epochs')
+    plt.ylabel('Loss (MAE)')
+    plt.legend()
+    plt.grid(True, alpha=0.3)
+    plt.tight_layout()
+    steps_loss_path = os.path.join(save_dir, "Transformer_steps_loss_curve.png")
+    plt.savefig(steps_loss_path, dpi=300, bbox_inches='tight')
+    plt.close()
+    print(f"Steps Loss curve saved to: {steps_loss_path}")
+
+    # -------------------
+    # 图 3: Success Loss (分类任务 - Binary Crossentropy)
+    # -------------------
+    plt.figure(figsize=(6, 6))
     if 'output_success_loss' in history.history:
         plt.plot(history.history['output_success_loss'], label='Training Success Loss')
         if 'val_output_success_loss' in history.history:
             plt.plot(history.history['val_output_success_loss'], label='Validation Success Loss')
-    plt.title('Component Losses')
+    plt.title('Success Prediction Component Loss (Binary Crossentropy)')
     plt.xlabel('Epochs')
-    plt.ylabel('Loss')
+    plt.ylabel('Loss (BCE)')
     plt.legend()
     plt.grid(True, alpha=0.3)
-
     plt.tight_layout()
-    plt.savefig(save_path, dpi=300, bbox_inches='tight')
+    success_loss_path = os.path.join(save_dir, "Transformer_success_loss_curve.png")
+    plt.savefig(success_loss_path, dpi=300, bbox_inches='tight')
     plt.close()
-    print(f"Loss curve saved to: {save_path}")
+    print(f"Success Loss curve saved to: {success_loss_path}")
 
 # WandB-safe callback
 class WandbEpochLogger(Callback):
@@ -628,7 +677,7 @@ def main_train():
 
     report = f"""
 ========================================
- Transformer Guess Sequence Model Report (fixed)
+ Transformer Guess Sequence Model Report
 ========================================
 ---- Validation Set Metrics ----
 1. Mean Absolute Error (MAE)    : {val_mae:.4f}
