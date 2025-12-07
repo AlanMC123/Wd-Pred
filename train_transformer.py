@@ -53,8 +53,8 @@ REPORT_SAVE_PATH = "outputs/transformer_output.txt"
 # 训练基本参数
 LOOK_BACK = 5
 BATCH_SIZE = 1024
-EPOCHS = 30
-LEARNING_RATE = 0.0002
+EPOCHS = 60
+LEARNING_RATE = 0.0001
 LARGE_ERROR_THRESHOLD = 1.5
 
 # Transformer 架构参数
@@ -69,7 +69,7 @@ EMBEDDING_DIM = 16
 OOV_TOKEN = "<OOV>"
 
 # 早停值
-PATIENCE = 3
+PATIENCE = 10
 
 # 损失函数权重
 LOSS_WEIGHTS = {"output_steps": 0.2, "output_success": 1.0}

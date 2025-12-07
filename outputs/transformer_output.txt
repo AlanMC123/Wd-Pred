@@ -3,23 +3,23 @@
  Transformer Model Report (Acc Constraint)
 ========================================
 Constraint: Accuracy must be >= 85.0%
-Optimal Probability Threshold Found: 0.6950
+Optimal Probability Threshold Found: 0.6850
 
 ---- Validation Set Metrics ----
-1. Mean Absolute Error (MAE)    : 0.8574
-2. Root Mean Squared Error (RMSE)     : 1.0595
-3. Win/Loss Prediction Accuracy        : 87.392% (Naive 0.5: 100.0%)
-4. Area Under ROC Curve (AUC)   : 0.8429
-5. Large Error Rate (>1.5)      : 15.709%
-6. Negative Class Precision     : 0.1215 (Predicted Loss correct rate)
-7. Negative Class Recall        : 0.5737 (Actual Loss detected rate)
+1. Mean Absolute Error (MAE)    : 0.8538
+2. Root Mean Squared Error (RMSE)     : 1.0558
+3. Win/Loss Prediction Accuracy        : 85.374% (Naive 0.5: 98.3%)
+4. Area Under ROC Curve (AUC)   : 0.8607
+5. Large Error Rate (>1.5)      : 15.599%
+6. Negative Class Precision     : 0.1195 (Predicted Loss correct rate)
+7. Negative Class Recall        : 0.6766 (Actual Loss detected rate)
 
 ---- Test Set Metrics ----
-1. Mean Absolute Error (MAE)    : 0.8249
-2. Root Mean Squared Error (RMSE)     : 1.0317
-3. Win/Loss Prediction Accuracy        : 88.844%
-4. Area Under ROC Curve (AUC)   : 0.8631
-5. Large Error Rate (>1.5)      : 14.302%
-6. Negative Class Precision     : 0.1434
-7. Negative Class Recall        : 0.6069
+1. Mean Absolute Error (MAE)    : 0.8208
+2. Root Mean Squared Error (RMSE)     : 1.0268
+3. Win/Loss Prediction Accuracy        : 87.111%
+4. Area Under ROC Curve (AUC)   : 0.8792
+5. Large Error Rate (>1.5)      : 14.045%
+6. Negative Class Precision     : 0.1388
+7. Negative Class Recall        : 0.6994
 ========================================
