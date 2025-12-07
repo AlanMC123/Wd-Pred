@@ -162,7 +162,7 @@ def lstm_predict(user_id):
     from train_LSTM import (
         load_tokenizer, attach_features, build_history,
         focal_loss, MODEL_SAVE_PATH, TOKENIZER_PATH,
-        LOOK_BACK, MAX_TRIES, GRID_SEQ_FEAT_DIM,
+        LOOK_BACK, MAX_TRIES, GRID_FEAT_LEN,
         safe_read_csv
     )
     
@@ -212,7 +212,7 @@ def lstm_predict(user_id):
     # 准备输入
     if len(events) < LOOK_BACK:
         avg = np.mean([e[0] for e in events])
-        pad_event = (avg, 0, 4.0, np.zeros((MAX_TRIES, GRID_SEQ_FEAT_DIM), dtype=np.float32))
+        pad_event = (avg, 0, 4.0, np.zeros((MAX_TRIES, GRID_FEAT_LEN), dtype=np.float32))
         pad = [pad_event] * (LOOK_BACK - len(events))
         window = pad + events
     else:
@@ -226,7 +226,7 @@ def lstm_predict(user_id):
     wid = np.array([[last[1]]], np.int32)  # word_id 现在是索引 1
     bias = np.array([[last[2] / 7.0]], np.float32)  # user_bias 是索引 2
     diff = np.array([[last[3] / 7.0]], np.float32)  # word_difficulty 是索引 3
-    grid_seq = last[4].reshape(1, MAX_TRIES, GRID_SEQ_FEAT_DIM)  # grid_seq 是索引 4
+    grid_seq = last[4].reshape(1, MAX_TRIES, GRID_FEAT_LEN)  # grid_seq 是索引 4
     
     # 进行预测
     p_steps, p_prob = model.predict({
@@ -395,7 +395,7 @@ if __name__ == "__main__":
         
         # 创建用于预测的样本
         def create_lstm_samples(history, look_back):
-            from train_LSTM import MAX_TRIES, GRID_SEQ_FEAT_DIM
+            from train_LSTM import MAX_TRIES, GRID_FEAT_LEN
             X_seq, X_wid, X_bias, X_diff, X_grid_seq, y_steps, y_succ = [], [], [], [], [], [], []
             for user, events in history.items():
                 if len(events) <= look_back:
@@ -424,7 +424,7 @@ if __name__ == "__main__":
                     np.zeros((0, 1), np.int32),
                     np.zeros((0, 1), np.float32),
                     np.zeros((0, 1), np.float32),
-                    np.zeros((0, MAX_TRIES, GRID_SEQ_FEAT_DIM), np.float32),
+                    np.zeros((0, MAX_TRIES, GRID_FEAT_LEN), np.float32),
                     np.zeros((0,), np.float32),
                     np.zeros((0,), np.float32)
                 )

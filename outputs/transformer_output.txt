@@ -1,6 +1,6 @@
 
 ========================================
- Transformer Guess Sequence Model Report
+ Transformer Validation and Test Report 
 ========================================
 ---- Validation Set Metrics ----
 1. Mean Absolute Error (MAE)    : 0.8555

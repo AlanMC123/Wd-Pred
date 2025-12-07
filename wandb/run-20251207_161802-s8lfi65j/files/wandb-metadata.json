@@ -1,0 +1,16 @@
+{
+  "os": "Windows-11-10.0.26100-SP0",
+  "python": "CPython 3.12.9",
+  "startedAt": "2025-12-07T08:18:02.965399Z",
+  "program": "f:\\Codes\\Wd-Pred\\train_LSTM.py",
+  "codePath": "train_LSTM.py",
+  "codePathLocal": "train_LSTM.py",
+  "git": {
+    "remote": "https://github.com/AlanMC123/Wd-Pred.git",
+    "commit": "db27c4eb9b4ac0e4e4b3c3346537d8ac47c4cb01"
+  },
+  "root": "F:\\Codes\\Wd-Pred",
+  "host": "KanchoTX5Pro",
+  "executable": "D:\\Python\\Python312\\python.exe",
+  "writerId": "6xeslx1iipwo9d1r0z7bqb94zc8mzyjb"
+}

@@ -1,9 +1,9 @@
-
 """
-LSTM 多输入预测脚本
+LSTM 多输入预测脚本 - 增强回归头版
 直接运行即开始训练。
 利用早停、Dropout、L2正则化防止过拟合。
-
+修改记录：
+- 增强了 output_steps 回归头的复杂度，从单层 Dense 改为双层 Dense + Dropout 结构。
 """
 
 import os
@@ -22,7 +22,6 @@ from tensorflow.keras.models import Model
 from tensorflow.keras.callbacks import EarlyStopping, Callback
 from tensorflow.keras.preprocessing.text import Tokenizer
 from sklearn.metrics import mean_absolute_error, mean_squared_error, accuracy_score
-from predict import plot_roc_curve, plot_scatter
 from tensorflow.keras.regularizers import l2 
 
 
@@ -38,7 +37,7 @@ PLAYER_FILE = "dataset/player_data.csv"
 DIFFICULTY_FILE = "dataset/difficulty_data.csv"
 
 # 模型和报告输出路径
-MODEL_SAVE_PATH = "models/lstm/lstm_model.keras"
+MODEL_SAVE_PATH = "models/lstm/lstm_model.keras" # 修改保存文件名以区分
 TOKENIZER_PATH = "models/lstm/lstm_tokenizer.json"
 REPORT_SAVE_PATH = "outputs/lstm_output.txt"
 
@@ -107,11 +106,6 @@ def encode_guess_sequence(grid_cell):
     """
     将 grid 列表转换为一个时间序列特征矩阵。
     返回形状为 (MAX_TRIES, GRID_FEAT_LEN) 的浮点矩阵。
-    与Transformer模型使用相同的8维累积特征：
-    1. 累积绿色方块数（归一化）
-    2. 累积黄色方块数（归一化）
-    3. 累积灰色方块数（归一化）
-    4-8. 每个位置累积绿色方块数（归一化）
     """
     default_seq = np.zeros((MAX_TRIES, GRID_FEAT_LEN), dtype=np.float32)
     if pd.isna(grid_cell):
@@ -199,7 +193,6 @@ def attach_features(df, tokenizer, user_map, diff_map):
     if "processed_text" in df.columns:
         df["grid_seq"] = df["processed_text"].apply(encode_guess_sequence)
     else:
-        # 缺失时返回零序列
         df["grid_seq"] = [np.zeros((MAX_TRIES, GRID_FEAT_LEN), dtype=np.float32) for _ in range(len(df))]
 
     return df
@@ -217,25 +210,15 @@ def focal_loss(gamma=2.0, alpha=0.25):
     alpha = float(alpha)
 
     def focal_loss_fixed(y_true, y_pred):
-        # 裁剪 y_pred 以避免 log(0)
         epsilon = tf.keras.backend.epsilon()
         y_pred = tf.clip_by_value(y_pred, epsilon, 1.0 - epsilon)
-
-        # 计算交叉熵
         bce = y_true * tf.math.log(y_pred)
         bce += (1 - y_true) * tf.math.log(1 - y_pred)
         bce = -bce
-
-        # 计算调制因子
         p_t = y_true * y_pred + (1 - y_true) * (1 - y_pred)
         modulating_factor = tf.pow(1.0 - p_t, gamma)
-
-        # 乘以权重项
         alpha_factor = y_true * alpha + (1 - y_true) * (1.0 - alpha)
-
-        # Focal Loss = alpha_factor * modulating_factor * BCE
         focal_loss = alpha_factor * modulating_factor * bce
-        
         return tf.reduce_mean(focal_loss)
 
     focal_loss_fixed.__name__ = f'focal_loss(gamma={gamma},alpha={alpha})'
@@ -249,7 +232,6 @@ def build_history(df) -> Dict[str, List[Tuple]]:
     hist = {}
     df_sorted = df.sort_values(["Username", "Game"])
     for u, g in df_sorted.groupby("Username", sort=False):
-        # 历史记录 tuple 结构：(Trial, word_id, user_bias, word_difficulty, grid_seq)
         hist[u] = [(int(r["Trial"]),
                     int(r["word_id"]),
                     float(r["user_bias"]),
@@ -276,13 +258,9 @@ def create_samples(history, look_back):
 
             seq = np.stack([norm, np.full_like(norm, std)], axis=1)
             X_seq.append(seq)
-            # 单词 ID
             X_wid.append([target[1]])
-            # 用户偏置
             X_bias.append([target[2] / 7.0])
-            # 单词难度
             X_diff.append([target[3] / 7.0])
-            # 序列特征
             X_grid_seq.append(target[4]) 
 
             y_steps.append(min(float(target[0]), 7.0))
@@ -308,7 +286,7 @@ def create_samples(history, look_back):
     )
 
 # ==========================================================
-# LSTM 模型构建
+# LSTM 模型构建 (MODIFIED)
 # ==========================================================
 def build_model(look_back, vocab_size):
     # 历史输入分支
@@ -339,12 +317,16 @@ def build_model(look_back, vocab_size):
     z = Dense(64, activation="relu", kernel_regularizer=l2(L2_REG_FACTOR))(z)
     z = Dropout(DROPOUT_RATE)(z)
 
-    # 回归头（预测步数）
-    out_steps = Dense(1, "linear", name="output_steps")(Dense(32, "relu", kernel_regularizer=l2(L2_REG_FACTOR))(z))
 
-    # success head
+    # 回归头
+    steps_feat = Dense(64, activation="relu", kernel_regularizer=l2(L2_REG_FACTOR))(z)
+    steps_feat = Dropout(0.3)(steps_feat)  # 适度的 Dropout 防止回归过拟合
+    steps_feat = Dense(32, activation="relu", kernel_regularizer=l2(L2_REG_FACTOR))(steps_feat)
+    out_steps = Dense(1, "linear", name="output_steps")(steps_feat)
+
+    # 分类头
     succ = Dense(64, activation="relu", kernel_regularizer=l2(L2_REG_FACTOR))(z)
-    succ = Dropout(0.45)(succ) # <--- 關鍵修改：從 0.3 調整為 0.45
+    succ = Dropout(0.45)(succ) 
     succ = Dense(32, activation="relu", kernel_regularizer=l2(L2_REG_FACTOR))(succ)
     out_succ = Dense(1, activation="sigmoid", name="output_success")(succ)
 
@@ -390,7 +372,6 @@ def evaluate_model(model, Xs):
     rmse = np.sqrt(mean_squared_error(y_steps, np.clip(pred_steps, 0, 7)))
     acc = accuracy_score(y_succ.astype(int), (pred_prob >= 0.5).astype(int))
 
-    # 使用从predict.py导入的calculate_auc_best函数
     from predict import calculate_auc_best
     auc_value, _, _ = calculate_auc_best(y_succ, pred_prob)
     auc = auc_value
@@ -404,17 +385,14 @@ def compute_large_error_rate(y_true, y_pred, threshold):
     return np.mean(errors > threshold)
 
 def plot_loss(history, save_path_base):
-    # 确保保存路径是文件夹，以便保存多个文件
     save_dir = os.path.dirname(save_path_base) or "."
     
-    # -------------------
-    # 图 1: Training and Validation Loss (总损失 - 保持不变)
-    # -------------------
+    # Total Loss
     plt.figure(figsize=(6, 6))
     plt.plot(history.history['loss'], label='Training Total Loss')
     if 'val_loss' in history.history:
         plt.plot(history.history['val_loss'], label='Validation Total Loss')
-    plt.title('Training and Validation Total Loss (Weighted)')
+    plt.title('Training and Validation Total Loss')
     plt.xlabel('Epochs')
     plt.ylabel('Loss')
     plt.legend()
@@ -423,11 +401,8 @@ def plot_loss(history, save_path_base):
     total_loss_path = os.path.join(save_dir, "LSTM_total_loss_curve.png")
     plt.savefig(total_loss_path, dpi=300, bbox_inches='tight')
     plt.close()
-    print(f"Total Loss curve saved to: {total_loss_path}")
     
-    # -------------------
-    # 图 2: Steps Loss (回归任务 - MAE)
-    # -------------------
+    # Steps Loss
     plt.figure(figsize=(6, 6))
     if 'output_steps_loss' in history.history:
         plt.plot(history.history['output_steps_loss'], label='Training Steps Loss')
@@ -442,11 +417,8 @@ def plot_loss(history, save_path_base):
     steps_loss_path = os.path.join(save_dir, "LSTM_steps_loss_curve.png")
     plt.savefig(steps_loss_path, dpi=300, bbox_inches='tight')
     plt.close()
-    print(f"Steps Loss curve saved to: {steps_loss_path}")
 
-    # -------------------
-    # 图 3: Success Loss (分类任务 - Focal Loss)
-    # -------------------
+    # Success Loss
     plt.figure(figsize=(6, 6))
     if 'output_success_loss' in history.history:
         plt.plot(history.history['output_success_loss'], label='Training Success Loss')
@@ -461,7 +433,6 @@ def plot_loss(history, save_path_base):
     success_loss_path = os.path.join(save_dir, "LSTM_success_loss_curve.png")
     plt.savefig(success_loss_path, dpi=300, bbox_inches='tight')
     plt.close()
-    print(f"Success Loss curve saved to: {success_loss_path}")
 
 # ==========================================================
 # WandB-safe Keras Callback
@@ -484,12 +455,11 @@ def main_train():
     set_seed(SEED)
     ensure_dirs()
 
-    # WandB 初始化
     wandb.init(
         project="word-difficulty-prediction",
-        name="lstm-model-grid-seq-run",
+        name="lstm-model-complex-reg",
         config={
-            "model_type": "LSTM_Grid_Seq_Simplified",
+            "model_type": "LSTM_Complex_Reg",
             "look_back": LOOK_BACK,
             "batch_size": BATCH_SIZE,
             "epochs": EPOCHS,
@@ -498,7 +468,7 @@ def main_train():
             "dropout_rate": DROPOUT_RATE,
             "embedding_dim": EMBEDDING_DIM,
             "seed": SEED,
-            "GRID_FEAT_LEN": GRID_FEAT_LEN # 新增配置
+            "GRID_FEAT_LEN": GRID_FEAT_LEN
         },
         settings=wandb.Settings(_disable_stats=True)
     )
@@ -521,11 +491,9 @@ def main_train():
         pdf = pd.read_csv(PLAYER_FILE)
         user_map = dict(zip(pdf["Username"], pdf["avg_trial"]))
     
-    # 加载单词难度数据
     diff_map = {}
     if os.path.exists(DIFFICULTY_FILE):
         df_diff = pd.read_csv(DIFFICULTY_FILE)
-        # 使用平均尝试次数作为难度值
         diff_map = dict(zip(df_diff["word"], df_diff["avg_trial"]))
 
     # 3. Tokenizer
@@ -542,7 +510,6 @@ def main_train():
     hist_test = build_history(test_df)
 
     # 6. Sliding samples
-    # X_set 结构：(seq, wid, bias, grid_seq, y_steps, y_succ)
     X_train = create_samples(hist_train, LOOK_BACK)
     X_val = create_samples(hist_val, LOOK_BACK)
     X_test = create_samples(hist_test, LOOK_BACK)
@@ -595,7 +562,6 @@ def main_train():
         callbacks=[early, wandb_logger]
     )
 
-    # 绘制并保存损失曲线
     loss_curve_path = "visualization/LSTM_loss_curve.png"
     plot_loss(train_history, loss_curve_path)
 
@@ -609,93 +575,28 @@ def main_train():
 
     # 验证评估
     print("\n=== Validation ===")
-    # X_val 结构: (seq, wid, bias, diff, grid_seq, y_steps, y_succ)
     val_mae, val_rmse, val_acc, val_auc = evaluate_model(model, X_val)
-
-    # 记录验证集指标到wandb
-    wandb.log({
-        "val_mae": val_mae,
-        "val_rmse": val_rmse,
-        "val_accuracy": val_acc,
-        "val_auc": val_auc
-    })
-
-    # 绘制验证集ROC曲线
-    val_pred_steps, val_pred_prob = model.predict({
-        "input_history": X_val[0],
-        "input_word_id": X_val[1],
-        "input_user_bias": X_val[2],
-        "input_difficulty": X_val[3],
-        "input_grid_sequence": X_val[4]
-    }, batch_size=1024, verbose=0)
-    val_roc_curve_path = "visualization/LSTM_validation_roc_curve.png"
-    plot_roc_curve(X_val[6], val_pred_prob.flatten(), val_roc_curve_path)
-    
-    # 绘制验证集散点图
-    val_scatter_path = "visualization/LSTM_validation_scatter.png"
-    plot_scatter(X_val[5], np.clip(val_pred_steps.flatten(), 0, 7), val_scatter_path, model_name="LSTM")
-    
-    try:
-        wandb.log({"validation_roc_curve": wandb.Image(val_roc_curve_path), "validation_scatter": wandb.Image(val_scatter_path)})
-    except Exception:
-        pass
+    wandb.log({"val_mae": val_mae, "val_rmse": val_rmse, "val_accuracy": val_acc, "val_auc": val_auc})
 
     # 测试评估
     print("\n=== Test ===")
     test_mae, test_rmse, test_acc, test_auc = evaluate_model(model, X_test)
+    wandb.log({"test_mae": test_mae, "test_rmse": test_rmse, "test_accuracy": test_acc, "test_auc": test_auc})
 
-    wandb.log({
-        "test_mae": test_mae,
-        "test_rmse": test_rmse,
-        "test_accuracy": test_acc,
-        "test_auc": test_auc
-    })
-
-    # 绘制测试集ROC曲线
-    test_pred_steps, test_pred_prob = model.predict({
-        "input_history": X_test[0],
-        "input_word_id": X_test[1],
-        "input_user_bias": X_test[2],
-        "input_difficulty": X_test[3],
-        "input_grid_sequence": X_test[4]
-    }, batch_size=1024, verbose=0)
-    test_roc_curve_path = "visualization/LSTM_test_roc_curve.png"
-    plot_roc_curve(X_test[6], test_pred_prob.flatten(), test_roc_curve_path)
-    
-    # 绘制测试集散点图
-    test_scatter_path = "visualization/LSTM_test_scatter.png"
-    plot_scatter(X_test[5], np.clip(test_pred_steps.flatten(), 0, 7), test_scatter_path, model_name="LSTM")
-    
-    try:
-        wandb.log({"test_roc_curve": wandb.Image(test_roc_curve_path), "test_scatter": wandb.Image(test_scatter_path)})
-    except Exception:
-        pass
-
-    # 生成大型误差统计
+    # 报告生成
     val_pred_steps, _ = model.predict({
-        "input_history": X_val[0],
-        "input_word_id": X_val[1],
-        "input_user_bias": X_val[2],
-        "input_difficulty": X_val[3],
-        "input_grid_sequence": X_val[4]
+        "input_history": X_val[0], "input_word_id": X_val[1], "input_user_bias": X_val[2], "input_difficulty": X_val[3], "input_grid_sequence": X_val[4]
     }, batch_size=1024, verbose=0)
-    val_pred_steps = val_pred_steps.flatten()
-    val_large_error_rate = compute_large_error_rate(X_val[5], np.clip(val_pred_steps, 0, 7), LARGE_ERROR_THRESHOLD)
+    val_large_error_rate = compute_large_error_rate(X_val[5], np.clip(val_pred_steps.flatten(), 0, 7), LARGE_ERROR_THRESHOLD)
 
     test_pred_steps, _ = model.predict({
-        "input_history": X_test[0],
-        "input_word_id": X_test[1],
-        "input_user_bias": X_test[2],
-        "input_difficulty": X_test[3],
-        "input_grid_sequence": X_test[4]
+        "input_history": X_test[0], "input_word_id": X_test[1], "input_user_bias": X_test[2], "input_difficulty": X_test[3], "input_grid_sequence": X_test[4]
     }, batch_size=1024, verbose=0)
-    test_pred_steps = test_pred_steps.flatten()
-    test_large_error_rate = compute_large_error_rate(X_test[5], np.clip(test_pred_steps, 0, 7), LARGE_ERROR_THRESHOLD)
+    test_large_error_rate = compute_large_error_rate(X_test[5], np.clip(test_pred_steps.flatten(), 0, 7), LARGE_ERROR_THRESHOLD)
 
-    # 格式化报告
     report = f"""
 ========================================
- LSTM Model Validation and Test Report 
+    LSTM Guess Sequence Model Report
 ========================================
 ---- Validation Set Metrics ----
 1. Mean Absolute Error (MAE)    : {val_mae:.4f}
@@ -712,23 +613,10 @@ def main_train():
 5. Large Error Rate (>{LARGE_ERROR_THRESHOLD} steps)  : {test_large_error_rate:.3%}
 ========================================
 """
-
     with open(REPORT_SAVE_PATH, "w", encoding="utf-8") as f:
         f.write(report)
-
-    print(f"\n📄 Report saved to: {REPORT_SAVE_PATH}")
     print(report)
-
-    wandb.log({
-        "val_large_error_rate": val_large_error_rate,
-        "test_large_error_rate": test_large_error_rate
-    })
-
-    # 结束 wandb 运行
     wandb.finish()
 
-# ==========================================================
-# 启动入口
-# ==========================================================
 if __name__ == "__main__":
     main_train()

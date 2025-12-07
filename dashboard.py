@@ -10,7 +10,6 @@ import tensorflow as tf
 import random
 import os
 from train_LSTM import (load_tokenizer as load_lstm_tokenizer, 
-                           parse_grid_sequence, 
                            attach_features as attach_lstm_features,
                            build_history as build_lstm_history,
                            focal_loss,
@@ -18,9 +17,8 @@ from train_LSTM import (load_tokenizer as load_lstm_tokenizer,
                            TOKENIZER_PATH as LSTM_TOKENIZER_PATH,
                            LOOK_BACK as LSTM_LOOK_BACK,
                            MAX_TRIES as LSTM_MAX_TRIES,
-                           GRID_SEQ_FEAT_DIM as LSTM_GRID_SEQ_FEAT_DIM)
+                           GRID_FEAT_LEN as LSTM_GRID_SEQ_FEAT_DIM)
 from train_transformer import (load_tokenizer as load_transformer_tokenizer,
-                                  encode_guess_sequence,
                                   attach_features as attach_transformer_features,
                                   build_history as build_transformer_history,
                                   TransformerBlock,

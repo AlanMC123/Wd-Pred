@@ -22,7 +22,7 @@ from tensorflow.keras.layers import (Input, Dense, Dropout, Embedding, Flatten,
 from tensorflow.keras.models import Model
 from tensorflow.keras.callbacks import EarlyStopping, Callback
 from tensorflow.keras.preprocessing.text import Tokenizer
-from sklearn.metrics import mean_absolute_error, mean_squared_error, accuracy_score, roc_auc_score, roc_curve, precision_recall_curve, f1_score
+from sklearn.metrics import mean_absolute_error, mean_squared_error, accuracy_score, precision_recall_curve
 from predict import plot_roc_curve, plot_scatter
 
 # ==========================================================
