@@ -1,18 +1,25 @@
 
 ========================================
- Transformer Validation and Test Report 
+ Transformer Model Report (Acc Constraint)
 ========================================
+Constraint: Accuracy must be >= 85.0%
+Optimal Probability Threshold Found: 0.6950
+
 ---- Validation Set Metrics ----
-1. Mean Absolute Error (MAE)    : 0.8555
-2. Root Mean Squared Error (RMSE)     : 1.0569
-3. Win/Loss Prediction Accuracy        : 97.295%
-4. Area Under ROC Curve (AUC)   : 0.8688
-5. Large Error Rate (>1.5 steps)  : 15.623%
+1. Mean Absolute Error (MAE)    : 0.8574
+2. Root Mean Squared Error (RMSE)     : 1.0595
+3. Win/Loss Prediction Accuracy        : 87.392% (Naive 0.5: 100.0%)
+4. Area Under ROC Curve (AUC)   : 0.8429
+5. Large Error Rate (>1.5)      : 15.709%
+6. Negative Class Precision     : 0.1215 (Predicted Loss correct rate)
+7. Negative Class Recall        : 0.5737 (Actual Loss detected rate)
 
 ---- Test Set Metrics ----
-1. Mean Absolute Error (MAE)    : 0.8219
-2. Root Mean Squared Error (RMSE)     : 1.0277
-3. Win/Loss Prediction Accuracy        : 97.319%
-4. Area Under ROC Curve (AUC)   : 0.8829
-5. Large Error Rate (>1.5 steps)  : 14.093%
+1. Mean Absolute Error (MAE)    : 0.8249
+2. Root Mean Squared Error (RMSE)     : 1.0317
+3. Win/Loss Prediction Accuracy        : 88.844%
+4. Area Under ROC Curve (AUC)   : 0.8631
+5. Large Error Rate (>1.5)      : 14.302%
+6. Negative Class Precision     : 0.1434
+7. Negative Class Recall        : 0.6069
 ========================================

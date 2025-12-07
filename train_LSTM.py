@@ -1,9 +1,11 @@
 """
-LSTM 多输入预测脚本 - 增强回归头版
+LSTM 多输入预测脚本 - "保底准确率"激进策略版
 直接运行即开始训练。
-利用早停、Dropout、L2正则化防止过拟合。
-修改记录：
-- 增强了 output_steps 回归头的复杂度，从单层 Dense 改为双层 Dense + Dropout 结构。
+
+核心修改：
+- [Threshold Strategy] 采用 "Accuracy Constrained Recall Maximization" 策略。
+  逻辑：在保证总体准确率 >= 85% (MIN_ACCURACY) 的前提下，寻找负类召回率最高的阈值。
+  这能最大限度地提升预警能力，同时防止模型“烂掉”。
 """
 
 import os
@@ -21,23 +23,29 @@ from tensorflow.keras.layers import (Input, Dense, Dropout, Embedding, Flatten,
 from tensorflow.keras.models import Model
 from tensorflow.keras.callbacks import EarlyStopping, Callback
 from tensorflow.keras.preprocessing.text import Tokenizer
-from sklearn.metrics import mean_absolute_error, mean_squared_error, accuracy_score
 from tensorflow.keras.regularizers import l2 
-
+from sklearn.metrics import (mean_absolute_error, mean_squared_error, 
+                             accuracy_score, precision_recall_curve, f1_score, 
+                             recall_score, precision_score, fbeta_score)
+from predict import calculate_auc_best
 
 # ==========================================================
 # 全局配置
 # ==========================================================
+
+# 核心参数：总体准确率的底线
+# 只要准确率高于这个数，我们就尽可能提高阈值去抓失败局
+MIN_ACCEPTABLE_ACCURACY = 0.85 
 
 # 数据集和特征文件路径
 TRAIN_FILE = "dataset/train_data.csv"
 VAL_FILE = "dataset/val_data.csv"
 TEST_FILE = "dataset/test_data.csv"
 PLAYER_FILE = "dataset/player_data.csv" 
-DIFFICULTY_FILE = "dataset/difficulty_data.csv"
+DIFFICULTY_FILE = "dataset/difficulty.csv"
 
 # 模型和报告输出路径
-MODEL_SAVE_PATH = "models/lstm/lstm_model.keras" # 修改保存文件名以区分
+MODEL_SAVE_PATH = "models/lstm/lstm_model.keras"
 TOKENIZER_PATH = "models/lstm/lstm_tokenizer.json"
 REPORT_SAVE_PATH = "outputs/lstm_output.txt"
 
@@ -60,7 +68,7 @@ OOV_TOKEN = "<OOV>"
 PATIENCE = 4
 
 # 损失函数权重
-LOSS_WEIGHTS = {"output_steps": 0.8, "output_success": 1}
+LOSS_WEIGHTS = {"output_steps": 0.8, "output_success": 1.0}
 
 # Focal Loss 超参数
 FOCAL_LOSS_ALPHA = 0.25
@@ -74,13 +82,12 @@ SEED = 42
 
 # Wordle固定参数
 MAX_TRIES = 6
-GRID_FEAT_LEN = 8 # 3个累积颜色特征 + 5个位置绿色特征
+GRID_FEAT_LEN = 8 
 
-# --------------------------
+# ==========================================================
 # 基本函数
-# --------------------------
+# ==========================================================
 def set_seed(seed):
-    """设置所有随机种子以确保可重复性"""
     random.seed(seed)
     np.random.seed(seed)
     tf.random.set_seed(seed)
@@ -103,23 +110,15 @@ def safe_read_csv(path, usecols=None):
 # 网格序列解析器
 # --------------------------
 def encode_guess_sequence(grid_cell):
-    """
-    将 grid 列表转换为一个时间序列特征矩阵。
-    返回形状为 (MAX_TRIES, GRID_FEAT_LEN) 的浮点矩阵。
-    """
     default_seq = np.zeros((MAX_TRIES, GRID_FEAT_LEN), dtype=np.float32)
-    if pd.isna(grid_cell):
-        return default_seq
+    if pd.isna(grid_cell): return default_seq
     try:
-        if isinstance(grid_cell, (list, tuple)):
-            grid_list = list(grid_cell)
+        if isinstance(grid_cell, (list, tuple)): grid_list = list(grid_cell)
         else:
             grid_list = ast.literal_eval(grid_cell)
-            if not isinstance(grid_list, (list, tuple)):
-                grid_list = [grid_list]
+            if not isinstance(grid_list, (list, tuple)): grid_list = [grid_list]
             grid_list = [str(r) for r in grid_list if isinstance(r, (str, bytes))]
-    except Exception:
-        return default_seq
+    except Exception: return default_seq
 
     num_rows = len(grid_list)
     cumulative_greens = 0
@@ -140,10 +139,8 @@ def encode_guess_sequence(grid_cell):
                     if ch == "🟩":
                         greens_t += 1
                         pos_green_counts_t[i] += 1.0
-                    elif ch == "🟨":
-                        yellows_t += 1
-                    elif ch == "⬜" or ch == "⬛":
-                        grays_t += 1
+                    elif ch == "🟨": yellows_t += 1
+                    elif ch == "⬜" or ch == "⬛": grays_t += 1
             cumulative_greens += greens_t
             cumulative_yellows += yellows_t
             cumulative_grays += grays_t
@@ -153,15 +150,12 @@ def encode_guess_sequence(grid_cell):
         feat[0] = cumulative_greens / norm_base_cells
         feat[1] = cumulative_yellows / norm_base_cells
         feat[2] = cumulative_grays / norm_base_cells
-        for i in range(5):
-            feat[3 + i] = cumulative_pos_green_counts[i] / norm_base_rows
+        for i in range(5): feat[3 + i] = cumulative_pos_green_counts[i] / norm_base_rows
         feature_sequence[t] = feat
-
     return feature_sequence
 
-
 # --------------------------
-# Tokenizer
+# Tokenizer & Features
 # --------------------------
 def fit_tokenizer(train_df):
     tokenizer = Tokenizer(oov_token=OOV_TOKEN, filters='', lower=True)
@@ -177,38 +171,25 @@ def load_tokenizer():
     tk.word_index = word_index
     return tk
 
-# --------------------------
-# 单词难度、用户偏置特征附加
-# --------------------------
 def attach_features(df, tokenizer, user_map, diff_map):
     df = df.copy()
     df["target"] = df["target"].astype(str)
-    # 单词 id
     seqs = tokenizer.texts_to_sequences(df["target"])
     df["word_id"] = [s[0] if s else 0 for s in seqs]
-    # 添加单词难度
     df["word_difficulty"] = df["target"].map(diff_map).fillna(4.0).astype(float)
     df["user_bias"] = df["Username"].map(user_map).fillna(4.0).astype(float)
-    # 解析 grid 序列
     if "processed_text" in df.columns:
         df["grid_seq"] = df["processed_text"].apply(encode_guess_sequence)
     else:
         df["grid_seq"] = [np.zeros((MAX_TRIES, GRID_FEAT_LEN), dtype=np.float32) for _ in range(len(df))]
-
     return df
 
-# ==========================================================
-# 损失函数 (Focal Loss 定义)
-# ==========================================================
-
+# --------------------------
+# Focal Loss
+# --------------------------
 def focal_loss(gamma=2.0, alpha=0.25):
-    """
-    Focal Loss for Binary Classification (sigmoid output).
-    Reference: Lin et al., 2017.
-    """
     gamma = float(gamma)
     alpha = float(alpha)
-
     def focal_loss_fixed(y_true, y_pred):
         epsilon = tf.keras.backend.epsilon()
         y_pred = tf.clip_by_value(y_pred, epsilon, 1.0 - epsilon)
@@ -218,15 +199,13 @@ def focal_loss(gamma=2.0, alpha=0.25):
         p_t = y_true * y_pred + (1 - y_true) * (1 - y_pred)
         modulating_factor = tf.pow(1.0 - p_t, gamma)
         alpha_factor = y_true * alpha + (1 - y_true) * (1.0 - alpha)
-        focal_loss = alpha_factor * modulating_factor * bce
-        return tf.reduce_mean(focal_loss)
-
+        loss = alpha_factor * modulating_factor * bce
+        return tf.reduce_mean(loss)
     focal_loss_fixed.__name__ = f'focal_loss(gamma={gamma},alpha={alpha})'
     return focal_loss_fixed
 
-
 # --------------------------
-# 历史建表
+# History & Samples
 # --------------------------
 def build_history(df) -> Dict[str, List[Tuple]]:
     hist = {}
@@ -240,87 +219,59 @@ def build_history(df) -> Dict[str, List[Tuple]]:
                    for _, r in g.iterrows()]
     return hist
 
-# --------------------------
-# 滑窗生成样本
-# --------------------------
 def create_samples(history, look_back):
     X_seq, X_wid, X_bias, X_diff, X_grid_seq, y_steps, y_succ = [], [], [], [], [], [], []
     for _, events in history.items():
-        if len(events) <= look_back:
-            continue
+        if len(events) <= look_back: continue
         for i in range(look_back, len(events)):
             window = events[i-look_back:i]
             target = events[i]
-
             trials = np.array([t[0] for t in window], np.float32)
             norm = trials / 7.0
             std = np.std(trials) / 7.0
-
             seq = np.stack([norm, np.full_like(norm, std)], axis=1)
             X_seq.append(seq)
             X_wid.append([target[1]])
             X_bias.append([target[2] / 7.0])
             X_diff.append([target[3] / 7.0])
             X_grid_seq.append(target[4]) 
-
             y_steps.append(min(float(target[0]), 7.0))
             y_succ.append(1.0 if target[0] <= 6 else 0.0)
 
     if not X_seq:
-        return (np.zeros((0, look_back, 2), np.float32),
-                np.zeros((0, 1), np.int32),
-                np.zeros((0, 1), np.float32),
-                np.zeros((0, 1), np.float32),
-                np.zeros((0, MAX_TRIES, GRID_FEAT_LEN), np.float32), 
-                np.zeros((0,), np.float32),
-                np.zeros((0,), np.float32))
+        return (np.zeros((0, look_back, 2), np.float32), np.zeros((0, 1), np.int32), np.zeros((0, 1), np.float32), np.zeros((0, 1), np.float32), np.zeros((0, MAX_TRIES, GRID_FEAT_LEN), np.float32), np.zeros((0,), np.float32), np.zeros((0,), np.float32))
 
-    return (
-        np.array(X_seq, np.float32),
-        np.array(X_wid, np.int32),
-        np.array(X_bias, np.float32),
-        np.array(X_diff, np.float32),
-        np.array(X_grid_seq, np.float32),
-        np.array(y_steps, np.float32),
-        np.array(y_succ, np.float32)
-    )
+    return (np.array(X_seq, np.float32), np.array(X_wid, np.int32), np.array(X_bias, np.float32), np.array(X_diff, np.float32), np.array(X_grid_seq, np.float32), np.array(y_steps, np.float32), np.array(y_succ, np.float32))
 
 # ==========================================================
-# LSTM 模型构建 (MODIFIED)
+# LSTM 模型构建
 # ==========================================================
 def build_model(look_back, vocab_size):
-    # 历史输入分支
     h_in = Input((look_back, 2), name="input_history")
     x = LSTM(LSTM_UNITS, kernel_regularizer=l2(L2_REG_FACTOR))(h_in)
     x = Dropout(DROPOUT_RATE)(x)
 
-    # 单词 ID
     wid_in = Input((1,), name="input_word_id", dtype="int32")
     wemb = Flatten()(Embedding(vocab_size, EMBEDDING_DIM)(wid_in))
 
-    # 用户偏置
     bias_in = Input((1,), name="input_user_bias")
     b1 = Dense(16, activation="relu", kernel_regularizer=l2(L2_REG_FACTOR))(bias_in)
 
-    # 单词难度
     diff_in = Input((1,), name="input_difficulty")
     d1 = Dense(16, activation="relu", kernel_regularizer=l2(L2_REG_FACTOR))(diff_in)
 
-    # Wordle 序列特征
     grid_seq_in = Input((MAX_TRIES, GRID_FEAT_LEN), name="input_grid_sequence")
     g_seq = LSTM(LSTM_UNITS // 4, kernel_regularizer=l2(L2_REG_FACTOR))(grid_seq_in)
     g_seq = Dropout(DROPOUT_RATE)(g_seq)
     g2 = Dense(16, activation="relu", kernel_regularizer=l2(L2_REG_FACTOR))(g_seq)
 
-    # 合并特征
     z = Concatenate()([x, wemb, b1, d1, g2])
     z = Dense(64, activation="relu", kernel_regularizer=l2(L2_REG_FACTOR))(z)
     z = Dropout(DROPOUT_RATE)(z)
 
-
-    # 回归头
+    # 回归头 (Enhanced)
     steps_feat = Dense(64, activation="relu", kernel_regularizer=l2(L2_REG_FACTOR))(z)
-    steps_feat = Dropout(0.3)(steps_feat)  # 适度的 Dropout 防止回归过拟合
+    steps_feat = Dropout(0.3)(steps_feat)
     steps_feat = Dense(32, activation="relu", kernel_regularizer=l2(L2_REG_FACTOR))(steps_feat)
     out_steps = Dense(1, "linear", name="output_steps")(steps_feat)
 
@@ -330,16 +281,9 @@ def build_model(look_back, vocab_size):
     succ = Dense(32, activation="relu", kernel_regularizer=l2(L2_REG_FACTOR))(succ)
     out_succ = Dense(1, activation="sigmoid", name="output_success")(succ)
 
-    # 编译
-    model = Model(
-        [h_in, wid_in, bias_in, diff_in, grid_seq_in],
-        [out_steps, out_succ]
-    )
-
+    model = Model([h_in, wid_in, bias_in, diff_in, grid_seq_in], [out_steps, out_succ])
     model.compile(
         optimizer=tf.keras.optimizers.Adam(LEARNING_RATE),
-
-        # 使用 Focal Loss
         loss={
             "output_steps": "mae",
             "output_success": focal_loss(alpha=FOCAL_LOSS_ALPHA, gamma=FOCAL_LOSS_GAMMA)
@@ -347,38 +291,113 @@ def build_model(look_back, vocab_size):
         loss_weights=LOSS_WEIGHTS,
         metrics={"output_success": "accuracy"}
     )
-
     return model
 
 # ==========================================================
-# 评估函数
+# 激进阈值寻优 (Aggressive Threshold Strategy)
 # ==========================================================
-def evaluate_model(model, Xs):
-    # Xs 结构: (seq, wid, bias, diff, grid_seq, y_steps, y_succ)
-    X_seq, X_wid, X_bias, X_diff, X_grid_seq, y_steps, y_succ = Xs
 
+def find_optimal_threshold(y_true, y_prob):
+    """
+    [保底激进版] 
+    策略：寻找能够最大化负类召回率(抓出更多输局)的阈值，
+    但在该阈值下，总体准确率(Accuracy)不能低于 MIN_ACCEPTABLE_ACCURACY (如 0.85)。
+    """
+    min_acc = MIN_ACCEPTABLE_ACCURACY
+    
+    # 搜索范围：0.50 到 0.99
+    thresholds = np.arange(0.5, 0.99, 0.005)
+    
+    print(f"   > Searching threshold: Max Negative Recall s.t. Accuracy >= {min_acc:.1%}...")
+    print(f"     (Threshold | Acc | Neg_Recall)")
+    
+    candidates = []
+    
+    for thresh in thresholds:
+        y_pred = (y_prob >= thresh).astype(int)
+        
+        # 计算总体准确率
+        acc = accuracy_score(y_true, y_pred)
+        
+        # 计算负类召回率 (pos_label=0)
+        neg_rec = recall_score(y_true, y_pred, pos_label=0, zero_division=0)
+        
+        candidates.append((thresh, acc, neg_rec))
+        
+        if int(thresh * 100) % 5 == 0:
+            print(f"      {thresh:.3f}     | {acc:.4f} | {neg_rec:.4f}")
+            
+    # 1. 筛选出所有满足 Accuracy >= min_acc 的点
+    valid_candidates = [x for x in candidates if x[1] >= min_acc]
+    
+    if valid_candidates:
+        # 2. 在满足条件点中，选 Neg_Recall 最高的
+        best_candidate = max(valid_candidates, key=lambda x: x[2])
+        best_thresh = best_candidate[0]
+        final_acc = best_candidate[1]
+        final_rec = best_candidate[2]
+        print(f"   [Auto-Threshold] FOUND: {best_thresh:.4f} (Acc: {final_acc:.2%}, Neg_Recall: {final_rec:.2%})")
+        return best_thresh
+    else:
+        # 3. 如果没有任何点满足准确率要求，则退回到 Acc 最高的点（防止模型完全不可用）
+        print("   [Auto-Threshold] WARNING: No threshold met min accuracy. Reverting to Max Accuracy.")
+        best_candidate = max(candidates, key=lambda x: x[1])
+        return best_candidate[0]
+
+def calculate_failure_miss_rate(y_true_steps, pred_prob, threshold):
+    """计算实际失败样本的漏报率"""
+    y_true_steps = y_true_steps.flatten()
+    pred_prob = pred_prob.flatten()
+    actual_failures_mask = (y_true_steps > 6.0)
+    total_failures = np.sum(actual_failures_mask)
+    if total_failures == 0: return 0.0
+    false_wins = (pred_prob[actual_failures_mask] > threshold)
+    return np.sum(false_wins) / total_failures
+
+def evaluate_model(model, Xs, fixed_threshold=None):
+    X_seq, X_wid, X_bias, X_diff, X_grid_seq, y_steps, y_succ = Xs
     pred_steps, pred_prob = model.predict({
-        "input_history": X_seq,
-        "input_word_id": X_wid,
-        "input_user_bias": X_bias,
-        "input_difficulty": X_diff,
+        "input_history": X_seq, "input_word_id": X_wid,
+        "input_user_bias": X_bias, "input_difficulty": X_diff,
         "input_grid_sequence": X_grid_seq
     }, batch_size=1024, verbose=1)
 
     pred_steps = pred_steps.flatten()
     pred_prob = pred_prob.flatten()
 
+    # 1. 基础回归指标
     mae = mean_absolute_error(y_steps, np.clip(pred_steps, 0, 7))
     rmse = np.sqrt(mean_squared_error(y_steps, np.clip(pred_steps, 0, 7)))
-    acc = accuracy_score(y_succ.astype(int), (pred_prob >= 0.5).astype(int))
 
-    from predict import calculate_auc_best
-    auc_value, _, _ = calculate_auc_best(y_succ, pred_prob)
-    auc = auc_value
+    # 2. AUC
+    auc, _, _ = calculate_auc_best(y_succ, pred_prob)
 
-    print(f"MAE={mae:.4f}, RMSE={rmse:.4f}, ACC={acc:.4f}, AUC={auc:.4f}")
-    return mae, rmse, acc, auc
+    # 3. 智能阈值逻辑
+    if fixed_threshold is None:
+        # 在验证阶段自动寻优
+        used_threshold = find_optimal_threshold(y_succ, pred_prob)
+    else:
+        print(f"   > Using provided fixed threshold: {fixed_threshold:.4f}")
+        used_threshold = fixed_threshold
 
+    # 4. 计算指标
+    y_pred_smart = (pred_prob >= used_threshold).astype(int)
+    
+    smart_acc = accuracy_score(y_succ.astype(int), y_pred_smart)
+    smart_fmr = calculate_failure_miss_rate(y_steps, pred_prob, used_threshold)
+    
+    # 5. 负类指标 (Class 0 = Failure)
+    neg_precision = precision_score(y_succ.astype(int), y_pred_smart, pos_label=0, zero_division=0)
+    neg_recall = recall_score(y_succ.astype(int), y_pred_smart, pos_label=0, zero_division=0)
+
+    # 对比用的 naive (0.5) 指标
+    naive_fmr = calculate_failure_miss_rate(y_steps, pred_prob, 0.5)
+
+    print(f"   [Metrics] MAE={mae:.4f}, RMSE={rmse:.4f}, AUC={auc:.4f}")
+    print(f"   [Smart {used_threshold:.3f}] ACC={smart_acc:.4f}, MissRate={smart_fmr:.2%}")
+    print(f"   [Negative Class] Precision={neg_precision:.4f}, Recall={neg_recall:.4f}")
+
+    return mae, rmse, smart_acc, auc, used_threshold, smart_fmr, naive_fmr, neg_precision, neg_recall
 
 def compute_large_error_rate(y_true, y_pred, threshold):
     errors = np.abs(y_true - y_pred)
@@ -386,8 +405,6 @@ def compute_large_error_rate(y_true, y_pred, threshold):
 
 def plot_loss(history, save_path_base):
     save_dir = os.path.dirname(save_path_base) or "."
-    
-    # Total Loss
     plt.figure(figsize=(6, 6))
     plt.plot(history.history['loss'], label='Training Total Loss')
     if 'val_loss' in history.history:
@@ -398,55 +415,13 @@ def plot_loss(history, save_path_base):
     plt.legend()
     plt.grid(True, alpha=0.3)
     plt.tight_layout()
-    total_loss_path = os.path.join(save_dir, "LSTM_total_loss_curve.png")
-    plt.savefig(total_loss_path, dpi=300, bbox_inches='tight')
-    plt.close()
-    
-    # Steps Loss
-    plt.figure(figsize=(6, 6))
-    if 'output_steps_loss' in history.history:
-        plt.plot(history.history['output_steps_loss'], label='Training Steps Loss')
-        if 'val_output_steps_loss' in history.history:
-            plt.plot(history.history['val_output_steps_loss'], label='Validation Steps Loss')
-    plt.title('Steps Prediction Component Loss (MAE)')
-    plt.xlabel('Epochs')
-    plt.ylabel('Loss (MAE)')
-    plt.legend()
-    plt.grid(True, alpha=0.3)
-    plt.tight_layout()
-    steps_loss_path = os.path.join(save_dir, "LSTM_steps_loss_curve.png")
-    plt.savefig(steps_loss_path, dpi=300, bbox_inches='tight')
+    plt.savefig(os.path.join(save_dir, "LSTM_total_loss_curve.png"), dpi=300, bbox_inches='tight')
     plt.close()
 
-    # Success Loss
-    plt.figure(figsize=(6, 6))
-    if 'output_success_loss' in history.history:
-        plt.plot(history.history['output_success_loss'], label='Training Success Loss')
-        if 'val_output_success_loss' in history.history:
-            plt.plot(history.history['val_output_success_loss'], label='Validation Success Loss')
-    plt.title('Success Prediction Component Loss (Focal Loss)')
-    plt.xlabel('Epochs')
-    plt.ylabel('Loss (Focal Loss)')
-    plt.legend()
-    plt.grid(True, alpha=0.3)
-    plt.tight_layout()
-    success_loss_path = os.path.join(save_dir, "LSTM_success_loss_curve.png")
-    plt.savefig(success_loss_path, dpi=300, bbox_inches='tight')
-    plt.close()
-
-# ==========================================================
-# WandB-safe Keras Callback
-# ==========================================================
 class WandbEpochLogger(Callback):
-    def __init__(self):
-        super().__init__()
-
     def on_epoch_end(self, epoch, logs=None):
-        if logs is None:
-            logs = {}
-        metrics = {k: float(v) for k, v in logs.items()}
-        metrics["epoch"] = int(epoch)
-        wandb.log(metrics, step=epoch)
+        if logs:
+            wandb.log({k: float(v) for k, v in logs.items()}, step=epoch)
 
 # ==========================================================
 # 主程序
@@ -457,18 +432,15 @@ def main_train():
 
     wandb.init(
         project="word-difficulty-prediction",
-        name="lstm-model-complex-reg",
+        name="lstm-acc-constrained",
         config={
-            "model_type": "LSTM_Complex_Reg",
+            "model_type": "LSTM (Accuracy Constrained Strategy)",
+            "min_accuracy": MIN_ACCEPTABLE_ACCURACY,
             "look_back": LOOK_BACK,
             "batch_size": BATCH_SIZE,
             "epochs": EPOCHS,
             "learning_rate": LEARNING_RATE,
-            "lstm_units": LSTM_UNITS,
-            "dropout_rate": DROPOUT_RATE,
-            "embedding_dim": EMBEDDING_DIM,
-            "seed": SEED,
-            "GRID_FEAT_LEN": GRID_FEAT_LEN
+            "focal_gamma": FOCAL_LOSS_GAMMA
         },
         settings=wandb.Settings(_disable_stats=True)
     )
@@ -479,13 +451,13 @@ def main_train():
     except Exception:
         pass
 
-    # 1. 数据读取
-    use_cols_list = ["Game", "Trial", "Username", "target", "processed_text"]
-    train_df = safe_read_csv(TRAIN_FILE, usecols=use_cols_list)
-    val_df = safe_read_csv(VAL_FILE, usecols=use_cols_list)
-    test_df = safe_read_csv(TEST_FILE, usecols=use_cols_list)
+    # 1. Load Data
+    use_cols = ["Game", "Trial", "Username", "target", "processed_text"]
+    train_df = safe_read_csv(TRAIN_FILE, use_cols)
+    val_df = safe_read_csv(VAL_FILE, use_cols)
+    test_df = safe_read_csv(TEST_FILE, use_cols)
 
-    # 2. 难度/用户水平
+    # 2. Maps
     user_map = {}
     if os.path.exists(PLAYER_FILE):
         pdf = pd.read_csv(PLAYER_FILE)
@@ -496,126 +468,103 @@ def main_train():
         df_diff = pd.read_csv(DIFFICULTY_FILE)
         diff_map = dict(zip(df_diff["word"], df_diff["avg_trial"]))
 
-    # 3. Tokenizer
+    # 3. Features
     tokenizer = fit_tokenizer(train_df)
-
-    # 4. 附加特征
     train_df = attach_features(train_df, tokenizer, user_map, diff_map)
     val_df = attach_features(val_df, tokenizer, user_map, diff_map)
     test_df = attach_features(test_df, tokenizer, user_map, diff_map)
 
-    # 5. 构建用户历史行为序列
     hist_train = build_history(train_df)
     hist_val = build_history(val_df)
     hist_test = build_history(test_df)
 
-    # 6. Sliding samples
     X_train = create_samples(hist_train, LOOK_BACK)
     X_val = create_samples(hist_val, LOOK_BACK)
     X_test = create_samples(hist_test, LOOK_BACK)
 
     print(f"Train={len(X_train[0])}, Val={len(X_val[0])}, Test={len(X_test[0])}")
 
+    # 4. Model
     vocab_size = len(tokenizer.word_index) + 1
-
-    # 7. 模型构建
     model = build_model(LOOK_BACK, vocab_size)
     model.summary()
 
-    # 8. TF dataset
     train_ds = tf.data.Dataset.from_tensor_slices((
-        {
-            "input_history": X_train[0],
-            "input_word_id": X_train[1],
-            "input_user_bias": X_train[2],
-            "input_difficulty": X_train[3],
-            "input_grid_sequence": X_train[4]
-        },
-        {
-            "output_steps": X_train[5],
-            "output_success": X_train[6]
-        }
+        {"input_history": X_train[0], "input_word_id": X_train[1], "input_user_bias": X_train[2], "input_difficulty": X_train[3], "input_grid_sequence": X_train[4]},
+        {"output_steps": X_train[5], "output_success": X_train[6]}
     )).shuffle(20000).batch(BATCH_SIZE).prefetch(tf.data.AUTOTUNE)
 
     val_ds = tf.data.Dataset.from_tensor_slices((
-        {
-            "input_history": X_val[0],
-            "input_word_id": X_val[1],
-            "input_user_bias": X_val[2],
-            "input_difficulty": X_val[3],
-            "input_grid_sequence": X_val[4]
-        },
-        {
-            "output_steps": X_val[5],
-            "output_success": X_val[6]
-        }
+        {"input_history": X_val[0], "input_word_id": X_val[1], "input_user_bias": X_val[2], "input_difficulty": X_val[3], "input_grid_sequence": X_val[4]},
+        {"output_steps": X_val[5], "output_success": X_val[6]}
     )).batch(BATCH_SIZE).prefetch(tf.data.AUTOTUNE)
 
-    # 9. 训练
     early = EarlyStopping(monitor="val_loss", patience=PATIENCE, restore_best_weights=True)
     wandb_logger = WandbEpochLogger()
-
-    train_history = model.fit(
-        train_ds,
-        validation_data=val_ds,
-        epochs=EPOCHS,
-        callbacks=[early, wandb_logger]
-    )
-
-    loss_curve_path = "visualization/LSTM_loss_curve.png"
-    plot_loss(train_history, loss_curve_path)
-
-    try:
-        wandb.log({"loss_curve": wandb.Image(loss_curve_path)})
-    except Exception:
-        pass
-
+    train_history = model.fit(train_ds, validation_data=val_ds, epochs=EPOCHS, callbacks=[early, wandb_logger])
+    
+    plot_loss(train_history, "visualization/LSTM_loss_curve.png")
     model.save(MODEL_SAVE_PATH)
     print(f"Model saved to {MODEL_SAVE_PATH}")
 
-    # 验证评估
-    print("\n=== Validation ===")
-    val_mae, val_rmse, val_acc, val_auc = evaluate_model(model, X_val)
-    wandb.log({"val_mae": val_mae, "val_rmse": val_rmse, "val_accuracy": val_acc, "val_auc": val_auc})
+    # 5. Validation Eval (Find Best Threshold)
+    print("\n=== Validation Evaluation (Finding Aggressive Threshold) ===")
+    val_mae, val_rmse, val_acc, val_auc, optimal_thresh, val_sfmr, val_nfmr, val_nprec, val_nrec = evaluate_model(model, X_val, fixed_threshold=None)
+    
+    # 6. Test Eval (Apply Threshold)
+    print(f"\n=== Test Evaluation (Applying Threshold {optimal_thresh:.4f}) ===")
+    test_mae, test_rmse, test_acc, test_auc, _, test_sfmr, test_nfmr, test_nprec, test_nrec = evaluate_model(model, X_test, fixed_threshold=optimal_thresh)
 
-    # 测试评估
-    print("\n=== Test ===")
-    test_mae, test_rmse, test_acc, test_auc = evaluate_model(model, X_test)
-    wandb.log({"test_mae": test_mae, "test_rmse": test_rmse, "test_accuracy": test_acc, "test_auc": test_auc})
-
-    # 报告生成
+    # 7. Large Error Rate
     val_pred_steps, _ = model.predict({
         "input_history": X_val[0], "input_word_id": X_val[1], "input_user_bias": X_val[2], "input_difficulty": X_val[3], "input_grid_sequence": X_val[4]
     }, batch_size=1024, verbose=0)
-    val_large_error_rate = compute_large_error_rate(X_val[5], np.clip(val_pred_steps.flatten(), 0, 7), LARGE_ERROR_THRESHOLD)
-
+    val_large_err = compute_large_error_rate(X_val[5], np.clip(val_pred_steps.flatten(), 0, 7), LARGE_ERROR_THRESHOLD)
+    
     test_pred_steps, _ = model.predict({
         "input_history": X_test[0], "input_word_id": X_test[1], "input_user_bias": X_test[2], "input_difficulty": X_test[3], "input_grid_sequence": X_test[4]
     }, batch_size=1024, verbose=0)
-    test_large_error_rate = compute_large_error_rate(X_test[5], np.clip(test_pred_steps.flatten(), 0, 7), LARGE_ERROR_THRESHOLD)
+    test_large_err = compute_large_error_rate(X_test[5], np.clip(test_pred_steps.flatten(), 0, 7), LARGE_ERROR_THRESHOLD)
 
+    # 8. Reporting
     report = f"""
 ========================================
-    LSTM Guess Sequence Model Report
+   LSTM Model Report (Acc Constrained)
 ========================================
+Constraint: Accuracy must be >= {MIN_ACCEPTABLE_ACCURACY:.1%}
+Optimal Probability Threshold Found: {optimal_thresh:.4f}
+
 ---- Validation Set Metrics ----
-1. Mean Absolute Error (MAE)    : {val_mae:.4f}
-2. Root Mean Squared Error (RMSE)     : {val_rmse:.4f}
-3. Win/Loss Prediction Accuracy        : {val_acc:.3%}
-4. Area Under ROC Curve (AUC)   : {val_auc:.4f}
-5. Large Error Rate (>{LARGE_ERROR_THRESHOLD} steps)  : {val_large_error_rate:.3%}
+1. MAE                          : {val_mae:.4f}
+2. RMSE                         : {val_rmse:.4f}
+3. AUC                          : {val_auc:.4f}
+4. Accuracy (Smart)             : {val_acc:.3%}
+5. Failure Miss Rate (Smart)    : {val_sfmr:.2%} 
+   (Naive 0.5 Miss Rate: {val_nfmr:.2%})
+6. Large Error Rate (>1.5)      : {val_large_err:.3%}
+7. Negative Class Precision     : {val_nprec:.4f}
+8. Negative Class Recall        : {val_nrec:.4f}
 
 ---- Test Set Metrics ----
-1. Mean Absolute Error (MAE)    : {test_mae:.4f}
-2. Root Mean Squared Error (RMSE)     : {test_rmse:.4f}
-3. Win/Loss Prediction Accuracy        : {test_acc:.3%}
-4. Area Under ROC Curve (AUC)   : {test_auc:.4f}
-5. Large Error Rate (>{LARGE_ERROR_THRESHOLD} steps)  : {test_large_error_rate:.3%}
+1. MAE                          : {test_mae:.4f}
+2. RMSE                         : {test_rmse:.4f}
+3. AUC                          : {test_auc:.4f}
+4. Accuracy (Smart)             : {test_acc:.3%}
+5. Failure Miss Rate (Smart)    : {test_sfmr:.2%}
+   (Naive 0.5 Miss Rate: {test_nfmr:.2%})
+6. Large Error Rate (>1.5)      : {test_large_err:.3%}
+7. Negative Class Precision     : {test_nprec:.4f}
+8. Negative Class Recall        : {test_nrec:.4f}
 ========================================
 """
     with open(REPORT_SAVE_PATH, "w", encoding="utf-8") as f:
         f.write(report)
     print(report)
+    wandb.log({
+        "val_mae": val_mae, "val_rmse": val_rmse, "val_auc": val_auc, "val_smart_acc": val_acc, "val_neg_rec": val_nrec,
+        "test_mae": test_mae, "test_rmse": test_rmse, "test_auc": test_auc, "test_smart_acc": test_acc, "test_neg_rec": test_nrec,
+        "optimal_threshold": optimal_thresh
+    })
     wandb.finish()
 
 if __name__ == "__main__":

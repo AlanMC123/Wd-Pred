@@ -1,0 +1,16 @@
+{
+  "os": "Windows-11-10.0.26100-SP0",
+  "python": "CPython 3.12.9",
+  "startedAt": "2025-12-07T12:24:13.231063Z",
+  "program": "f:\\Codes\\Wd-Pred\\train_transformer.py",
+  "codePath": "train_transformer.py",
+  "codePathLocal": "train_transformer.py",
+  "git": {
+    "remote": "https://github.com/AlanMC123/Wd-Pred.git",
+    "commit": "65d6cefea9c12cb7039f79245e506a3f9399ebba"
+  },
+  "root": "F:\\Codes\\Wd-Pred",
+  "host": "KanchoTX5Pro",
+  "executable": "D:\\Python\\Python312\\python.exe",
+  "writerId": "2rrsg00w3bijvl6g9bbh8k6ji1e61m33"
+}

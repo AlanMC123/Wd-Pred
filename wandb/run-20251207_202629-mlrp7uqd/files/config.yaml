@@ -1,0 +1,56 @@
+_wandb:
+    value:
+        cli_version: 0.23.0
+        e:
+            oykem1gnxjp4bxu1qnv8p28pmvf86so6:
+                codePath: train_LSTM.py
+                codePathLocal: train_LSTM.py
+                executable: D:\Python\Python312\python.exe
+                git:
+                    commit: 65d6cefea9c12cb7039f79245e506a3f9399ebba
+                    remote: https://github.com/AlanMC123/Wd-Pred.git
+                host: KanchoTX5Pro
+                os: Windows-11-10.0.26100-SP0
+                program: f:\Codes\Wd-Pred\train_LSTM.py
+                python: CPython 3.12.9
+                root: F:\Codes\Wd-Pred
+                startedAt: "2025-12-07T12:26:29.113371Z"
+                writerId: oykem1gnxjp4bxu1qnv8p28pmvf86so6
+        m: []
+        python_version: 3.12.9
+        t:
+            "1":
+                - 2
+                - 3
+                - 5
+                - 49
+                - 53
+            "2":
+                - 2
+                - 3
+                - 5
+                - 49
+                - 53
+            "3":
+                - 2
+                - 13
+                - 16
+                - 61
+            "4": 3.12.9
+            "5": 0.23.0
+            "8":
+                - 3
+            "12": 0.23.0
+            "13": windows-amd64
+batch_size:
+    value: 1024
+epochs:
+    value: 40
+look_back:
+    value: 5
+lstm_units:
+    value: 56
+model_type:
+    value: LSTM_Smart_Threshold
+note:
+    value: Includes automated threshold finding for optimistic predictions

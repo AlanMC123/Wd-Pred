@@ -1,0 +1,43 @@
+_wandb:
+    value:
+        cli_version: 0.23.0
+        e:
+            st1r8i5xyxq7fbzckkwltb7dmbd3c0db:
+                codePath: train_transformer.py
+                codePathLocal: train_transformer.py
+                executable: D:\Python\Python312\python.exe
+                git:
+                    commit: 65d6cefea9c12cb7039f79245e506a3f9399ebba
+                    remote: https://github.com/AlanMC123/Wd-Pred.git
+                host: KanchoTX5Pro
+                os: Windows-11-10.0.26100-SP0
+                program: f:\Codes\Wd-Pred\train_transformer.py
+                python: CPython 3.12.9
+                root: F:\Codes\Wd-Pred
+                startedAt: "2025-12-07T13:40:36.036238Z"
+                writerId: st1r8i5xyxq7fbzckkwltb7dmbd3c0db
+        m: []
+        python_version: 3.12.9
+        t:
+            "1":
+                - 2
+                - 3
+                - 5
+                - 49
+                - 53
+            "2":
+                - 2
+                - 3
+                - 5
+                - 49
+                - 53
+            "3":
+                - 2
+                - 13
+                - 61
+            "4": 3.12.9
+            "5": 0.23.0
+            "8":
+                - 3
+            "12": 0.23.0
+            "13": windows-amd64

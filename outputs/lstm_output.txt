@@ -1,18 +1,29 @@
 
 ========================================
- LSTM Model Validation and Test Report 
+   LSTM Model Report (Acc Constrained)
 ========================================
+Constraint: Accuracy must be >= 85.0%
+Optimal Probability Threshold Found: 0.6900
+
 ---- Validation Set Metrics ----
-1. Mean Absolute Error (MAE)    : 0.8486
-2. Root Mean Squared Error (RMSE)     : 1.0533
-3. Win/Loss Prediction Accuracy        : 97.271%
-4. Area Under ROC Curve (AUC)   : 0.8353
-5. Large Error Rate (>1.5 steps)  : 15.374%
+1. MAE                          : 0.8489
+2. RMSE                         : 1.0565
+3. AUC                          : 0.8357
+4. Accuracy (Smart)             : 86.040%
+5. Failure Miss Rate (Smart)    : 39.90% 
+   (Naive 0.5 Miss Rate: 94.80%)
+6. Large Error Rate (>1.5)      : 15.712%
+7. Negative Class Precision     : 0.1141
+8. Negative Class Recall        : 0.6010
 
 ---- Test Set Metrics ----
-1. Mean Absolute Error (MAE)    : 0.8166
-2. Root Mean Squared Error (RMSE)     : 1.0237
-3. Win/Loss Prediction Accuracy        : 97.303%
-4. Area Under ROC Curve (AUC)   : 0.8613
-5. Large Error Rate (>1.5 steps)  : 13.965%
+1. MAE                          : 0.8153
+2. RMSE                         : 1.0254
+3. AUC                          : 0.8617
+4. Accuracy (Smart)             : 87.913%
+5. Failure Miss Rate (Smart)    : 39.31%
+   (Naive 0.5 Miss Rate: 94.22%)
+6. Large Error Rate (>1.5)      : 14.446%
+7. Negative Class Precision     : 0.1329
+8. Negative Class Recall        : 0.6069
 ========================================
