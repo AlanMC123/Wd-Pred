@@ -1,27 +1,27 @@
-Wordle游戏难度分析结果
+Wordle Game Difficulty Analysis Results
 ========================================
-平均尝试次数最多的10个词(从难到易):
+Top 10 words with highest average tries (from difficult to easy):
 ----------------------------------------
-PARER: 5.49次, 失败率: 24.96%
-MUMMY: 5.39次, 失败率: 19.23%
-COYLY: 5.25次, 失败率: 15.63%
-GAWKY: 5.00次, 失败率: 11.32%
-DANDY: 4.91次, 失败率: 8.66%
-FLUFF: 4.90次, 失败率: 4.30%
-PROXY: 4.88次, 失败率: 20.03%
-GULLY: 4.87次, 失败率: 5.35%
-LOWLY: 4.86次, 失败率: 18.17%
-IONIC: 4.83次, 失败率: 9.41%
+PARER: 5.49 tries, failure rate: 24.96%
+MUMMY: 5.39 tries, failure rate: 19.23%
+COYLY: 5.25 tries, failure rate: 15.63%
+GAWKY: 5.00 tries, failure rate: 11.32%
+DANDY: 4.91 tries, failure rate: 8.66%
+FLUFF: 4.90 tries, failure rate: 4.30%
+PROXY: 4.88 tries, failure rate: 20.03%
+GULLY: 4.87 tries, failure rate: 5.35%
+LOWLY: 4.86 tries, failure rate: 18.17%
+IONIC: 4.83 tries, failure rate: 9.41%
 
-平均尝试次数最少的10个词(从易到难):
+Top 10 words with lowest average tries (from easy to difficult):
 ----------------------------------------
-RAINY: 3.48次, 失败率: 0.27%
-TREAT: 3.55次, 失败率: 0.48%
-TRAIN: 3.59次, 失败率: 0.79%
-DREAM: 3.60次, 失败率: 0.47%
-CHUTE: 3.60次, 失败率: 0.27%
-ALIEN: 3.62次, 失败率: 0.54%
-STALE: 3.63次, 失败率: 1.25%
-ALOUD: 3.63次, 失败率: 0.58%
-SLOTH: 3.65次, 失败率: 0.54%
-PHASE: 3.66次, 失败率: 0.32%
+RAINY: 3.48 tries, failure rate: 0.27%
+TREAT: 3.55 tries, failure rate: 0.48%
+TRAIN: 3.59 tries, failure rate: 0.79%
+DREAM: 3.60 tries, failure rate: 0.47%
+CHUTE: 3.60 tries, failure rate: 0.27%
+ALIEN: 3.62 tries, failure rate: 0.54%
+STALE: 3.63 tries, failure rate: 1.25%
+ALOUD: 3.63 tries, failure rate: 0.58%
+SLOTH: 3.65 tries, failure rate: 0.54%
+PHASE: 3.66 tries, failure rate: 0.32%

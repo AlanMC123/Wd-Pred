@@ -1,0 +1,26 @@
+2025-12-02 16:03:36,553 INFO    MainThread:39032 [wandb_setup.py:_flush():80] Current SDK version is 0.23.0
+2025-12-02 16:03:36,553 INFO    MainThread:39032 [wandb_setup.py:_flush():80] Configure stats pid to 39032
+2025-12-02 16:03:36,553 INFO    MainThread:39032 [wandb_setup.py:_flush():80] Loading settings from C:\Users\Asus\.config\wandb\settings
+2025-12-02 16:03:36,553 INFO    MainThread:39032 [wandb_setup.py:_flush():80] Loading settings from F:\Codes\Wd-Pred\wandb\settings
+2025-12-02 16:03:36,553 INFO    MainThread:39032 [wandb_setup.py:_flush():80] Loading settings from environment variables
+2025-12-02 16:03:36,553 INFO    MainThread:39032 [wandb_init.py:setup_run_log_directory():713] Logging user logs to F:\Codes\Wd-Pred\wandb\run-20251202_160336-v5d5l0ve\logs\debug.log
+2025-12-02 16:03:36,554 INFO    MainThread:39032 [wandb_init.py:setup_run_log_directory():714] Logging internal logs to F:\Codes\Wd-Pred\wandb\run-20251202_160336-v5d5l0ve\logs\debug-internal.log
+2025-12-02 16:03:36,554 INFO    MainThread:39032 [wandb_init.py:init():840] calling init triggers
+2025-12-02 16:03:36,554 INFO    MainThread:39032 [wandb_init.py:init():845] wandb.init called with sweep_config: {}
+config: {'model_type': 'Transformer (Guess Seq) - fixed', 'look_back': 5, 'batch_size': 1024, 'epochs': 20, 'learning_rate': 0.0002, 'project_dim': 16, 'num_heads': 6, 'ff_dim': 16, 'transformer_layers': 1, 'dropout_rate': 0.45, 'embedding_dim': 16, 'seed': 42, 'guess_sequence_len': 6, 'guess_feat_len': 8, '_wandb': {}}
+2025-12-02 16:03:36,554 INFO    MainThread:39032 [wandb_init.py:init():888] starting backend
+2025-12-02 16:03:37,495 INFO    MainThread:39032 [wandb_init.py:init():891] sending inform_init request
+2025-12-02 16:03:37,536 INFO    MainThread:39032 [wandb_init.py:init():899] backend started and connected
+2025-12-02 16:03:37,558 INFO    MainThread:39032 [wandb_init.py:init():969] updated telemetry
+2025-12-02 16:03:37,620 INFO    MainThread:39032 [wandb_init.py:init():993] communicating run to backend with 90.0 second timeout
+2025-12-02 16:03:38,601 INFO    MainThread:39032 [wandb_init.py:init():1040] starting run threads in backend
+2025-12-02 16:03:38,703 INFO    MainThread:39032 [wandb_run.py:_console_start():2504] atexit reg
+2025-12-02 16:03:38,703 INFO    MainThread:39032 [wandb_run.py:_redirect():2352] redirect: wrap_raw
+2025-12-02 16:03:38,703 INFO    MainThread:39032 [wandb_run.py:_redirect():2421] Wrapping output streams.
+2025-12-02 16:03:38,703 INFO    MainThread:39032 [wandb_run.py:_redirect():2444] Redirects installed.
+2025-12-02 16:03:38,710 INFO    MainThread:39032 [wandb_init.py:init():1080] run started, returning control to user process
+2025-12-02 16:36:11,595 INFO    MainThread:39032 [wandb_run.py:_finish():2270] finishing run anony-mouse-242507206924556988/word-difficulty-prediction/v5d5l0ve
+2025-12-02 16:36:11,596 INFO    MainThread:39032 [wandb_run.py:_atexit_cleanup():2469] got exitcode: 0
+2025-12-02 16:36:11,596 INFO    MainThread:39032 [wandb_run.py:_restore():2451] restore
+2025-12-02 16:36:11,596 INFO    MainThread:39032 [wandb_run.py:_restore():2457] restore done
+2025-12-02 16:52:28,995 INFO    MainThread:39032 [wandb_run.py:_footer_sync_info():3853] logging synced files

@@ -1,0 +1,91 @@
+Step 1: 读取数据并构建四特征...
+f:\Codes\Wd-Pred\transformer_prediction.py:99: FutureWarning: DataFrameGroupBy.apply operated on the grouping columns. This behavior is deprecated, and in a future version of pandas the grouping columns will be excluded from the operation. Either pass `include_groups=False` to exclude the groupings or explicitly select the grouping columns after groupby to silence this warning.
+  history_map = df.groupby('Username').apply(
+Step 2: 构建四输入样本...
+数据集划分：训练集 2770743, 验证集 395820, 测试集 791642
+✅ 数据加载优化已应用 (cache + prefetch)
+Step 3: 构建Transformer神经网络 (Vocab=321, Layers=3)...
+WARNING:tensorflow:From D:\Python\Python312\Lib\site-packages\keras\src\backend\tensorflow\core.py:232: The name tf.placeholder is deprecated. Please use tf.compat.v1.placeholder instead.
+
+D:\Python\Python312\Lib\site-packages\keras\src\layers\core\embedding.py:97: UserWarning: Argument `input_length` is deprecated. Just remove it.
+  warnings.warn(
+✅ 模型编译完成，使用Focal Loss (gamma=2.0, alpha=0.25)
+Step 4: 开始训练 (Epochs=15, Batch=4096, Patience=4)...
+提示: 当前使用CPU训练，速度可能较慢。建议使用支持CUDA的GPU以获得显著加速。
+Epoch 1/15
+[1m677/677[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m144s[0m 205ms/step - loss: 2.1930 - output_steps_loss: 2.1797 - output_success_accuracy: 0.9387 - output_success_loss: 0.0252 - val_loss: 1.2538 - val_output_steps_loss: 1.2434 - val_output_success_accuracy: 0.9664 - val_output_success_loss: 0.0210
+Epoch 2/15
+[1m677/677[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m142s[0m 210ms/step - loss: 1.3437 - output_steps_loss: 1.3338 - output_success_accuracy: 0.9647 - output_success_loss: 0.0197 - val_loss: 1.2491 - val_output_steps_loss: 1.2406 - val_output_success_accuracy: 0.9675 - val_output_success_loss: 0.0172
+Epoch 3/15
+[1m677/677[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m144s[0m 212ms/step - loss: 1.3258 - output_steps_loss: 1.3169 - output_success_accuracy: 0.9627 - output_success_loss: 0.0178 - val_loss: 1.2457 - val_output_steps_loss: 1.2374 - val_output_success_accuracy: 0.9666 - val_output_success_loss: 0.0167
+Epoch 4/15
+[1m677/677[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m137s[0m 203ms/step - loss: 1.3125 - output_steps_loss: 1.3037 - output_success_accuracy: 0.9620 - output_success_loss: 0.0175 - val_loss: 1.2442 - val_output_steps_loss: 1.2360 - val_output_success_accuracy: 0.9654 - val_output_success_loss: 0.0166
+Epoch 5/15
+[1m677/677[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m122s[0m 181ms/step - loss: 1.2960 - output_steps_loss: 1.2873 - output_success_accuracy: 0.9613 - output_success_loss: 0.0173 - val_loss: 1.2442 - val_output_steps_loss: 1.2360 - val_output_success_accuracy: 0.9626 - val_output_success_loss: 0.0167
+Epoch 6/15
+[1m677/677[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m123s[0m 181ms/step - loss: 1.2776 - output_steps_loss: 1.2690 - output_success_accuracy: 0.9606 - output_success_loss: 0.0172 - val_loss: 1.2447 - val_output_steps_loss: 1.2365 - val_output_success_accuracy: 0.9622 - val_output_success_loss: 0.0166
+Epoch 7/15
+[1m677/677[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m117s[0m 173ms/step - loss: 1.2626 - output_steps_loss: 1.2541 - output_success_accuracy: 0.9608 - output_success_loss: 0.0170 - val_loss: 1.2445 - val_output_steps_loss: 1.2364 - val_output_success_accuracy: 0.9611 - val_output_success_loss: 0.0165
+Epoch 8/15
+[1m677/677[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m107s[0m 158ms/step - loss: 1.2544 - output_steps_loss: 1.2459 - output_success_accuracy: 0.9602 - output_success_loss: 0.0168 - val_loss: 1.2438 - val_output_steps_loss: 1.2357 - val_output_success_accuracy: 0.9613 - val_output_success_loss: 0.0163
+Epoch 9/15
+[1m677/677[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m105s[0m 156ms/step - loss: 1.2502 - output_steps_loss: 1.2418 - output_success_accuracy: 0.9597 - output_success_loss: 0.0166 - val_loss: 1.2431 - val_output_steps_loss: 1.2350 - val_output_success_accuracy: 0.9592 - val_output_success_loss: 0.0162
+Epoch 10/15
+[1m677/677[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m112s[0m 165ms/step - loss: 1.2481 - output_steps_loss: 1.2398 - output_success_accuracy: 0.9594 - output_success_loss: 0.0165 - val_loss: 1.2447 - val_output_steps_loss: 1.2367 - val_output_success_accuracy: 0.9592 - val_output_success_loss: 0.0162
+Epoch 11/15
+[1m677/677[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m106s[0m 156ms/step - loss: 1.2469 - output_steps_loss: 1.2386 - output_success_accuracy: 0.9595 - output_success_loss: 0.0165 - val_loss: 1.2412 - val_output_steps_loss: 1.2332 - val_output_success_accuracy: 0.9599 - val_output_success_loss: 0.0162
+Epoch 12/15
+[1m677/677[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m108s[0m 159ms/step - loss: 1.2480 - output_steps_loss: 1.2397 - output_success_accuracy: 0.9593 - output_success_loss: 0.0166 - val_loss: 1.2420 - val_output_steps_loss: 1.2340 - val_output_success_accuracy: 0.9638 - val_output_success_loss: 0.0163
+Epoch 13/15
+[1m677/677[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m120s[0m 178ms/step - loss: 1.2510 - output_steps_loss: 1.2426 - output_success_accuracy: 0.9591 - output_success_loss: 0.0168 - val_loss: 1.2435 - val_output_steps_loss: 1.2354 - val_output_success_accuracy: 0.9637 - val_output_success_loss: 0.0164
+Epoch 14/15
+[1m677/677[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m123s[0m 182ms/step - loss: 1.2613 - output_steps_loss: 1.2526 - output_success_accuracy: 0.9576 - output_success_loss: 0.0173 - val_loss: 1.2483 - val_output_steps_loss: 1.2402 - val_output_success_accuracy: 0.9590 - val_output_success_loss: 0.0164
+Epoch 15/15
+[1m677/677[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m113s[0m 166ms/step - loss: 1.2674 - output_steps_loss: 1.2583 - output_success_accuracy: 0.9542 - output_success_loss: 0.0181 - val_loss: 1.2695 - val_output_steps_loss: 1.2613 - val_output_success_accuracy: 0.9555 - val_output_success_loss: 0.0165
+✅ Loss曲线已保存至: visualization\Transformer_loss_curve.png
+
+✅ 模型已成功保存到: models/Transformer_Model.keras
+
+Step 4: 开始批量预测，显示进度条...
+[1m97/97[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m6s[0m 64ms/step
+
+Step 4: 开始批量预测，显示进度条...
+[1m194/194[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m12s[0m 62ms/step
+
+========================================
+  Transformer模型验证和测试报告
+========================================
+---- 验证集指标 ----
+1. 平均步数误差 (MAE)    : 0.9031
+2. 均方根误差 (RMSE)     : 1.1104
+3. 胜负预测准确率        : 95.991%
+4. ROC曲线下面积 (AUC)   : 0.8645
+5. 大型误差率 (>1.5步)  : 17.992%
+
+---- 测试集指标 ----
+1. 平均步数误差 (MAE)    : 0.9035
+2. 均方根误差 (RMSE)     : 1.1103
+3. 胜负预测准确率        : 96.040%
+4. ROC曲线下面积 (AUC)   : 0.8664
+5. 大型误差率 (>1.5步)  : 17.923%
+========================================
+
+
+Step 5: 启动回测验证抽样报告 (样本数=10000, 输出至 output.txt)...
+------------------------------------------------------------
+User ID    | Bias  | Diff  | Real  | Pred  | Err   | Status
+------------------------------------------------------------
+807725     | 4.49  | 4.72  | 4    | 4.94  | 0.94  | ✅
+182916     | 4.73  | 4.52  | 5    | 4.98  | 0.02  | ✅
+53410      | 4.94  | 4.09  | 5    | 4.74  | 0.26  | ✅
+315300     | 5.09  | 4.00  | 6    | 4.79  | 1.21  | ⚠️
+209253     | 4.70  | 4.62  | 3    | 4.95  | 1.95  | ❌
+717666     | 3.33  | 3.88  | 3    | 3.07  | 0.07  | ✅
+719123     | 3.50  | 4.62  | 3    | 3.92  | 0.92  | ✅
+7959       | 4.47  | 4.35  | 6    | 4.55  | 1.45  | ⚠️
+532925     | 4.49  | 3.63  | 4    | 3.82  | 0.18  | ✅
+706331     | 4.89  | 4.28  | 5    | 4.97  | 0.03  | ✅
+... (其余 9990 条省略)
+
+✅ 抽样报告已成功导出至 outputs/transformer_output.txt 文件。
+✅ 预测趋势图已保存至: visualization\Transformer_prediction_trends.png

@@ -1,0 +1,47 @@
+2025-11-30 18:07:41,146 INFO    MainThread:39856 [wandb_setup.py:_flush():80] Current SDK version is 0.23.0
+2025-11-30 18:07:41,146 INFO    MainThread:39856 [wandb_setup.py:_flush():80] Configure stats pid to 39856
+2025-11-30 18:07:41,146 INFO    MainThread:39856 [wandb_setup.py:_flush():80] Loading settings from C:\Users\Asus\.config\wandb\settings
+2025-11-30 18:07:41,146 INFO    MainThread:39856 [wandb_setup.py:_flush():80] Loading settings from F:\Codes\Wd-Pred\wandb\settings
+2025-11-30 18:07:41,146 INFO    MainThread:39856 [wandb_setup.py:_flush():80] Loading settings from environment variables
+2025-11-30 18:07:41,146 INFO    MainThread:39856 [wandb_init.py:setup_run_log_directory():713] Logging user logs to wandb\wandb\run-20251130_180741-9bwm2jpr\logs\debug.log
+2025-11-30 18:07:41,146 INFO    MainThread:39856 [wandb_init.py:setup_run_log_directory():714] Logging internal logs to wandb\wandb\run-20251130_180741-9bwm2jpr\logs\debug-internal.log
+2025-11-30 18:07:41,146 INFO    MainThread:39856 [wandb_init.py:init():840] calling init triggers
+2025-11-30 18:07:41,146 INFO    MainThread:39856 [wandb_init.py:init():845] wandb.init called with sweep_config: {}
+config: {'_wandb': {}}
+2025-11-30 18:07:41,146 INFO    MainThread:39856 [wandb_init.py:init():888] starting backend
+2025-11-30 18:07:41,497 INFO    MainThread:39856 [wandb_init.py:init():891] sending inform_init request
+2025-11-30 18:07:41,531 INFO    MainThread:39856 [wandb_init.py:init():899] backend started and connected
+2025-11-30 18:07:41,545 INFO    MainThread:39856 [wandb_init.py:init():969] updated telemetry
+2025-11-30 18:07:41,604 INFO    MainThread:39856 [wandb_init.py:init():993] communicating run to backend with 90.0 second timeout
+2025-11-30 18:07:42,513 INFO    MainThread:39856 [wandb_init.py:init():1040] starting run threads in backend
+2025-11-30 18:07:42,577 INFO    MainThread:39856 [wandb_run.py:_console_start():2504] atexit reg
+2025-11-30 18:07:42,577 INFO    MainThread:39856 [wandb_run.py:_redirect():2352] redirect: wrap_raw
+2025-11-30 18:07:42,577 INFO    MainThread:39856 [wandb_run.py:_redirect():2421] Wrapping output streams.
+2025-11-30 18:07:42,577 INFO    MainThread:39856 [wandb_run.py:_redirect():2444] Redirects installed.
+2025-11-30 18:07:42,579 INFO    MainThread:39856 [wandb_init.py:init():1080] run started, returning control to user process
+2025-11-30 18:07:42,580 INFO    MainThread:39856 [wandb_config.py:__setitem__():154] [no run ID] config set look_back = 8 - <bound method Run._config_callback of <wandb.sdk.wandb_run.Run object at 0x0000020DECAED520>>
+2025-11-30 18:07:42,580 INFO    MainThread:39856 [wandb_run.py:_config_callback():1385] config_cb look_back 8 None
+2025-11-30 18:07:42,580 INFO    MainThread:39856 [wandb_config.py:__setitem__():154] [no run ID] config set epochs = 10 - <bound method Run._config_callback of <wandb.sdk.wandb_run.Run object at 0x0000020DECAED520>>
+2025-11-30 18:07:42,580 INFO    MainThread:39856 [wandb_run.py:_config_callback():1385] config_cb epochs 10 None
+2025-11-30 18:07:42,580 INFO    MainThread:39856 [wandb_config.py:__setitem__():154] [no run ID] config set batch_size = 4096 - <bound method Run._config_callback of <wandb.sdk.wandb_run.Run object at 0x0000020DECAED520>>
+2025-11-30 18:07:42,580 INFO    MainThread:39856 [wandb_run.py:_config_callback():1385] config_cb batch_size 4096 None
+2025-11-30 18:07:42,580 INFO    MainThread:39856 [wandb_config.py:__setitem__():154] [no run ID] config set embedding_dim = 32 - <bound method Run._config_callback of <wandb.sdk.wandb_run.Run object at 0x0000020DECAED520>>
+2025-11-30 18:07:42,580 INFO    MainThread:39856 [wandb_run.py:_config_callback():1385] config_cb embedding_dim 32 None
+2025-11-30 18:07:42,581 INFO    MainThread:39856 [wandb_config.py:__setitem__():154] [no run ID] config set num_heads = 6 - <bound method Run._config_callback of <wandb.sdk.wandb_run.Run object at 0x0000020DECAED520>>
+2025-11-30 18:07:42,581 INFO    MainThread:39856 [wandb_run.py:_config_callback():1385] config_cb num_heads 6 None
+2025-11-30 18:07:42,581 INFO    MainThread:39856 [wandb_config.py:__setitem__():154] [no run ID] config set key_dim = 48 - <bound method Run._config_callback of <wandb.sdk.wandb_run.Run object at 0x0000020DECAED520>>
+2025-11-30 18:07:42,581 INFO    MainThread:39856 [wandb_run.py:_config_callback():1385] config_cb key_dim 48 None
+2025-11-30 18:07:42,581 INFO    MainThread:39856 [wandb_config.py:__setitem__():154] [no run ID] config set ff_dim = 192 - <bound method Run._config_callback of <wandb.sdk.wandb_run.Run object at 0x0000020DECAED520>>
+2025-11-30 18:07:42,581 INFO    MainThread:39856 [wandb_run.py:_config_callback():1385] config_cb ff_dim 192 None
+2025-11-30 18:07:42,581 INFO    MainThread:39856 [wandb_config.py:__setitem__():154] [no run ID] config set dropout_rate = 0.25 - <bound method Run._config_callback of <wandb.sdk.wandb_run.Run object at 0x0000020DECAED520>>
+2025-11-30 18:07:42,581 INFO    MainThread:39856 [wandb_run.py:_config_callback():1385] config_cb dropout_rate 0.25 None
+2025-11-30 18:07:42,582 INFO    MainThread:39856 [wandb_config.py:__setitem__():154] [no run ID] config set transformer_layers = 3 - <bound method Run._config_callback of <wandb.sdk.wandb_run.Run object at 0x0000020DECAED520>>
+2025-11-30 18:07:42,582 INFO    MainThread:39856 [wandb_run.py:_config_callback():1385] config_cb transformer_layers 3 None
+2025-11-30 18:07:42,582 INFO    MainThread:39856 [wandb_config.py:__setitem__():154] [no run ID] config set learning_rate = 0.001 - <bound method Run._config_callback of <wandb.sdk.wandb_run.Run object at 0x0000020DECAED520>>
+2025-11-30 18:07:42,582 INFO    MainThread:39856 [wandb_run.py:_config_callback():1385] config_cb learning_rate 0.001 None
+2025-11-30 18:07:42,582 INFO    MainThread:39856 [wandb_config.py:__setitem__():154] [no run ID] config set patience = 5 - <bound method Run._config_callback of <wandb.sdk.wandb_run.Run object at 0x0000020DECAED520>>
+2025-11-30 18:07:42,582 INFO    MainThread:39856 [wandb_run.py:_config_callback():1385] config_cb patience 5 None
+2025-11-30 18:07:42,582 INFO    MainThread:39856 [wandb_config.py:__setitem__():154] [no run ID] config set large_error_threshold = 1.5 - <bound method Run._config_callback of <wandb.sdk.wandb_run.Run object at 0x0000020DECAED520>>
+2025-11-30 18:07:42,582 INFO    MainThread:39856 [wandb_run.py:_config_callback():1385] config_cb large_error_threshold 1.5 None
+2025-11-30 18:24:07,649 INFO    wandb-AsyncioManager-main:39856 [service_client.py:_forward_responses():80] Reached EOF.
+2025-11-30 18:24:07,649 INFO    wandb-AsyncioManager-main:39856 [mailbox.py:close():137] Closing mailbox, abandoning 1 handles.

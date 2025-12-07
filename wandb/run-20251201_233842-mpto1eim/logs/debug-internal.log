@@ -1,0 +1,12 @@
+{"time":"2025-12-01T23:38:43.2702052+08:00","level":"INFO","msg":"stream: starting","core version":"0.23.0"}
+{"time":"2025-12-01T23:38:43.7346023+08:00","level":"INFO","msg":"stream: created new stream","id":"mpto1eim"}
+{"time":"2025-12-01T23:38:43.7356342+08:00","level":"INFO","msg":"handler: started","stream_id":"mpto1eim"}
+{"time":"2025-12-01T23:38:43.735984+08:00","level":"INFO","msg":"stream: started","id":"mpto1eim"}
+{"time":"2025-12-01T23:38:43.735984+08:00","level":"INFO","msg":"writer: started","stream_id":"mpto1eim"}
+{"time":"2025-12-01T23:38:43.735984+08:00","level":"INFO","msg":"sender: started","stream_id":"mpto1eim"}
+{"time":"2025-12-01T23:39:48.7678675+08:00","level":"INFO","msg":"fileTransfer: Close: file transfer manager closed"}
+{"time":"2025-12-01T23:39:49.2826089+08:00","level":"INFO","msg":"handler: operation stats","stats":{}}
+{"time":"2025-12-01T23:39:49.2855377+08:00","level":"INFO","msg":"stream: closing","id":"mpto1eim"}
+{"time":"2025-12-01T23:39:49.2855377+08:00","level":"INFO","msg":"handler: closed","stream_id":"mpto1eim"}
+{"time":"2025-12-01T23:39:49.2855377+08:00","level":"INFO","msg":"sender: closed","stream_id":"mpto1eim"}
+{"time":"2025-12-01T23:39:49.2855377+08:00","level":"INFO","msg":"stream: closed","id":"mpto1eim"}

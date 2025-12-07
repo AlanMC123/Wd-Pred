@@ -123,12 +123,12 @@ class MultiThreadedDataProcessor:
 
 
         print(f"\n    耗时: {time.time() - start_time:.2f} 秒")
-        return train_data, val_data, test_data
+        return train_data
     
     def calculate_word_difficulty(self, train_data):
         """
         计算每个单词的平均猜测步数，并保存到difficulty.csv
-        使用多线程加速计算
+        使用多线程CPU加速计算
         """
         print("\nStep 2: 计算单词难度...")
         start_time = time.time()
@@ -185,8 +185,6 @@ class MultiThreadedDataProcessor:
         print(f"    最简单单词: {difficulty_df.iloc[-1]['word']} (平均步数: {difficulty_df.iloc[-1]['avg_trial']:.2f})")
         print(f"    耗时: {time.time() - start_time:.2f} 秒")
         print(f"    结果保存至: {self.difficulty_file}")
-        
-        return difficulty_df
     
     def calculate_player_stats(self, train_data):
         """
@@ -257,8 +255,6 @@ class MultiThreadedDataProcessor:
         print(f"    水平最低用户: {player_df.iloc[-1]['Username']} (平均步数: {player_df.iloc[-1]['avg_trial']:.2f})")
         print(f"    耗时: {time.time() - start_time:.2f} 秒")
         print(f"    结果保存至: {self.player_data_file}")
-        
-        return player_df
     
     def run_complete_pipeline(self):
         """
@@ -269,13 +265,13 @@ class MultiThreadedDataProcessor:
         
         try:
             # 1. 加载并分割数据集
-            train_data, val_data, test_data = self.load_and_split_dataset()
+            train_data = self.load_and_split_dataset()
             
             # 2. 计算单词难度
-            difficulty_df = self.calculate_word_difficulty(train_data)
+            self.calculate_word_difficulty(train_data)
             
             # 3. 计算用户水平
-            player_df = self.calculate_player_stats(train_data)
+            self.calculate_player_stats(train_data)
             
             total_time = time.time() - total_start_time
             print(f"\n===== 数据预处理完成 =====")
@@ -294,6 +290,7 @@ class MultiThreadedDataProcessor:
 def main():
     """主函数，执行完整的预处理流程"""
     print("开始数据预处理流程...")
+    
     # 创建并运行数据处理器
     processor = MultiThreadedDataProcessor()
     processor.run_complete_pipeline()

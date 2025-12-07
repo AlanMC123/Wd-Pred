@@ -6,103 +6,103 @@ import csv
 
 FILE_PATH = 'dataset/cleaned_dataset.csv'
 
-# 设置字体为微软雅黑
-plt.rcParams['font.sans-serif'] = ['Microsoft YaHei']
+# Set font to Arial for better English display
+plt.rcParams['font.sans-serif'] = ['Arial']
 plt.rcParams['axes.unicode_minus'] = False
 
-# 创建difficulty文件夹
+# Create difficulty folder
 if not os.path.exists('difficulty'):
     os.makedirs('difficulty')
 
-# 读取CSV文件
-print("正在读取wordle_games.csv文件...")
+# Read CSV file
+print("Reading wordle_games.csv file...")
 df = pd.read_csv(FILE_PATH)
 
-# 1. 输出尝试次数(Trial)直方图
-print("正在生成尝试次数直方图...")
+# 1. Output Try distribution histogram
+print("Generating try distribution histogram...")
 plt.figure(figsize=(12, 6))
 plt.hist(df['Trial'], bins=range(1, df['Trial'].max() + 2), edgecolor='black', align='left')
-plt.title('Wordle游戏尝试次数直方图')
-plt.xlabel('尝试次数')
-plt.ylabel('游戏次数(万)')
+plt.title('Wordle Try Distribution')
+plt.xlabel('Number of Tries')
+plt.ylabel('Number of Games (10,000)')
 plt.xticks(range(1, df['Trial'].max() + 1))
-# 设置y轴单位为万
+# Set y-axis unit to 10,000
 plt.gca().yaxis.set_major_formatter(ticker.FuncFormatter(lambda x, pos: '{:.1f}'.format(x/10000)))
 plt.grid(axis='y', alpha=0.75)
 plt.tight_layout()
 
-# 保存直方图
-histogram_path = os.path.join('difficulty', 'trial_histogram.png')
+# Save histogram
+histogram_path = os.path.join('difficulty', 'try_histogram.png')
 plt.savefig(histogram_path, dpi=300, bbox_inches='tight')
 plt.close()
-print(f"尝试次数直方图已保存到: {histogram_path}")
+print(f"Try distribution histogram saved to: {histogram_path}")
 
-# 2. 计算每个目标词的平均尝试次数和失败率
-print("正在计算每个目标词的平均尝试次数和失败率...")
+# 2. Calculate average Tries and failure rate for each target word
+print("Calculating average Tries and failure rate for each target word...")
 
-# 计算平均尝试次数
-target_avg_trial = df.groupby('target')['Trial'].mean().reset_index()
-target_avg_trial.columns = ['target', 'avg_trial']
+# Calculate average Tries
+target_avg_try = df.groupby('target')['Trial'].mean().reset_index()
+target_avg_try.columns = ['target', 'avg_try']
 
-# 计算总游戏次数
+# Calculate total games
 total_games = df.groupby('target').size().reset_index(name='total_games')
 
-# 计算失败次数（尝试次数>=6次且未猜中，假设Trial为6表示失败）
+# Calculate failed games (assuming Trial = 7 indicates failure)
 failed_games = df[df['Trial'] == 7].groupby('target').size().reset_index(name='failed_games')
 
-# 合并数据
-word_stats = pd.merge(target_avg_trial, total_games, on='target')
+# Merge data
+word_stats = pd.merge(target_avg_try, total_games, on='target')
 word_stats = pd.merge(word_stats, failed_games, on='target', how='left')
 
-# 填充缺失值（没有失败记录的单词）
+# Fill missing values (words with no failed records)
 word_stats['failed_games'] = word_stats['failed_games'].fillna(0)
 
-# 计算失败率
+# Calculate failure rate
 word_stats['failure_rate'] = (word_stats['failed_games'] / word_stats['total_games'] * 100).round(2)
 
-# 3. 设置n和m的值
-n = 10  # 平均次数最多的n个词
-m = 10  # 平均次数最少的m个词
+# 3. Set values for n and m
+n = 10  # Top n words with highest average Tries
+m = 10  # Top m words with lowest average Tries
 
-# 4. 找出平均次数最多的n个词
-most_difficult = word_stats.sort_values(by='avg_trial', ascending=False).head(n)
+# 4. Find top n words with highest average Tries
+most_difficult = word_stats.sort_values(by='avg_try', ascending=False).head(n)
 
-# 5. 找出平均次数最少的m个词
-least_difficult = word_stats.sort_values(by='avg_trial', ascending=True).head(m)
+# 5. Find top m words with lowest average Tries
+least_difficult = word_stats.sort_values(by='avg_try', ascending=True).head(m)
 
-# 6. 准备所有单词的数据，按平均尝试次数降序排序
-all_words_sorted = word_stats.sort_values(by='avg_trial', ascending=False).reset_index(drop=True)
+# 6. Prepare data for all words, sorted by average Tries in descending order
+all_words_sorted = word_stats.sort_values(by='avg_try', ascending=False).reset_index(drop=True)
 
-# 6. 保存结果到txt文件
+# 6. Save results to txt file
 result_path = os.path.join('difficulty', 'word_difficulty.txt')
 with open(result_path, 'w', encoding='utf-8') as f:
-    f.write("Wordle游戏难度分析结果\n")
+    f.write("Wordle Game Difficulty Analysis Results\n")
     f.write("=" * 40 + "\n")
-    f.write(f"平均尝试次数最多的{n}个词(从难到易):\n")
+    f.write(f"Top {n} words with highest average tries (from difficult to easy):\n")
     f.write("-" * 40 + "\n")
     for index, row in most_difficult.iterrows():
-        f.write(f"{row['target']}: {row['avg_trial']:.2f}次, 失败率: {row['failure_rate']:.2f}%\n")
+        f.write(f"{row['target']}: {row['avg_try']:.2f} tries, failure rate: {row['failure_rate']:.2f}%\n")
     f.write("\n")
-    f.write(f"平均尝试次数最少的{m}个词(从易到难):\n")
+    f.write(f"Top {m} words with lowest average tries (from easy to difficult):\n")
     f.write("-" * 40 + "\n")
     for index, row in least_difficult.iterrows():
-        f.write(f"{row['target']}: {row['avg_trial']:.2f}次, 失败率: {row['failure_rate']:.2f}%\n")
+        f.write(f"{row['target']}: {row['avg_try']:.2f} tries, failure rate: {row['failure_rate']:.2f}%\n")
 
-# 7. 生成CSV文件，包含所有单词的排名、单词、平均尝试次数和失败率
-print("正在生成CSV文件...")
+# 7. Generate CSV file with ranking, word, average Tries, and failure rate
+print("Generating CSV file...")
 csv_path = os.path.join('difficulty', 'word_difficulty_ranking.csv')
 with open(csv_path, 'w', newline='', encoding='utf-8') as csvfile:
-    # 创建CSV写入器
+    # Create CSV writer
     csv_writer = csv.writer(csvfile)
     
-    # 写入表头
-    csv_writer.writerow(['排名', '单词', '平均尝试次数', '失败率(%)'])
+    # Write header
+    csv_writer.writerow(['Ranking', 'Word', 'Average Tries', 'Failure Rate(%)'])
     
-    # 写入数据，排名从1开始
+    # Write data, ranking starts from 1
     for idx, row in all_words_sorted.iterrows():
-        ranking = idx + 1  # 排名从1开始
-        csv_writer.writerow([ranking, row['target'], round(row['avg_trial'], 2), row['failure_rate']])
+        ranking = idx + 1  # Ranking starts from 1
+        csv_writer.writerow([ranking, row['target'], round(row['avg_try'], 2), row['failure_rate']])
 
-print(f"难度分析结果已保存到: {result_path}")
-print(f"CSV排名文件已保存到: {csv_path}")
-print("所有分析任务已完成!")
+print(f"Difficulty analysis results saved to: {result_path}")
+print(f"CSV ranking file saved to: {csv_path}")
+print("All analysis tasks completed!")

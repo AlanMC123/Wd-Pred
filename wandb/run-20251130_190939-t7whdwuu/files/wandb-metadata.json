@@ -1,0 +1,16 @@
+{
+  "os": "Windows-11-10.0.26100-SP0",
+  "python": "CPython 3.12.9",
+  "startedAt": "2025-11-30T11:09:39.141320Z",
+  "program": "f:\\Codes\\Wd-Pred\\transformer_prediction.py",
+  "codePath": "transformer_prediction.py",
+  "codePathLocal": "transformer_prediction.py",
+  "git": {
+    "remote": "https://github.com/AlanMC123/Wd-Pred.git",
+    "commit": "21fbaf0800fae8ec5066a94e48839896910ef468"
+  },
+  "root": "wandb",
+  "host": "KanchoTX5Pro",
+  "executable": "D:\\Python\\Python312\\python.exe",
+  "writerId": "24qltey3q30odmk9z7qljswtl5z4wy8k"
+}

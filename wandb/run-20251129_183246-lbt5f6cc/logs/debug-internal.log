@@ -1,0 +1,1030 @@
+2025-11-29 18:32:46,174 INFO    StreamThr :44432 [internal.py:wandb_internal():86] W&B internal server running at pid: 44432, started at: 2025-11-29 18:32:46.173388
+2025-11-29 18:32:46,174 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: status
+2025-11-29 18:32:46,177 INFO    WriterThread:44432 [datastore.py:open_for_write():85] open: wandb\wandb\run-20251129_183246-lbt5f6cc\run-lbt5f6cc.wandb
+2025-11-29 18:32:46,177 DEBUG   SenderThread:44432 [sender.py:send():380] send: header
+2025-11-29 18:32:46,240 DEBUG   SenderThread:44432 [sender.py:send():380] send: run
+2025-11-29 18:32:47,123 INFO    SenderThread:44432 [dir_watcher.py:__init__():211] watching files in: wandb\wandb\run-20251129_183246-lbt5f6cc\files
+2025-11-29 18:32:47,124 INFO    SenderThread:44432 [sender.py:_start_run_threads():1124] run started: lbt5f6cc with start time 1764412366.174279
+2025-11-29 18:32:47,133 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: check_version
+2025-11-29 18:32:47,133 DEBUG   SenderThread:44432 [sender.py:send_request():407] send_request: check_version
+2025-11-29 18:32:47,692 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: run_start
+2025-11-29 18:32:47,724 DEBUG   HandlerThread:44432 [system_info.py:__init__():32] System info init
+2025-11-29 18:32:47,724 DEBUG   HandlerThread:44432 [system_info.py:__init__():47] System info init done
+2025-11-29 18:32:47,724 INFO    HandlerThread:44432 [system_monitor.py:start():194] Starting system monitor
+2025-11-29 18:32:47,725 INFO    SystemMonitor:44432 [system_monitor.py:_start():158] Starting system asset monitoring threads
+2025-11-29 18:32:47,725 INFO    HandlerThread:44432 [system_monitor.py:probe():214] Collecting system info
+2025-11-29 18:32:47,732 INFO    SystemMonitor:44432 [interfaces.py:start():190] Started cpu monitoring
+2025-11-29 18:32:47,733 INFO    SystemMonitor:44432 [interfaces.py:start():190] Started disk monitoring
+2025-11-29 18:32:47,733 INFO    SystemMonitor:44432 [interfaces.py:start():190] Started gpu monitoring
+2025-11-29 18:32:47,746 INFO    SystemMonitor:44432 [interfaces.py:start():190] Started memory monitoring
+2025-11-29 18:32:47,764 INFO    SystemMonitor:44432 [interfaces.py:start():190] Started network monitoring
+2025-11-29 18:32:47,770 DEBUG   HandlerThread:44432 [system_info.py:probe():196] Probing system
+2025-11-29 18:32:47,771 DEBUG   HandlerThread:44432 [system_info.py:_probe_git():181] Probing git
+2025-11-29 18:32:47,901 DEBUG   HandlerThread:44432 [system_info.py:_probe_git():189] Probing git done
+2025-11-29 18:32:47,902 DEBUG   HandlerThread:44432 [system_info.py:probe():244] Probing system done
+2025-11-29 18:32:47,902 DEBUG   HandlerThread:44432 [system_monitor.py:probe():223] {'os': 'Windows-10-10.0.26100-SP0', 'python': '3.9.11', 'heartbeatAt': '2025-11-29T10:32:47.770520', 'startedAt': '2025-11-29T10:32:46.166876', 'docker': None, 'cuda': None, 'args': (), 'state': 'running', 'program': 'f:\\Codes\\Wd-Pred\\transformer_prediction.py', 'codePathLocal': 'transformer_prediction.py', 'codePath': 'transformer_prediction.py', 'git': {'remote': 'https://github.com/AlanMC123/Wd-Pred.git', 'commit': '78ef48126655a2572ad6bae18d8e1247d4fbf100'}, 'email': 'alan_123@yeah.net', 'root': 'F:/Codes/Wd-Pred', 'host': 'KanchoTX5Pro', 'username': 'Asus', 'executable': 'D:\\Python\\Python39\\python.exe', 'cpu_count': 24, 'cpu_count_logical': 32, 'cpu_freq': {'current': 2200.0, 'min': 0.0, 'max': 2200.0}, 'cpu_freq_per_core': [{'current': 2200.0, 'min': 0.0, 'max': 2200.0}], 'disk': {'/': {'total': 697.8671836853027, 'used': 345.2234649658203}}, 'gpu': 'NVIDIA GeForce RTX 4070 Laptop GPU', 'gpu_count': 1, 'gpu_devices': [{'name': 'NVIDIA GeForce RTX 4070 Laptop GPU', 'memory_total': 8585740288}], 'memory': {'total': 63.627445220947266}}
+2025-11-29 18:32:47,902 INFO    HandlerThread:44432 [system_monitor.py:probe():224] Finished collecting system info
+2025-11-29 18:32:47,902 INFO    HandlerThread:44432 [system_monitor.py:probe():227] Publishing system info
+2025-11-29 18:32:47,902 DEBUG   HandlerThread:44432 [system_info.py:_save_pip():52] Saving list of pip packages installed into the current environment
+2025-11-29 18:32:47,903 DEBUG   HandlerThread:44432 [system_info.py:_save_pip():68] Saving pip packages done
+2025-11-29 18:32:47,904 INFO    HandlerThread:44432 [system_monitor.py:probe():229] Finished publishing system info
+2025-11-29 18:32:47,913 DEBUG   SenderThread:44432 [sender.py:send():380] send: files
+2025-11-29 18:32:47,913 INFO    SenderThread:44432 [sender.py:_save_file():1380] saving file wandb-metadata.json with policy now
+2025-11-29 18:32:47,922 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: stop_status
+2025-11-29 18:32:47,922 DEBUG   SenderThread:44432 [sender.py:send_request():407] send_request: stop_status
+2025-11-29 18:32:47,923 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: internal_messages
+2025-11-29 18:32:48,130 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_created():271] file/dir created: wandb\wandb\run-20251129_183246-lbt5f6cc\files\wandb-metadata.json
+2025-11-29 18:32:48,130 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_created():271] file/dir created: wandb\wandb\run-20251129_183246-lbt5f6cc\files\requirements.txt
+2025-11-29 18:32:48,399 DEBUG   SenderThread:44432 [sender.py:send():380] send: telemetry
+2025-11-29 18:32:48,399 DEBUG   SenderThread:44432 [sender.py:send():380] send: telemetry
+2025-11-29 18:32:48,399 DEBUG   SenderThread:44432 [sender.py:send():380] send: config
+2025-11-29 18:32:48,399 DEBUG   SenderThread:44432 [sender.py:send():380] send: config
+2025-11-29 18:32:48,399 DEBUG   SenderThread:44432 [sender.py:send():380] send: config
+2025-11-29 18:32:48,399 DEBUG   SenderThread:44432 [sender.py:send():380] send: config
+2025-11-29 18:32:48,399 DEBUG   SenderThread:44432 [sender.py:send():380] send: config
+2025-11-29 18:32:48,399 DEBUG   SenderThread:44432 [sender.py:send():380] send: config
+2025-11-29 18:32:48,399 DEBUG   SenderThread:44432 [sender.py:send():380] send: config
+2025-11-29 18:32:48,399 DEBUG   SenderThread:44432 [sender.py:send():380] send: config
+2025-11-29 18:32:48,399 DEBUG   SenderThread:44432 [sender.py:send():380] send: config
+2025-11-29 18:32:48,399 DEBUG   SenderThread:44432 [sender.py:send():380] send: config
+2025-11-29 18:32:48,399 DEBUG   SenderThread:44432 [sender.py:send():380] send: config
+2025-11-29 18:32:49,049 INFO    wandb-upload_0:44432 [upload_job.py:push():131] Uploaded file C:\Users\Asus\AppData\Local\Temp\tmpn72kdcu2wandb\tvx85acc-wandb-metadata.json
+2025-11-29 18:32:49,139 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_created():271] file/dir created: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:32:51,161 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:32:51,434 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: status_report
+2025-11-29 18:32:56,470 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: status_report
+2025-11-29 18:33:01,492 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: status_report
+2025-11-29 18:33:02,952 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: stop_status
+2025-11-29 18:33:02,953 DEBUG   SenderThread:44432 [sender.py:send_request():407] send_request: stop_status
+2025-11-29 18:33:03,091 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: internal_messages
+2025-11-29 18:33:07,319 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: status_report
+2025-11-29 18:33:12,363 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: status_report
+2025-11-29 18:33:17,393 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: status_report
+2025-11-29 18:33:18,040 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: stop_status
+2025-11-29 18:33:18,041 DEBUG   SenderThread:44432 [sender.py:send_request():407] send_request: stop_status
+2025-11-29 18:33:18,085 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: internal_messages
+2025-11-29 18:33:18,362 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\config.yaml
+2025-11-29 18:33:23,409 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: status_report
+2025-11-29 18:33:28,443 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: status_report
+2025-11-29 18:33:33,004 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: stop_status
+2025-11-29 18:33:33,004 DEBUG   SenderThread:44432 [sender.py:send_request():407] send_request: stop_status
+2025-11-29 18:33:33,175 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: internal_messages
+2025-11-29 18:33:34,339 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: status_report
+2025-11-29 18:33:36,562 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:33:38,596 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:33:39,755 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: status_report
+2025-11-29 18:33:44,819 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: status_report
+2025-11-29 18:33:47,772 DEBUG   SystemMonitor:44432 [system_monitor.py:_start():172] Starting system metrics aggregation loop
+2025-11-29 18:33:47,772 DEBUG   SenderThread:44432 [sender.py:send():380] send: stats
+2025-11-29 18:33:48,012 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: stop_status
+2025-11-29 18:33:48,012 DEBUG   SenderThread:44432 [sender.py:send_request():407] send_request: stop_status
+2025-11-29 18:33:48,183 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: internal_messages
+2025-11-29 18:33:50,348 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: status_report
+2025-11-29 18:33:55,392 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: status_report
+2025-11-29 18:34:00,435 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: status_report
+2025-11-29 18:34:03,017 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: stop_status
+2025-11-29 18:34:03,017 DEBUG   SenderThread:44432 [sender.py:send_request():407] send_request: stop_status
+2025-11-29 18:34:03,194 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: internal_messages
+2025-11-29 18:34:06,320 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: status_report
+2025-11-29 18:34:11,347 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: status_report
+2025-11-29 18:34:16,368 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: status_report
+2025-11-29 18:34:17,783 DEBUG   SenderThread:44432 [sender.py:send():380] send: stats
+2025-11-29 18:34:18,016 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: stop_status
+2025-11-29 18:34:18,016 DEBUG   SenderThread:44432 [sender.py:send_request():407] send_request: stop_status
+2025-11-29 18:34:18,212 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: internal_messages
+2025-11-29 18:34:21,395 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: status_report
+2025-11-29 18:34:26,448 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: status_report
+2025-11-29 18:34:31,501 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: status_report
+2025-11-29 18:34:33,056 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: stop_status
+2025-11-29 18:34:33,056 DEBUG   SenderThread:44432 [sender.py:send_request():407] send_request: stop_status
+2025-11-29 18:34:33,221 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: internal_messages
+2025-11-29 18:34:37,475 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: status_report
+2025-11-29 18:34:42,557 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: status_report
+2025-11-29 18:34:47,634 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: status_report
+2025-11-29 18:34:47,787 DEBUG   SenderThread:44432 [sender.py:send():380] send: stats
+2025-11-29 18:34:48,046 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: stop_status
+2025-11-29 18:34:48,047 DEBUG   SenderThread:44432 [sender.py:send_request():407] send_request: stop_status
+2025-11-29 18:34:48,230 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: internal_messages
+2025-11-29 18:34:53,426 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: status_report
+2025-11-29 18:34:58,866 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: status_report
+2025-11-29 18:34:59,134 DEBUG   SenderThread:44432 [sender.py:send():380] send: telemetry
+2025-11-29 18:34:59,134 DEBUG   SenderThread:44432 [sender.py:send():380] send: telemetry
+2025-11-29 18:34:59,134 DEBUG   SenderThread:44432 [sender.py:send():380] send: files
+2025-11-29 18:34:59,134 INFO    SenderThread:44432 [sender.py:_save_file():1380] saving file model-best.h5 with policy live
+2025-11-29 18:34:59,134 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: get_summary
+2025-11-29 18:34:59,833 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:35:01,515 DEBUG   SenderThread:44432 [sender.py:send():380] send: files
+2025-11-29 18:35:01,516 INFO    SenderThread:44432 [sender.py:_save_file():1380] saving file media\graph\graph_summary_5539a23328920778143a.graph.json with policy now
+2025-11-29 18:35:01,517 DEBUG   SenderThread:44432 [sender.py:send_request():407] send_request: summary_record
+2025-11-29 18:35:01,518 INFO    SenderThread:44432 [sender.py:_save_file():1380] saving file wandb-summary.json with policy end
+2025-11-29 18:35:01,894 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:35:01,895 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_created():271] file/dir created: wandb\wandb\run-20251129_183246-lbt5f6cc\files\media\graph\graph_summary_5539a23328920778143a.graph.json
+2025-11-29 18:35:01,896 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_created():271] file/dir created: wandb\wandb\run-20251129_183246-lbt5f6cc\files\wandb-summary.json
+2025-11-29 18:35:01,896 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_created():271] file/dir created: wandb\wandb\run-20251129_183246-lbt5f6cc\files\media\graph
+2025-11-29 18:35:01,896 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_created():271] file/dir created: wandb\wandb\run-20251129_183246-lbt5f6cc\files\media
+2025-11-29 18:35:02,178 INFO    wandb-upload_0:44432 [upload_job.py:push():131] Uploaded file C:\Users\Asus\AppData\Local\Temp\tmpn72kdcu2wandb\685h3i40-media/graph/graph_summary_5539a23328920778143a.graph.json
+2025-11-29 18:35:02,884 INFO    wandb-upload_0:44432 [upload_job.py:push():131] Uploaded file C:\Users\Asus\AppData\Local\Temp\tmpn72kdcu2wandb\5hfba4l3-media/graph/graph_summary_5539a23328920778143a.graph.json
+2025-11-29 18:35:03,057 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: stop_status
+2025-11-29 18:35:03,058 DEBUG   SenderThread:44432 [sender.py:send_request():407] send_request: stop_status
+2025-11-29 18:35:03,243 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: internal_messages
+2025-11-29 18:35:03,883 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: status_report
+2025-11-29 18:35:03,968 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:35:06,027 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:35:07,043 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:35:08,964 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: status_report
+2025-11-29 18:35:09,071 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:35:11,118 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:35:13,182 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:35:14,048 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: status_report
+2025-11-29 18:35:15,225 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:35:17,277 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:35:17,802 DEBUG   SenderThread:44432 [sender.py:send():380] send: stats
+2025-11-29 18:35:18,066 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: stop_status
+2025-11-29 18:35:18,066 DEBUG   SenderThread:44432 [sender.py:send_request():407] send_request: stop_status
+2025-11-29 18:35:18,250 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: internal_messages
+2025-11-29 18:35:19,072 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: status_report
+2025-11-29 18:35:19,330 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:35:21,461 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:35:23,471 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:35:24,091 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: status_report
+2025-11-29 18:35:24,506 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\config.yaml
+2025-11-29 18:35:25,512 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:35:27,585 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:35:29,424 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: status_report
+2025-11-29 18:35:29,623 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:35:31,687 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:35:33,082 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: stop_status
+2025-11-29 18:35:33,083 DEBUG   SenderThread:44432 [sender.py:send_request():407] send_request: stop_status
+2025-11-29 18:35:33,264 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: internal_messages
+2025-11-29 18:35:33,742 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:35:34,463 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: status_report
+2025-11-29 18:35:35,780 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:35:37,837 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:35:39,540 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: status_report
+2025-11-29 18:35:39,884 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:35:41,944 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:35:43,996 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:35:44,585 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: status_report
+2025-11-29 18:35:46,064 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:35:47,805 DEBUG   SenderThread:44432 [sender.py:send():380] send: stats
+2025-11-29 18:35:48,079 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: stop_status
+2025-11-29 18:35:48,080 DEBUG   SenderThread:44432 [sender.py:send_request():407] send_request: stop_status
+2025-11-29 18:35:48,111 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:35:48,266 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: internal_messages
+2025-11-29 18:35:49,606 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: status_report
+2025-11-29 18:35:50,159 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:35:51,266 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:35:53,288 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:35:54,683 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: status_report
+2025-11-29 18:35:55,346 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:35:57,394 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:35:59,445 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:35:59,766 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: status_report
+2025-11-29 18:36:01,496 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:36:03,091 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: stop_status
+2025-11-29 18:36:03,092 DEBUG   SenderThread:44432 [sender.py:send_request():407] send_request: stop_status
+2025-11-29 18:36:03,271 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: internal_messages
+2025-11-29 18:36:03,540 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:36:05,592 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:36:05,676 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: status_report
+2025-11-29 18:36:09,457 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: partial_history
+2025-11-29 18:36:09,457 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: partial_history
+2025-11-29 18:36:09,459 DEBUG   SenderThread:44432 [sender.py:send():380] send: history
+2025-11-29 18:36:09,459 DEBUG   SenderThread:44432 [sender.py:send_request():407] send_request: summary_record
+2025-11-29 18:36:09,461 INFO    SenderThread:44432 [sender.py:_save_file():1380] saving file wandb-summary.json with policy end
+2025-11-29 18:36:09,461 DEBUG   SenderThread:44432 [sender.py:send_request():407] send_request: summary_record
+2025-11-29 18:36:09,463 INFO    SenderThread:44432 [sender.py:_save_file():1380] saving file wandb-summary.json with policy end
+2025-11-29 18:36:09,463 DEBUG   SenderThread:44432 [sender.py:send_request():407] send_request: summary_record
+2025-11-29 18:36:09,464 INFO    SenderThread:44432 [sender.py:_save_file():1380] saving file wandb-summary.json with policy end
+2025-11-29 18:36:09,689 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\wandb-summary.json
+2025-11-29 18:36:10,741 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: status_report
+2025-11-29 18:36:11,743 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:36:13,796 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:36:15,757 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: status_report
+2025-11-29 18:36:15,833 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:36:17,810 DEBUG   SenderThread:44432 [sender.py:send():380] send: stats
+2025-11-29 18:36:17,883 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:36:18,101 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: stop_status
+2025-11-29 18:36:18,101 DEBUG   SenderThread:44432 [sender.py:send_request():407] send_request: stop_status
+2025-11-29 18:36:18,283 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: internal_messages
+2025-11-29 18:36:19,920 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:36:20,809 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: status_report
+2025-11-29 18:36:21,994 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:36:24,020 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:36:25,877 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: status_report
+2025-11-29 18:36:26,043 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:36:28,091 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:36:30,125 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:36:30,952 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: status_report
+2025-11-29 18:36:32,164 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:36:33,110 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: stop_status
+2025-11-29 18:36:33,110 DEBUG   SenderThread:44432 [sender.py:send_request():407] send_request: stop_status
+2025-11-29 18:36:33,287 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: internal_messages
+2025-11-29 18:36:34,199 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:36:36,003 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: status_report
+2025-11-29 18:36:36,239 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:36:38,299 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:36:40,348 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:36:41,010 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: status_report
+2025-11-29 18:36:42,393 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:36:44,444 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:36:46,062 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: status_report
+2025-11-29 18:36:46,490 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:36:47,816 DEBUG   SenderThread:44432 [sender.py:send():380] send: stats
+2025-11-29 18:36:48,119 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: stop_status
+2025-11-29 18:36:48,120 DEBUG   SenderThread:44432 [sender.py:send_request():407] send_request: stop_status
+2025-11-29 18:36:48,291 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: internal_messages
+2025-11-29 18:36:48,543 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:36:50,598 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:36:51,166 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: status_report
+2025-11-29 18:36:52,688 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:36:53,709 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:36:55,730 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:36:56,192 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: status_report
+2025-11-29 18:36:57,762 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:36:59,826 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:37:01,215 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: status_report
+2025-11-29 18:37:01,858 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:37:03,118 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: stop_status
+2025-11-29 18:37:03,118 DEBUG   SenderThread:44432 [sender.py:send_request():407] send_request: stop_status
+2025-11-29 18:37:03,304 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: internal_messages
+2025-11-29 18:37:03,925 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:37:05,988 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:37:06,293 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: status_report
+2025-11-29 18:37:08,035 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:37:10,086 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:37:11,344 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: status_report
+2025-11-29 18:37:12,145 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:37:16,313 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: partial_history
+2025-11-29 18:37:16,314 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: partial_history
+2025-11-29 18:37:16,315 DEBUG   SenderThread:44432 [sender.py:send():380] send: history
+2025-11-29 18:37:16,315 DEBUG   SenderThread:44432 [sender.py:send_request():407] send_request: summary_record
+2025-11-29 18:37:16,316 INFO    SenderThread:44432 [sender.py:_save_file():1380] saving file wandb-summary.json with policy end
+2025-11-29 18:37:16,317 DEBUG   SenderThread:44432 [sender.py:send_request():407] send_request: summary_record
+2025-11-29 18:37:16,318 INFO    SenderThread:44432 [sender.py:_save_file():1380] saving file wandb-summary.json with policy end
+2025-11-29 18:37:16,319 DEBUG   SenderThread:44432 [sender.py:send_request():407] send_request: summary_record
+2025-11-29 18:37:16,319 INFO    SenderThread:44432 [sender.py:_save_file():1380] saving file wandb-summary.json with policy end
+2025-11-29 18:37:16,424 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: status_report
+2025-11-29 18:37:17,344 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\wandb-summary.json
+2025-11-29 18:37:17,821 DEBUG   SenderThread:44432 [sender.py:send():380] send: stats
+2025-11-29 18:37:18,125 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: stop_status
+2025-11-29 18:37:18,126 DEBUG   SenderThread:44432 [sender.py:send_request():407] send_request: stop_status
+2025-11-29 18:37:18,312 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: internal_messages
+2025-11-29 18:37:18,359 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:37:20,431 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:37:21,442 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: status_report
+2025-11-29 18:37:22,483 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:37:24,589 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:37:26,455 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: status_report
+2025-11-29 18:37:26,600 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:37:28,661 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:37:30,728 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:37:31,490 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: status_report
+2025-11-29 18:37:32,769 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:37:33,144 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: stop_status
+2025-11-29 18:37:33,144 DEBUG   SenderThread:44432 [sender.py:send_request():407] send_request: stop_status
+2025-11-29 18:37:33,324 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: internal_messages
+2025-11-29 18:37:34,811 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:37:36,491 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: status_report
+2025-11-29 18:37:36,855 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:37:38,901 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:37:40,956 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:37:41,519 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: status_report
+2025-11-29 18:37:43,003 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:37:44,044 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:37:46,085 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:37:46,527 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: status_report
+2025-11-29 18:37:47,832 DEBUG   SenderThread:44432 [sender.py:send():380] send: stats
+2025-11-29 18:37:48,138 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:37:48,153 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: stop_status
+2025-11-29 18:37:48,153 DEBUG   SenderThread:44432 [sender.py:send_request():407] send_request: stop_status
+2025-11-29 18:37:48,334 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: internal_messages
+2025-11-29 18:37:50,194 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:37:51,529 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: status_report
+2025-11-29 18:37:52,239 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:37:54,359 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:37:56,367 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:37:56,533 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: status_report
+2025-11-29 18:37:58,442 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:38:00,508 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:38:01,569 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: status_report
+2025-11-29 18:38:02,565 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:38:03,163 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: stop_status
+2025-11-29 18:38:03,164 DEBUG   SenderThread:44432 [sender.py:send_request():407] send_request: stop_status
+2025-11-29 18:38:03,341 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: internal_messages
+2025-11-29 18:38:04,619 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:38:06,570 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: status_report
+2025-11-29 18:38:06,671 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:38:08,717 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:38:10,769 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:38:11,617 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: status_report
+2025-11-29 18:38:12,809 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:38:14,852 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:38:16,629 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: status_report
+2025-11-29 18:38:16,897 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:38:17,846 DEBUG   SenderThread:44432 [sender.py:send():380] send: stats
+2025-11-29 18:38:18,172 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: stop_status
+2025-11-29 18:38:18,173 DEBUG   SenderThread:44432 [sender.py:send_request():407] send_request: stop_status
+2025-11-29 18:38:18,350 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: internal_messages
+2025-11-29 18:38:18,953 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:38:21,002 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:38:21,677 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: status_report
+2025-11-29 18:38:23,052 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:38:25,165 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:38:26,778 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: status_report
+2025-11-29 18:38:27,181 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:38:29,220 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:38:31,878 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: status_report
+2025-11-29 18:38:33,184 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: stop_status
+2025-11-29 18:38:33,185 DEBUG   SenderThread:44432 [sender.py:send_request():407] send_request: stop_status
+2025-11-29 18:38:33,355 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: internal_messages
+2025-11-29 18:38:34,009 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: partial_history
+2025-11-29 18:38:34,009 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: partial_history
+2025-11-29 18:38:34,009 DEBUG   SenderThread:44432 [sender.py:send():380] send: history
+2025-11-29 18:38:34,009 DEBUG   SenderThread:44432 [sender.py:send_request():407] send_request: summary_record
+2025-11-29 18:38:34,009 INFO    SenderThread:44432 [sender.py:_save_file():1380] saving file wandb-summary.json with policy end
+2025-11-29 18:38:34,009 DEBUG   SenderThread:44432 [sender.py:send_request():407] send_request: summary_record
+2025-11-29 18:38:34,014 INFO    SenderThread:44432 [sender.py:_save_file():1380] saving file wandb-summary.json with policy end
+2025-11-29 18:38:34,014 DEBUG   SenderThread:44432 [sender.py:send_request():407] send_request: summary_record
+2025-11-29 18:38:34,016 INFO    SenderThread:44432 [sender.py:_save_file():1380] saving file wandb-summary.json with policy end
+2025-11-29 18:38:34,319 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\wandb-summary.json
+2025-11-29 18:38:35,354 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:38:36,912 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: status_report
+2025-11-29 18:38:37,392 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:38:38,404 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:38:40,434 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:38:41,951 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: status_report
+2025-11-29 18:38:42,480 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:38:44,539 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:38:46,590 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:38:47,013 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: status_report
+2025-11-29 18:38:47,856 DEBUG   SenderThread:44432 [sender.py:send():380] send: stats
+2025-11-29 18:38:48,189 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: stop_status
+2025-11-29 18:38:48,189 DEBUG   SenderThread:44432 [sender.py:send_request():407] send_request: stop_status
+2025-11-29 18:38:48,363 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: internal_messages
+2025-11-29 18:38:48,643 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:38:50,695 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:38:52,065 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: status_report
+2025-11-29 18:38:52,741 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:38:54,795 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:38:56,918 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:38:57,091 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: status_report
+2025-11-29 18:38:58,944 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:39:00,962 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:39:02,126 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: status_report
+2025-11-29 18:39:03,011 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:39:03,206 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: stop_status
+2025-11-29 18:39:03,206 DEBUG   SenderThread:44432 [sender.py:send_request():407] send_request: stop_status
+2025-11-29 18:39:03,375 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: internal_messages
+2025-11-29 18:39:05,048 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:39:07,099 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:39:07,146 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: status_report
+2025-11-29 18:39:09,138 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:39:11,186 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:39:12,161 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: status_report
+2025-11-29 18:39:13,245 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:39:15,295 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:39:17,204 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: status_report
+2025-11-29 18:39:17,355 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:39:17,862 DEBUG   SenderThread:44432 [sender.py:send():380] send: stats
+2025-11-29 18:39:18,219 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: stop_status
+2025-11-29 18:39:18,220 DEBUG   SenderThread:44432 [sender.py:send_request():407] send_request: stop_status
+2025-11-29 18:39:18,390 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: internal_messages
+2025-11-29 18:39:19,398 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:39:21,451 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:39:22,288 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: status_report
+2025-11-29 18:39:23,507 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:39:25,567 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:39:27,293 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: status_report
+2025-11-29 18:39:27,675 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:39:28,687 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:39:30,735 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:39:32,314 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: status_report
+2025-11-29 18:39:32,785 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:39:33,233 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: stop_status
+2025-11-29 18:39:33,234 DEBUG   SenderThread:44432 [sender.py:send_request():407] send_request: stop_status
+2025-11-29 18:39:33,418 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: internal_messages
+2025-11-29 18:39:34,825 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:39:36,869 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:39:37,326 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: status_report
+2025-11-29 18:39:38,920 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:39:40,965 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:39:42,505 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: status_report
+2025-11-29 18:39:47,380 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: partial_history
+2025-11-29 18:39:47,381 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: partial_history
+2025-11-29 18:39:47,381 DEBUG   SenderThread:44432 [sender.py:send():380] send: history
+2025-11-29 18:39:47,381 DEBUG   SenderThread:44432 [sender.py:send_request():407] send_request: summary_record
+2025-11-29 18:39:47,381 INFO    SenderThread:44432 [sender.py:_save_file():1380] saving file wandb-summary.json with policy end
+2025-11-29 18:39:47,587 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: status_report
+2025-11-29 18:39:47,865 DEBUG   SenderThread:44432 [sender.py:send():380] send: stats
+2025-11-29 18:39:48,115 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\wandb-summary.json
+2025-11-29 18:39:48,256 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: stop_status
+2025-11-29 18:39:48,256 DEBUG   SenderThread:44432 [sender.py:send_request():407] send_request: stop_status
+2025-11-29 18:39:48,410 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: internal_messages
+2025-11-29 18:39:49,162 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:39:51,216 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:39:52,592 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: status_report
+2025-11-29 18:39:53,264 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:39:55,313 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:39:57,417 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:39:57,617 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: status_report
+2025-11-29 18:39:59,426 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:40:01,471 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:40:02,657 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: status_report
+2025-11-29 18:40:03,251 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: stop_status
+2025-11-29 18:40:03,252 DEBUG   SenderThread:44432 [sender.py:send_request():407] send_request: stop_status
+2025-11-29 18:40:03,426 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: internal_messages
+2025-11-29 18:40:03,519 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:40:05,573 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:40:07,621 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:40:07,724 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: status_report
+2025-11-29 18:40:09,676 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:40:11,719 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:40:12,814 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: status_report
+2025-11-29 18:40:13,764 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:40:15,814 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:40:17,868 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: status_report
+2025-11-29 18:40:17,868 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:40:17,878 DEBUG   SenderThread:44432 [sender.py:send():380] send: stats
+2025-11-29 18:40:18,262 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: stop_status
+2025-11-29 18:40:18,262 DEBUG   SenderThread:44432 [sender.py:send_request():407] send_request: stop_status
+2025-11-29 18:40:18,439 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: internal_messages
+2025-11-29 18:40:19,934 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:40:21,998 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:40:22,893 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: status_report
+2025-11-29 18:40:23,001 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:40:25,066 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:40:27,098 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:40:27,906 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: status_report
+2025-11-29 18:40:29,231 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:40:31,262 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:40:32,944 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: status_report
+2025-11-29 18:40:33,271 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: stop_status
+2025-11-29 18:40:33,272 DEBUG   SenderThread:44432 [sender.py:send_request():407] send_request: stop_status
+2025-11-29 18:40:33,333 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:40:33,440 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: internal_messages
+2025-11-29 18:40:35,369 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:40:37,420 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:40:37,966 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: status_report
+2025-11-29 18:40:39,491 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:40:41,557 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:40:42,977 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: status_report
+2025-11-29 18:40:43,604 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:40:45,656 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:40:47,718 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:40:47,888 DEBUG   SenderThread:44432 [sender.py:send():380] send: stats
+2025-11-29 18:40:47,997 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: status_report
+2025-11-29 18:40:48,276 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: stop_status
+2025-11-29 18:40:48,276 DEBUG   SenderThread:44432 [sender.py:send_request():407] send_request: stop_status
+2025-11-29 18:40:48,458 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: internal_messages
+2025-11-29 18:40:49,780 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:40:51,834 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:40:53,026 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: status_report
+2025-11-29 18:40:53,901 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:40:55,961 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:40:58,008 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:40:58,798 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: status_report
+2025-11-29 18:41:00,494 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: partial_history
+2025-11-29 18:41:00,494 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: partial_history
+2025-11-29 18:41:00,494 DEBUG   SenderThread:44432 [sender.py:send():380] send: history
+2025-11-29 18:41:00,498 DEBUG   SenderThread:44432 [sender.py:send_request():407] send_request: summary_record
+2025-11-29 18:41:00,499 INFO    SenderThread:44432 [sender.py:_save_file():1380] saving file wandb-summary.json with policy end
+2025-11-29 18:41:01,135 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\wandb-summary.json
+2025-11-29 18:41:01,136 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:41:03,195 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:41:03,279 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: stop_status
+2025-11-29 18:41:03,280 DEBUG   SenderThread:44432 [sender.py:send_request():407] send_request: stop_status
+2025-11-29 18:41:03,467 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: internal_messages
+2025-11-29 18:41:03,839 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: status_report
+2025-11-29 18:41:05,259 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:41:07,304 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:41:08,863 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: status_report
+2025-11-29 18:41:09,353 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:41:11,408 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:41:13,464 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:41:13,945 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: status_report
+2025-11-29 18:41:15,523 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:41:17,580 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:41:17,896 DEBUG   SenderThread:44432 [sender.py:send():380] send: stats
+2025-11-29 18:41:18,288 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: stop_status
+2025-11-29 18:41:18,289 DEBUG   SenderThread:44432 [sender.py:send_request():407] send_request: stop_status
+2025-11-29 18:41:18,471 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: internal_messages
+2025-11-29 18:41:18,973 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: status_report
+2025-11-29 18:41:19,643 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:41:21,697 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:41:23,743 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:41:23,985 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: status_report
+2025-11-29 18:41:25,786 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:41:27,827 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:41:28,987 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: status_report
+2025-11-29 18:41:29,919 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:41:31,942 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:41:33,306 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: stop_status
+2025-11-29 18:41:33,307 DEBUG   SenderThread:44432 [sender.py:send_request():407] send_request: stop_status
+2025-11-29 18:41:33,474 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: internal_messages
+2025-11-29 18:41:33,983 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:41:34,075 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: status_report
+2025-11-29 18:41:36,034 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:41:38,084 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:41:39,163 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: status_report
+2025-11-29 18:41:40,127 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:41:42,179 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:41:44,228 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: status_report
+2025-11-29 18:41:44,229 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:41:46,296 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:41:47,908 DEBUG   SenderThread:44432 [sender.py:send():380] send: stats
+2025-11-29 18:41:48,338 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: stop_status
+2025-11-29 18:41:48,340 DEBUG   SenderThread:44432 [sender.py:send_request():407] send_request: stop_status
+2025-11-29 18:41:48,344 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:41:48,486 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: internal_messages
+2025-11-29 18:41:49,255 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: status_report
+2025-11-29 18:41:50,395 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:41:52,461 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:41:54,307 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: status_report
+2025-11-29 18:41:54,513 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:41:56,569 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:41:57,584 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:41:59,314 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: status_report
+2025-11-29 18:41:59,638 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:42:01,737 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:42:03,313 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: stop_status
+2025-11-29 18:42:03,313 DEBUG   SenderThread:44432 [sender.py:send_request():407] send_request: stop_status
+2025-11-29 18:42:03,488 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: internal_messages
+2025-11-29 18:42:03,761 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:42:04,352 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: status_report
+2025-11-29 18:42:05,831 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:42:07,890 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:42:09,393 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: status_report
+2025-11-29 18:42:09,927 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:42:11,980 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:42:15,368 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: status_report
+2025-11-29 18:42:17,167 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: partial_history
+2025-11-29 18:42:17,168 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: partial_history
+2025-11-29 18:42:17,170 DEBUG   SenderThread:44432 [sender.py:send():380] send: history
+2025-11-29 18:42:17,171 DEBUG   SenderThread:44432 [sender.py:send_request():407] send_request: summary_record
+2025-11-29 18:42:17,172 INFO    SenderThread:44432 [sender.py:_save_file():1380] saving file wandb-summary.json with policy end
+2025-11-29 18:42:17,173 DEBUG   SenderThread:44432 [sender.py:send_request():407] send_request: summary_record
+2025-11-29 18:42:17,173 INFO    SenderThread:44432 [sender.py:_save_file():1380] saving file wandb-summary.json with policy end
+2025-11-29 18:42:17,173 DEBUG   SenderThread:44432 [sender.py:send_request():407] send_request: summary_record
+2025-11-29 18:42:17,173 INFO    SenderThread:44432 [sender.py:_save_file():1380] saving file wandb-summary.json with policy end
+2025-11-29 18:42:17,918 DEBUG   SenderThread:44432 [sender.py:send():380] send: stats
+2025-11-29 18:42:18,126 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\wandb-summary.json
+2025-11-29 18:42:18,127 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:42:18,327 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: stop_status
+2025-11-29 18:42:18,327 DEBUG   SenderThread:44432 [sender.py:send_request():407] send_request: stop_status
+2025-11-29 18:42:18,499 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: internal_messages
+2025-11-29 18:42:20,180 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:42:20,371 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: status_report
+2025-11-29 18:42:22,230 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:42:24,286 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:42:25,428 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: status_report
+2025-11-29 18:42:26,330 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:42:28,379 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:42:30,438 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:42:30,521 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: status_report
+2025-11-29 18:42:32,541 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:42:33,328 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: stop_status
+2025-11-29 18:42:33,329 DEBUG   SenderThread:44432 [sender.py:send_request():407] send_request: stop_status
+2025-11-29 18:42:33,558 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: internal_messages
+2025-11-29 18:42:34,572 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:42:35,617 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: status_report
+2025-11-29 18:42:36,639 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:42:38,683 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:42:40,652 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: status_report
+2025-11-29 18:42:40,722 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:42:42,772 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:42:43,818 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:42:45,715 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: status_report
+2025-11-29 18:42:45,867 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:42:47,920 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:42:47,928 DEBUG   SenderThread:44432 [sender.py:send():380] send: stats
+2025-11-29 18:42:48,345 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: stop_status
+2025-11-29 18:42:48,346 DEBUG   SenderThread:44432 [sender.py:send_request():407] send_request: stop_status
+2025-11-29 18:42:48,526 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: internal_messages
+2025-11-29 18:42:49,961 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:42:50,727 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: status_report
+2025-11-29 18:42:52,013 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:42:54,061 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:42:55,738 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: status_report
+2025-11-29 18:42:56,126 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:42:58,183 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:43:00,249 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:43:00,786 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: status_report
+2025-11-29 18:43:02,351 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:43:03,335 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: stop_status
+2025-11-29 18:43:03,337 DEBUG   SenderThread:44432 [sender.py:send_request():407] send_request: stop_status
+2025-11-29 18:43:03,530 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: internal_messages
+2025-11-29 18:43:04,362 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:43:05,812 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: status_report
+2025-11-29 18:43:06,394 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:43:08,440 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:43:10,491 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:43:10,841 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: status_report
+2025-11-29 18:43:12,555 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:43:14,602 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:43:15,874 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: status_report
+2025-11-29 18:43:16,657 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:43:17,948 DEBUG   SenderThread:44432 [sender.py:send():380] send: stats
+2025-11-29 18:43:18,340 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: stop_status
+2025-11-29 18:43:18,341 DEBUG   SenderThread:44432 [sender.py:send_request():407] send_request: stop_status
+2025-11-29 18:43:18,532 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: internal_messages
+2025-11-29 18:43:18,727 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:43:20,775 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:43:20,917 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: status_report
+2025-11-29 18:43:22,823 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:43:24,904 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:43:26,809 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: status_report
+2025-11-29 18:43:26,980 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:43:29,022 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:43:31,864 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: status_report
+2025-11-29 18:43:31,981 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: partial_history
+2025-11-29 18:43:31,981 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: partial_history
+2025-11-29 18:43:31,984 DEBUG   SenderThread:44432 [sender.py:send():380] send: history
+2025-11-29 18:43:31,984 DEBUG   SenderThread:44432 [sender.py:send_request():407] send_request: summary_record
+2025-11-29 18:43:31,987 INFO    SenderThread:44432 [sender.py:_save_file():1380] saving file wandb-summary.json with policy end
+2025-11-29 18:43:31,987 DEBUG   SenderThread:44432 [sender.py:send_request():407] send_request: summary_record
+2025-11-29 18:43:31,988 INFO    SenderThread:44432 [sender.py:_save_file():1380] saving file wandb-summary.json with policy end
+2025-11-29 18:43:31,988 DEBUG   SenderThread:44432 [sender.py:send_request():407] send_request: summary_record
+2025-11-29 18:43:31,990 INFO    SenderThread:44432 [sender.py:_save_file():1380] saving file wandb-summary.json with policy end
+2025-11-29 18:43:32,062 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\wandb-summary.json
+2025-11-29 18:43:33,358 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: stop_status
+2025-11-29 18:43:33,358 DEBUG   SenderThread:44432 [sender.py:send_request():407] send_request: stop_status
+2025-11-29 18:43:33,536 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: internal_messages
+2025-11-29 18:43:34,182 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:43:36,193 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:43:36,882 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: status_report
+2025-11-29 18:43:38,216 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:43:40,268 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:43:41,930 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: status_report
+2025-11-29 18:43:42,293 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:43:44,325 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:43:46,375 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:43:47,010 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: status_report
+2025-11-29 18:43:47,964 DEBUG   SenderThread:44432 [sender.py:send():380] send: stats
+2025-11-29 18:43:48,372 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: stop_status
+2025-11-29 18:43:48,372 DEBUG   SenderThread:44432 [sender.py:send_request():407] send_request: stop_status
+2025-11-29 18:43:48,425 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:43:48,542 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: internal_messages
+2025-11-29 18:43:50,487 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:43:52,078 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: status_report
+2025-11-29 18:43:52,532 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:43:54,579 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:43:56,614 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:43:57,105 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: status_report
+2025-11-29 18:43:58,683 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:44:00,732 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:44:02,190 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: status_report
+2025-11-29 18:44:02,779 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:44:03,380 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: stop_status
+2025-11-29 18:44:03,380 DEBUG   SenderThread:44432 [sender.py:send_request():407] send_request: stop_status
+2025-11-29 18:44:03,552 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: internal_messages
+2025-11-29 18:44:04,882 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:44:06,893 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:44:07,210 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: status_report
+2025-11-29 18:44:08,948 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:44:11,004 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:44:12,244 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: status_report
+2025-11-29 18:44:13,068 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:44:15,101 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:44:17,182 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:44:17,278 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: status_report
+2025-11-29 18:44:17,970 DEBUG   SenderThread:44432 [sender.py:send():380] send: stats
+2025-11-29 18:44:18,375 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: stop_status
+2025-11-29 18:44:18,376 DEBUG   SenderThread:44432 [sender.py:send_request():407] send_request: stop_status
+2025-11-29 18:44:18,560 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: internal_messages
+2025-11-29 18:44:19,260 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:44:21,305 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:44:22,290 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: status_report
+2025-11-29 18:44:23,343 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:44:25,391 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:44:26,443 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:44:27,339 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: status_report
+2025-11-29 18:44:28,496 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:44:30,535 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:44:32,341 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: status_report
+2025-11-29 18:44:32,579 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:44:33,381 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: stop_status
+2025-11-29 18:44:33,381 DEBUG   SenderThread:44432 [sender.py:send_request():407] send_request: stop_status
+2025-11-29 18:44:33,566 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: internal_messages
+2025-11-29 18:44:34,687 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:44:36,702 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:44:37,346 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: status_report
+2025-11-29 18:44:38,759 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:44:40,818 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:44:42,924 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: status_report
+2025-11-29 18:44:44,385 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: partial_history
+2025-11-29 18:44:44,385 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: partial_history
+2025-11-29 18:44:44,387 DEBUG   SenderThread:44432 [sender.py:send():380] send: history
+2025-11-29 18:44:44,387 DEBUG   SenderThread:44432 [sender.py:send_request():407] send_request: summary_record
+2025-11-29 18:44:44,387 INFO    SenderThread:44432 [sender.py:_save_file():1380] saving file wandb-summary.json with policy end
+2025-11-29 18:44:44,908 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\wandb-summary.json
+2025-11-29 18:44:46,969 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:44:47,972 DEBUG   SenderThread:44432 [sender.py:send():380] send: stats
+2025-11-29 18:44:47,972 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: status_report
+2025-11-29 18:44:48,389 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: stop_status
+2025-11-29 18:44:48,389 DEBUG   SenderThread:44432 [sender.py:send_request():407] send_request: stop_status
+2025-11-29 18:44:48,568 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: internal_messages
+2025-11-29 18:44:49,021 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:44:51,072 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:44:53,021 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: status_report
+2025-11-29 18:44:53,118 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:44:55,168 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:44:57,224 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:44:58,099 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: status_report
+2025-11-29 18:44:59,286 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:45:01,322 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:45:03,108 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: status_report
+2025-11-29 18:45:03,371 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:45:03,408 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: stop_status
+2025-11-29 18:45:03,408 DEBUG   SenderThread:44432 [sender.py:send_request():407] send_request: stop_status
+2025-11-29 18:45:03,572 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: internal_messages
+2025-11-29 18:45:05,499 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:45:07,513 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:45:08,109 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: status_report
+2025-11-29 18:45:09,550 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:45:11,583 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:45:13,145 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: status_report
+2025-11-29 18:45:13,634 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:45:15,692 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:45:17,750 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:45:17,984 DEBUG   SenderThread:44432 [sender.py:send():380] send: stats
+2025-11-29 18:45:18,156 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: status_report
+2025-11-29 18:45:18,411 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: stop_status
+2025-11-29 18:45:18,411 DEBUG   SenderThread:44432 [sender.py:send_request():407] send_request: stop_status
+2025-11-29 18:45:18,575 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: internal_messages
+2025-11-29 18:45:19,811 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:45:21,857 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:45:23,206 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: status_report
+2025-11-29 18:45:23,905 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:45:25,958 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:45:26,970 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:45:28,260 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: status_report
+2025-11-29 18:45:29,022 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:45:31,091 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:45:33,133 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:45:33,264 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: status_report
+2025-11-29 18:45:33,417 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: stop_status
+2025-11-29 18:45:33,417 DEBUG   SenderThread:44432 [sender.py:send_request():407] send_request: stop_status
+2025-11-29 18:45:33,578 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: internal_messages
+2025-11-29 18:45:35,168 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:45:37,276 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:45:38,332 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: status_report
+2025-11-29 18:45:39,303 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:45:41,367 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:45:43,368 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: status_report
+2025-11-29 18:45:43,424 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:45:45,445 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:45:47,515 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:45:47,992 DEBUG   SenderThread:44432 [sender.py:send():380] send: stats
+2025-11-29 18:45:48,416 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: status_report
+2025-11-29 18:45:48,432 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: stop_status
+2025-11-29 18:45:48,432 DEBUG   SenderThread:44432 [sender.py:send_request():407] send_request: stop_status
+2025-11-29 18:45:48,583 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: internal_messages
+2025-11-29 18:45:49,561 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:45:51,616 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:45:53,447 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: status_report
+2025-11-29 18:45:53,661 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:45:58,386 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: partial_history
+2025-11-29 18:45:58,386 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: partial_history
+2025-11-29 18:45:58,387 DEBUG   SenderThread:44432 [sender.py:send():380] send: history
+2025-11-29 18:45:58,388 DEBUG   SenderThread:44432 [sender.py:send_request():407] send_request: summary_record
+2025-11-29 18:45:58,389 INFO    SenderThread:44432 [sender.py:_save_file():1380] saving file wandb-summary.json with policy end
+2025-11-29 18:45:58,519 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: status_report
+2025-11-29 18:45:58,815 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\wandb-summary.json
+2025-11-29 18:45:59,828 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:46:01,892 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:46:03,439 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: stop_status
+2025-11-29 18:46:03,440 DEBUG   SenderThread:44432 [sender.py:send_request():407] send_request: stop_status
+2025-11-29 18:46:03,591 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: internal_messages
+2025-11-29 18:46:03,788 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: status_report
+2025-11-29 18:46:03,943 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:46:05,997 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:46:08,116 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:46:08,860 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: status_report
+2025-11-29 18:46:10,145 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:46:12,178 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:46:13,902 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: status_report
+2025-11-29 18:46:14,202 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:46:16,253 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:46:18,005 DEBUG   SenderThread:44432 [sender.py:send():380] send: stats
+2025-11-29 18:46:18,316 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:46:18,450 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: stop_status
+2025-11-29 18:46:18,451 DEBUG   SenderThread:44432 [sender.py:send_request():407] send_request: stop_status
+2025-11-29 18:46:18,593 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: internal_messages
+2025-11-29 18:46:18,926 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: status_report
+2025-11-29 18:46:20,379 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:46:22,425 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:46:23,957 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: status_report
+2025-11-29 18:46:24,467 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:46:26,550 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:46:28,599 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:46:28,988 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: status_report
+2025-11-29 18:46:30,653 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:46:32,732 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:46:33,471 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: stop_status
+2025-11-29 18:46:33,472 DEBUG   SenderThread:44432 [sender.py:send_request():407] send_request: stop_status
+2025-11-29 18:46:33,609 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: internal_messages
+2025-11-29 18:46:34,023 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: status_report
+2025-11-29 18:46:34,804 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:46:35,842 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:46:37,967 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:46:39,031 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: status_report
+2025-11-29 18:46:39,995 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:46:42,036 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:46:44,111 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:46:44,120 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: status_report
+2025-11-29 18:46:46,172 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:46:48,016 DEBUG   SenderThread:44432 [sender.py:send():380] send: stats
+2025-11-29 18:46:48,253 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:46:48,490 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: stop_status
+2025-11-29 18:46:48,491 DEBUG   SenderThread:44432 [sender.py:send_request():407] send_request: stop_status
+2025-11-29 18:46:48,612 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: internal_messages
+2025-11-29 18:46:49,128 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: status_report
+2025-11-29 18:46:50,298 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:46:52,333 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:46:54,161 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: status_report
+2025-11-29 18:46:54,369 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:46:56,422 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:46:58,464 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:46:59,242 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: status_report
+2025-11-29 18:47:00,521 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:47:02,581 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:47:03,497 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: stop_status
+2025-11-29 18:47:03,498 DEBUG   SenderThread:44432 [sender.py:send_request():407] send_request: stop_status
+2025-11-29 18:47:03,620 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: internal_messages
+2025-11-29 18:47:04,264 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: status_report
+2025-11-29 18:47:04,646 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:47:06,699 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:47:08,803 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:47:09,929 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: status_report
+2025-11-29 18:47:12,160 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: partial_history
+2025-11-29 18:47:12,160 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: partial_history
+2025-11-29 18:47:12,163 DEBUG   SenderThread:44432 [sender.py:send():380] send: history
+2025-11-29 18:47:12,163 DEBUG   SenderThread:44432 [sender.py:send_request():407] send_request: summary_record
+2025-11-29 18:47:12,164 INFO    SenderThread:44432 [sender.py:_save_file():1380] saving file wandb-summary.json with policy end
+2025-11-29 18:47:12,834 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\wandb-summary.json
+2025-11-29 18:47:13,705 DEBUG   SenderThread:44432 [sender.py:send():380] send: files
+2025-11-29 18:47:13,705 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: partial_history
+2025-11-29 18:47:13,705 INFO    SenderThread:44432 [sender.py:_save_file():1380] saving file media\images\loss_curve_10_513d973c81b3d8b215c7.png with policy now
+2025-11-29 18:47:13,706 DEBUG   SenderThread:44432 [sender.py:send():380] send: history
+2025-11-29 18:47:13,706 DEBUG   SenderThread:44432 [sender.py:send_request():407] send_request: summary_record
+2025-11-29 18:47:13,706 INFO    SenderThread:44432 [sender.py:_save_file():1380] saving file wandb-summary.json with policy end
+2025-11-29 18:47:13,851 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\wandb-summary.json
+2025-11-29 18:47:13,851 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_created():271] file/dir created: wandb\wandb\run-20251129_183246-lbt5f6cc\files\media\images\loss_curve_10_513d973c81b3d8b215c7.png
+2025-11-29 18:47:13,852 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\media
+2025-11-29 18:47:13,852 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_created():271] file/dir created: wandb\wandb\run-20251129_183246-lbt5f6cc\files\media\images
+2025-11-29 18:47:14,864 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:47:15,176 INFO    wandb-upload_0:44432 [upload_job.py:push():131] Uploaded file C:\Users\Asus\AppData\Local\Temp\tmpn72kdcu2wandb\0d5vf599-media/images/loss_curve_10_513d973c81b3d8b215c7.png
+2025-11-29 18:47:15,719 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: status_report
+2025-11-29 18:47:16,418 INFO    wandb-upload_0:44432 [upload_job.py:push():131] Uploaded file C:\Users\Asus\AppData\Local\Temp\tmpn72kdcu2wandb\j27wjan9-media/images/loss_curve_10_513d973c81b3d8b215c7.png
+2025-11-29 18:47:18,019 DEBUG   SenderThread:44432 [sender.py:send():380] send: stats
+2025-11-29 18:47:18,524 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: stop_status
+2025-11-29 18:47:18,525 DEBUG   SenderThread:44432 [sender.py:send_request():407] send_request: stop_status
+2025-11-29 18:47:18,632 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: internal_messages
+2025-11-29 18:47:18,970 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:47:20,926 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: status_report
+2025-11-29 18:47:20,928 DEBUG   SenderThread:44432 [sender.py:send():380] send: exit
+2025-11-29 18:47:20,928 INFO    SenderThread:44432 [sender.py:send_exit():585] handling exit code: 1
+2025-11-29 18:47:20,928 INFO    SenderThread:44432 [sender.py:send_exit():587] handling runtime: 873
+2025-11-29 18:47:20,929 INFO    SenderThread:44432 [sender.py:_save_file():1380] saving file wandb-summary.json with policy end
+2025-11-29 18:47:20,929 INFO    SenderThread:44432 [sender.py:send_exit():593] send defer
+2025-11-29 18:47:20,930 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: defer
+2025-11-29 18:47:20,930 INFO    HandlerThread:44432 [handler.py:handle_request_defer():172] handle defer: 0
+2025-11-29 18:47:20,930 DEBUG   SenderThread:44432 [sender.py:send_request():407] send_request: defer
+2025-11-29 18:47:20,930 INFO    SenderThread:44432 [sender.py:send_request_defer():609] handle sender defer: 0
+2025-11-29 18:47:20,930 INFO    SenderThread:44432 [sender.py:transition_state():613] send defer: 1
+2025-11-29 18:47:20,930 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: defer
+2025-11-29 18:47:20,930 INFO    HandlerThread:44432 [handler.py:handle_request_defer():172] handle defer: 1
+2025-11-29 18:47:20,931 DEBUG   SenderThread:44432 [sender.py:send_request():407] send_request: defer
+2025-11-29 18:47:20,931 INFO    SenderThread:44432 [sender.py:send_request_defer():609] handle sender defer: 1
+2025-11-29 18:47:20,931 INFO    SenderThread:44432 [sender.py:transition_state():613] send defer: 2
+2025-11-29 18:47:20,931 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: defer
+2025-11-29 18:47:20,931 INFO    HandlerThread:44432 [handler.py:handle_request_defer():172] handle defer: 2
+2025-11-29 18:47:20,931 INFO    HandlerThread:44432 [system_monitor.py:finish():203] Stopping system monitor
+2025-11-29 18:47:20,931 DEBUG   SystemMonitor:44432 [system_monitor.py:_start():179] Finished system metrics aggregation loop
+2025-11-29 18:47:20,939 DEBUG   SystemMonitor:44432 [system_monitor.py:_start():183] Publishing last batch of metrics
+2025-11-29 18:47:20,940 INFO    HandlerThread:44432 [interfaces.py:finish():202] Joined cpu monitor
+2025-11-29 18:47:20,940 INFO    HandlerThread:44432 [interfaces.py:finish():202] Joined disk monitor
+2025-11-29 18:47:20,997 INFO    HandlerThread:44432 [interfaces.py:finish():202] Joined gpu monitor
+2025-11-29 18:47:20,997 INFO    HandlerThread:44432 [interfaces.py:finish():202] Joined memory monitor
+2025-11-29 18:47:20,997 INFO    HandlerThread:44432 [interfaces.py:finish():202] Joined network monitor
+2025-11-29 18:47:20,998 DEBUG   SenderThread:44432 [sender.py:send_request():407] send_request: defer
+2025-11-29 18:47:20,998 INFO    SenderThread:44432 [sender.py:send_request_defer():609] handle sender defer: 2
+2025-11-29 18:47:20,998 INFO    SenderThread:44432 [sender.py:transition_state():613] send defer: 3
+2025-11-29 18:47:20,998 DEBUG   SenderThread:44432 [sender.py:send():380] send: stats
+2025-11-29 18:47:20,998 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: defer
+2025-11-29 18:47:20,998 INFO    HandlerThread:44432 [handler.py:handle_request_defer():172] handle defer: 3
+2025-11-29 18:47:20,998 DEBUG   SenderThread:44432 [sender.py:send_request():407] send_request: defer
+2025-11-29 18:47:20,998 INFO    SenderThread:44432 [sender.py:send_request_defer():609] handle sender defer: 3
+2025-11-29 18:47:20,998 INFO    SenderThread:44432 [sender.py:transition_state():613] send defer: 4
+2025-11-29 18:47:20,998 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: defer
+2025-11-29 18:47:20,998 INFO    HandlerThread:44432 [handler.py:handle_request_defer():172] handle defer: 4
+2025-11-29 18:47:20,998 DEBUG   SenderThread:44432 [sender.py:send_request():407] send_request: defer
+2025-11-29 18:47:20,998 INFO    SenderThread:44432 [sender.py:send_request_defer():609] handle sender defer: 4
+2025-11-29 18:47:20,998 INFO    SenderThread:44432 [sender.py:transition_state():613] send defer: 5
+2025-11-29 18:47:20,998 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: defer
+2025-11-29 18:47:20,998 INFO    HandlerThread:44432 [handler.py:handle_request_defer():172] handle defer: 5
+2025-11-29 18:47:20,999 DEBUG   SenderThread:44432 [sender.py:send():380] send: summary
+2025-11-29 18:47:21,000 INFO    SenderThread:44432 [sender.py:_save_file():1380] saving file wandb-summary.json with policy end
+2025-11-29 18:47:21,000 DEBUG   SenderThread:44432 [sender.py:send_request():407] send_request: defer
+2025-11-29 18:47:21,000 INFO    SenderThread:44432 [sender.py:send_request_defer():609] handle sender defer: 5
+2025-11-29 18:47:21,000 INFO    SenderThread:44432 [sender.py:transition_state():613] send defer: 6
+2025-11-29 18:47:21,000 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: defer
+2025-11-29 18:47:21,000 INFO    HandlerThread:44432 [handler.py:handle_request_defer():172] handle defer: 6
+2025-11-29 18:47:21,000 DEBUG   SenderThread:44432 [sender.py:send_request():407] send_request: defer
+2025-11-29 18:47:21,000 INFO    SenderThread:44432 [sender.py:send_request_defer():609] handle sender defer: 6
+2025-11-29 18:47:21,002 INFO    SenderThread:44432 [sender.py:transition_state():613] send defer: 7
+2025-11-29 18:47:21,002 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: status_report
+2025-11-29 18:47:21,002 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: defer
+2025-11-29 18:47:21,002 INFO    HandlerThread:44432 [handler.py:handle_request_defer():172] handle defer: 7
+2025-11-29 18:47:21,002 DEBUG   SenderThread:44432 [sender.py:send_request():407] send_request: defer
+2025-11-29 18:47:21,002 INFO    SenderThread:44432 [sender.py:send_request_defer():609] handle sender defer: 7
+2025-11-29 18:47:21,002 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\wandb-summary.json
+2025-11-29 18:47:21,002 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:47:21,940 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: poll_exit
+2025-11-29 18:47:22,019 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:47:23,029 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:47:23,229 INFO    SenderThread:44432 [sender.py:transition_state():613] send defer: 8
+2025-11-29 18:47:23,229 DEBUG   SenderThread:44432 [sender.py:send_request():407] send_request: poll_exit
+2025-11-29 18:47:23,229 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: defer
+2025-11-29 18:47:23,229 INFO    HandlerThread:44432 [handler.py:handle_request_defer():172] handle defer: 8
+2025-11-29 18:47:23,229 DEBUG   SenderThread:44432 [sender.py:send_request():407] send_request: defer
+2025-11-29 18:47:23,229 INFO    SenderThread:44432 [sender.py:send_request_defer():609] handle sender defer: 8
+2025-11-29 18:47:23,229 INFO    SenderThread:44432 [job_builder.py:build():298] Attempting to build job artifact
+2025-11-29 18:47:23,230 INFO    SenderThread:44432 [job_builder.py:_get_source_type():428] is repo sourced job
+2025-11-29 18:47:23,299 INFO    SenderThread:44432 [job_builder.py:build():404] adding wandb-job metadata file
+2025-11-29 18:47:23,308 INFO    SenderThread:44432 [sender.py:transition_state():613] send defer: 9
+2025-11-29 18:47:23,308 DEBUG   SenderThread:44432 [sender.py:send():380] send: artifact
+2025-11-29 18:47:23,308 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: defer
+2025-11-29 18:47:23,309 INFO    HandlerThread:44432 [handler.py:handle_request_defer():172] handle defer: 9
+2025-11-29 18:47:24,036 INFO    Thread-16 :44432 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:47:25,159 INFO    wandb-upload_0:44432 [upload_job.py:push():86] Skipped uploading C:\Users\Asus\AppData\Local\wandb\wandb\artifacts\staging\tmpl7glp6kr
+2025-11-29 18:47:25,817 INFO    wandb-upload_1:44432 [upload_job.py:push():89] Uploaded file C:\Users\Asus\AppData\Local\wandb\wandb\artifacts\staging\tmp5o1z5v3a
+2025-11-29 18:47:26,968 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: keepalive
+2025-11-29 18:47:28,231 INFO    SenderThread:44432 [sender.py:send_artifact():1458] sent artifact job-https___github.com_AlanMC123_Wd-Pred.git_transformer_prediction.py - {'id': 'QXJ0aWZhY3Q6MjI5MDMzMDQzMQ==', 'state': 'PENDING', 'artifactSequence': {'id': 'QXJ0aWZhY3RDb2xsZWN0aW9uOjgwMjUyMzY5Nw==', 'latestArtifact': {'id': 'QXJ0aWZhY3Q6MjI5MDMwODExNg==', 'versionIndex': 7}}}
+2025-11-29 18:47:28,232 DEBUG   SenderThread:44432 [sender.py:send_request():407] send_request: defer
+2025-11-29 18:47:28,232 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: status_report
+2025-11-29 18:47:28,232 INFO    SenderThread:44432 [sender.py:send_request_defer():609] handle sender defer: 9
+2025-11-29 18:47:28,232 INFO    SenderThread:44432 [dir_watcher.py:finish():358] shutting down directory watcher
+2025-11-29 18:47:29,062 INFO    SenderThread:44432 [dir_watcher.py:finish():388] scan: wandb\wandb\run-20251129_183246-lbt5f6cc\files
+2025-11-29 18:47:29,062 INFO    SenderThread:44432 [dir_watcher.py:finish():402] scan save: wandb\wandb\run-20251129_183246-lbt5f6cc\files\config.yaml config.yaml
+2025-11-29 18:47:29,062 INFO    SenderThread:44432 [dir_watcher.py:finish():402] scan save: wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log output.log
+2025-11-29 18:47:29,062 INFO    SenderThread:44432 [dir_watcher.py:finish():402] scan save: wandb\wandb\run-20251129_183246-lbt5f6cc\files\requirements.txt requirements.txt
+2025-11-29 18:47:29,062 INFO    SenderThread:44432 [dir_watcher.py:finish():402] scan save: wandb\wandb\run-20251129_183246-lbt5f6cc\files\wandb-metadata.json wandb-metadata.json
+2025-11-29 18:47:29,062 INFO    SenderThread:44432 [dir_watcher.py:finish():402] scan save: wandb\wandb\run-20251129_183246-lbt5f6cc\files\wandb-summary.json wandb-summary.json
+2025-11-29 18:47:29,069 INFO    SenderThread:44432 [dir_watcher.py:finish():402] scan save: wandb\wandb\run-20251129_183246-lbt5f6cc\files\media\graph\graph_summary_5539a23328920778143a.graph.json media/graph/graph_summary_5539a23328920778143a.graph.json
+2025-11-29 18:47:29,070 INFO    SenderThread:44432 [dir_watcher.py:finish():402] scan save: wandb\wandb\run-20251129_183246-lbt5f6cc\files\media\images\loss_curve_10_513d973c81b3d8b215c7.png media/images/loss_curve_10_513d973c81b3d8b215c7.png
+2025-11-29 18:47:29,070 INFO    SenderThread:44432 [sender.py:transition_state():613] send defer: 10
+2025-11-29 18:47:29,070 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: defer
+2025-11-29 18:47:29,070 INFO    HandlerThread:44432 [handler.py:handle_request_defer():172] handle defer: 10
+2025-11-29 18:47:29,070 DEBUG   SenderThread:44432 [sender.py:send_request():407] send_request: defer
+2025-11-29 18:47:29,070 INFO    SenderThread:44432 [sender.py:send_request_defer():609] handle sender defer: 10
+2025-11-29 18:47:29,070 INFO    SenderThread:44432 [file_pusher.py:finish():175] shutting down file pusher
+2025-11-29 18:47:29,761 INFO    wandb-upload_0:44432 [upload_job.py:push():131] Uploaded file wandb\wandb\run-20251129_183246-lbt5f6cc\files\config.yaml
+2025-11-29 18:47:30,074 INFO    wandb-upload_3:44432 [upload_job.py:push():131] Uploaded file wandb\wandb\run-20251129_183246-lbt5f6cc\files\wandb-summary.json
+2025-11-29 18:47:30,424 INFO    wandb-upload_2:44432 [upload_job.py:push():131] Uploaded file wandb\wandb\run-20251129_183246-lbt5f6cc\files\requirements.txt
+2025-11-29 18:47:30,948 INFO    wandb-upload_1:44432 [upload_job.py:push():131] Uploaded file wandb\wandb\run-20251129_183246-lbt5f6cc\files\output.log
+2025-11-29 18:47:31,149 INFO    Thread-15 :44432 [sender.py:transition_state():613] send defer: 11
+2025-11-29 18:47:31,149 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: defer
+2025-11-29 18:47:31,149 INFO    HandlerThread:44432 [handler.py:handle_request_defer():172] handle defer: 11
+2025-11-29 18:47:31,149 DEBUG   SenderThread:44432 [sender.py:send_request():407] send_request: defer
+2025-11-29 18:47:31,150 INFO    SenderThread:44432 [sender.py:send_request_defer():609] handle sender defer: 11
+2025-11-29 18:47:31,150 INFO    SenderThread:44432 [file_pusher.py:join():181] waiting for file pusher
+2025-11-29 18:47:31,150 INFO    SenderThread:44432 [sender.py:transition_state():613] send defer: 12
+2025-11-29 18:47:31,150 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: defer
+2025-11-29 18:47:31,150 INFO    HandlerThread:44432 [handler.py:handle_request_defer():172] handle defer: 12
+2025-11-29 18:47:31,150 DEBUG   SenderThread:44432 [sender.py:send_request():407] send_request: defer
+2025-11-29 18:47:31,150 INFO    SenderThread:44432 [sender.py:send_request_defer():609] handle sender defer: 12
+2025-11-29 18:47:31,150 INFO    SenderThread:44432 [file_stream.py:finish():595] file stream finish called
+2025-11-29 18:47:31,998 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: keepalive
+2025-11-29 18:47:32,118 INFO    SenderThread:44432 [file_stream.py:finish():599] file stream finish is done
+2025-11-29 18:47:32,118 INFO    SenderThread:44432 [sender.py:transition_state():613] send defer: 13
+2025-11-29 18:47:32,118 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: defer
+2025-11-29 18:47:32,118 INFO    HandlerThread:44432 [handler.py:handle_request_defer():172] handle defer: 13
+2025-11-29 18:47:32,118 DEBUG   SenderThread:44432 [sender.py:send_request():407] send_request: defer
+2025-11-29 18:47:32,119 INFO    SenderThread:44432 [sender.py:send_request_defer():609] handle sender defer: 13
+2025-11-29 18:47:32,119 INFO    SenderThread:44432 [sender.py:transition_state():613] send defer: 14
+2025-11-29 18:47:32,119 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: defer
+2025-11-29 18:47:32,119 DEBUG   SenderThread:44432 [sender.py:send():380] send: final
+2025-11-29 18:47:32,119 DEBUG   SenderThread:44432 [sender.py:send():380] send: footer
+2025-11-29 18:47:32,119 INFO    HandlerThread:44432 [handler.py:handle_request_defer():172] handle defer: 14
+2025-11-29 18:47:32,119 DEBUG   SenderThread:44432 [sender.py:send_request():407] send_request: defer
+2025-11-29 18:47:32,119 INFO    SenderThread:44432 [sender.py:send_request_defer():609] handle sender defer: 14
+2025-11-29 18:47:32,120 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: poll_exit
+2025-11-29 18:47:32,120 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: server_info
+2025-11-29 18:47:32,120 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: get_summary
+2025-11-29 18:47:32,120 DEBUG   SenderThread:44432 [sender.py:send_request():407] send_request: poll_exit
+2025-11-29 18:47:32,120 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: sampled_history
+2025-11-29 18:47:32,120 DEBUG   SenderThread:44432 [sender.py:send_request():407] send_request: server_info
+2025-11-29 18:47:32,121 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: internal_messages
+2025-11-29 18:47:32,122 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: job_info
+2025-11-29 18:47:32,372 DEBUG   SenderThread:44432 [sender.py:send_request():407] send_request: job_info
+2025-11-29 18:47:32,372 INFO    MainThread:44432 [wandb_run.py:_footer_history_summary_info():3760] rendering history
+2025-11-29 18:47:32,373 INFO    MainThread:44432 [wandb_run.py:_footer_history_summary_info():3792] rendering summary
+2025-11-29 18:47:32,377 INFO    MainThread:44432 [wandb_run.py:_footer_sync_info():3719] logging synced files
+2025-11-29 18:47:32,377 DEBUG   HandlerThread:44432 [handler.py:handle_request():146] handle_request: shutdown
+2025-11-29 18:47:32,378 INFO    HandlerThread:44432 [handler.py:finish():866] shutting down handler
+2025-11-29 18:47:33,134 INFO    WriterThread:44432 [datastore.py:close():294] close: wandb\wandb\run-20251129_183246-lbt5f6cc\run-lbt5f6cc.wandb
+2025-11-29 18:47:33,375 INFO    SenderThread:44432 [sender.py:finish():1536] shutting down sender
+2025-11-29 18:47:33,375 INFO    SenderThread:44432 [file_pusher.py:finish():175] shutting down file pusher
+2025-11-29 18:47:33,375 INFO    SenderThread:44432 [file_pusher.py:join():181] waiting for file pusher

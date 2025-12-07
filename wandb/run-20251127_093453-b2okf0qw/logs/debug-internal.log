@@ -1,0 +1,109 @@
+2025-11-27 09:34:53,446 INFO    StreamThr :21808 [internal.py:wandb_internal():86] W&B internal server running at pid: 21808, started at: 2025-11-27 09:34:53.446953
+2025-11-27 09:34:53,447 DEBUG   HandlerThread:21808 [handler.py:handle_request():146] handle_request: status
+2025-11-27 09:34:53,450 INFO    WriterThread:21808 [datastore.py:open_for_write():85] open: wandb\wandb\run-20251127_093453-b2okf0qw\run-b2okf0qw.wandb
+2025-11-27 09:34:53,452 DEBUG   SenderThread:21808 [sender.py:send():380] send: header
+2025-11-27 09:34:53,512 DEBUG   SenderThread:21808 [sender.py:send():380] send: run
+2025-11-27 09:34:54,450 INFO    SenderThread:21808 [dir_watcher.py:__init__():211] watching files in: wandb\wandb\run-20251127_093453-b2okf0qw\files
+2025-11-27 09:34:54,452 INFO    SenderThread:21808 [sender.py:_start_run_threads():1124] run started: b2okf0qw with start time 1764207293.447963
+2025-11-27 09:34:54,457 DEBUG   HandlerThread:21808 [handler.py:handle_request():146] handle_request: check_version
+2025-11-27 09:34:54,457 DEBUG   SenderThread:21808 [sender.py:send_request():407] send_request: check_version
+2025-11-27 09:34:54,987 DEBUG   HandlerThread:21808 [handler.py:handle_request():146] handle_request: run_start
+2025-11-27 09:34:55,018 DEBUG   HandlerThread:21808 [system_info.py:__init__():32] System info init
+2025-11-27 09:34:55,018 DEBUG   HandlerThread:21808 [system_info.py:__init__():47] System info init done
+2025-11-27 09:34:55,018 INFO    HandlerThread:21808 [system_monitor.py:start():194] Starting system monitor
+2025-11-27 09:34:55,018 INFO    SystemMonitor:21808 [system_monitor.py:_start():158] Starting system asset monitoring threads
+2025-11-27 09:34:55,018 INFO    HandlerThread:21808 [system_monitor.py:probe():214] Collecting system info
+2025-11-27 09:34:55,025 INFO    SystemMonitor:21808 [interfaces.py:start():190] Started cpu monitoring
+2025-11-27 09:34:55,025 INFO    SystemMonitor:21808 [interfaces.py:start():190] Started disk monitoring
+2025-11-27 09:34:55,025 INFO    SystemMonitor:21808 [interfaces.py:start():190] Started gpu monitoring
+2025-11-27 09:34:55,036 INFO    SystemMonitor:21808 [interfaces.py:start():190] Started memory monitoring
+2025-11-27 09:34:55,053 INFO    SystemMonitor:21808 [interfaces.py:start():190] Started network monitoring
+2025-11-27 09:34:55,059 DEBUG   HandlerThread:21808 [system_info.py:probe():196] Probing system
+2025-11-27 09:34:55,060 DEBUG   HandlerThread:21808 [system_info.py:_probe_git():181] Probing git
+2025-11-27 09:34:55,179 DEBUG   HandlerThread:21808 [system_info.py:_probe_git():189] Probing git done
+2025-11-27 09:34:55,179 DEBUG   HandlerThread:21808 [system_info.py:probe():244] Probing system done
+2025-11-27 09:34:55,179 DEBUG   HandlerThread:21808 [system_monitor.py:probe():223] {'os': 'Windows-10-10.0.26100-SP0', 'python': '3.9.11', 'heartbeatAt': '2025-11-27T01:34:55.059572', 'startedAt': '2025-11-27T01:34:53.440512', 'docker': None, 'cuda': None, 'args': (), 'state': 'running', 'program': 'f:\\Codes\\Wd-Pred\\transformer_prediction.py', 'codePathLocal': 'transformer_prediction.py', 'codePath': 'transformer_prediction.py', 'git': {'remote': 'https://github.com/AlanMC123/Wd-Pred.git', 'commit': '318ed8956bc33bece4377f1be8aad9686589b555'}, 'email': 'alan_123@yeah.net', 'root': 'F:/Codes/Wd-Pred', 'host': 'KanchoTX5Pro', 'username': 'Asus', 'executable': 'D:\\Python\\Python39\\python.exe', 'cpu_count': 24, 'cpu_count_logical': 32, 'cpu_freq': {'current': 2200.0, 'min': 0.0, 'max': 2200.0}, 'cpu_freq_per_core': [{'current': 2200.0, 'min': 0.0, 'max': 2200.0}], 'disk': {'/': {'total': 697.8671836853027, 'used': 355.9806137084961}}, 'gpu': 'NVIDIA GeForce RTX 4070 Laptop GPU', 'gpu_count': 1, 'gpu_devices': [{'name': 'NVIDIA GeForce RTX 4070 Laptop GPU', 'memory_total': 8585740288}], 'memory': {'total': 63.627445220947266}}
+2025-11-27 09:34:55,179 INFO    HandlerThread:21808 [system_monitor.py:probe():224] Finished collecting system info
+2025-11-27 09:34:55,179 INFO    HandlerThread:21808 [system_monitor.py:probe():227] Publishing system info
+2025-11-27 09:34:55,179 DEBUG   HandlerThread:21808 [system_info.py:_save_pip():52] Saving list of pip packages installed into the current environment
+2025-11-27 09:34:55,180 DEBUG   HandlerThread:21808 [system_info.py:_save_pip():68] Saving pip packages done
+2025-11-27 09:34:55,180 INFO    HandlerThread:21808 [system_monitor.py:probe():229] Finished publishing system info
+2025-11-27 09:34:55,190 DEBUG   SenderThread:21808 [sender.py:send():380] send: files
+2025-11-27 09:34:55,190 INFO    SenderThread:21808 [sender.py:_save_file():1380] saving file wandb-metadata.json with policy now
+2025-11-27 09:34:55,198 DEBUG   HandlerThread:21808 [handler.py:handle_request():146] handle_request: stop_status
+2025-11-27 09:34:55,198 DEBUG   SenderThread:21808 [sender.py:send_request():407] send_request: stop_status
+2025-11-27 09:34:55,199 DEBUG   HandlerThread:21808 [handler.py:handle_request():146] handle_request: internal_messages
+2025-11-27 09:34:55,459 INFO    Thread-16 :21808 [dir_watcher.py:_on_file_created():271] file/dir created: wandb\wandb\run-20251127_093453-b2okf0qw\files\wandb-metadata.json
+2025-11-27 09:34:55,459 INFO    Thread-16 :21808 [dir_watcher.py:_on_file_created():271] file/dir created: wandb\wandb\run-20251127_093453-b2okf0qw\files\requirements.txt
+2025-11-27 09:34:55,676 DEBUG   SenderThread:21808 [sender.py:send():380] send: telemetry
+2025-11-27 09:34:55,676 DEBUG   SenderThread:21808 [sender.py:send():380] send: telemetry
+2025-11-27 09:34:55,676 DEBUG   SenderThread:21808 [sender.py:send():380] send: config
+2025-11-27 09:34:55,676 DEBUG   SenderThread:21808 [sender.py:send():380] send: config
+2025-11-27 09:34:55,676 DEBUG   SenderThread:21808 [sender.py:send():380] send: config
+2025-11-27 09:34:55,676 DEBUG   SenderThread:21808 [sender.py:send():380] send: config
+2025-11-27 09:34:55,676 DEBUG   SenderThread:21808 [sender.py:send():380] send: config
+2025-11-27 09:34:55,676 DEBUG   SenderThread:21808 [sender.py:send():380] send: config
+2025-11-27 09:34:55,676 DEBUG   SenderThread:21808 [sender.py:send():380] send: config
+2025-11-27 09:34:55,676 DEBUG   SenderThread:21808 [sender.py:send():380] send: config
+2025-11-27 09:34:55,676 DEBUG   SenderThread:21808 [sender.py:send():380] send: config
+2025-11-27 09:34:55,676 DEBUG   SenderThread:21808 [sender.py:send():380] send: config
+2025-11-27 09:34:55,676 DEBUG   SenderThread:21808 [sender.py:send():380] send: config
+2025-11-27 09:34:56,464 INFO    Thread-16 :21808 [dir_watcher.py:_on_file_created():271] file/dir created: wandb\wandb\run-20251127_093453-b2okf0qw\files\output.log
+2025-11-27 09:34:56,552 INFO    wandb-upload_0:21808 [upload_job.py:push():131] Uploaded file C:\Users\Asus\AppData\Local\Temp\tmplqkyanqfwandb\nusmekls-wandb-metadata.json
+2025-11-27 09:34:58,478 INFO    Thread-16 :21808 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251127_093453-b2okf0qw\files\output.log
+2025-11-27 09:34:58,704 DEBUG   HandlerThread:21808 [handler.py:handle_request():146] handle_request: status_report
+2025-11-27 09:35:03,750 DEBUG   HandlerThread:21808 [handler.py:handle_request():146] handle_request: status_report
+2025-11-27 09:35:08,781 DEBUG   HandlerThread:21808 [handler.py:handle_request():146] handle_request: status_report
+2025-11-27 09:35:10,228 DEBUG   HandlerThread:21808 [handler.py:handle_request():146] handle_request: internal_messages
+2025-11-27 09:35:10,271 DEBUG   HandlerThread:21808 [handler.py:handle_request():146] handle_request: stop_status
+2025-11-27 09:35:10,271 DEBUG   SenderThread:21808 [sender.py:send_request():407] send_request: stop_status
+2025-11-27 09:35:14,616 DEBUG   HandlerThread:21808 [handler.py:handle_request():146] handle_request: status_report
+2025-11-27 09:35:19,635 DEBUG   HandlerThread:21808 [handler.py:handle_request():146] handle_request: status_report
+2025-11-27 09:35:24,673 DEBUG   HandlerThread:21808 [handler.py:handle_request():146] handle_request: status_report
+2025-11-27 09:35:25,341 DEBUG   HandlerThread:21808 [handler.py:handle_request():146] handle_request: stop_status
+2025-11-27 09:35:25,341 DEBUG   SenderThread:21808 [sender.py:send_request():407] send_request: stop_status
+2025-11-27 09:35:25,342 DEBUG   HandlerThread:21808 [handler.py:handle_request():146] handle_request: internal_messages
+2025-11-27 09:35:25,699 INFO    Thread-16 :21808 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251127_093453-b2okf0qw\files\config.yaml
+2025-11-27 09:35:30,742 DEBUG   HandlerThread:21808 [handler.py:handle_request():146] handle_request: status_report
+2025-11-27 09:35:35,873 DEBUG   HandlerThread:21808 [handler.py:handle_request():146] handle_request: status_report
+2025-11-27 09:35:36,767 INFO    Thread-16 :21808 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251127_093453-b2okf0qw\files\output.log
+2025-11-27 09:35:37,771 INFO    Thread-16 :21808 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251127_093453-b2okf0qw\files\output.log
+2025-11-27 09:35:40,367 DEBUG   HandlerThread:21808 [handler.py:handle_request():146] handle_request: internal_messages
+2025-11-27 09:35:40,367 DEBUG   HandlerThread:21808 [handler.py:handle_request():146] handle_request: stop_status
+2025-11-27 09:35:40,367 DEBUG   SenderThread:21808 [sender.py:send_request():407] send_request: stop_status
+2025-11-27 09:35:41,694 DEBUG   HandlerThread:21808 [handler.py:handle_request():146] handle_request: status_report
+2025-11-27 09:35:46,723 DEBUG   HandlerThread:21808 [handler.py:handle_request():146] handle_request: status_report
+2025-11-27 09:35:51,760 DEBUG   HandlerThread:21808 [handler.py:handle_request():146] handle_request: status_report
+2025-11-27 09:35:55,058 DEBUG   SystemMonitor:21808 [system_monitor.py:_start():172] Starting system metrics aggregation loop
+2025-11-27 09:35:55,058 DEBUG   SenderThread:21808 [sender.py:send():380] send: stats
+2025-11-27 09:35:55,375 DEBUG   HandlerThread:21808 [handler.py:handle_request():146] handle_request: internal_messages
+2025-11-27 09:35:55,375 DEBUG   HandlerThread:21808 [handler.py:handle_request():146] handle_request: stop_status
+2025-11-27 09:35:55,375 DEBUG   SenderThread:21808 [sender.py:send_request():407] send_request: stop_status
+2025-11-27 09:35:57,764 DEBUG   HandlerThread:21808 [handler.py:handle_request():146] handle_request: status_report
+2025-11-27 09:36:02,821 DEBUG   HandlerThread:21808 [handler.py:handle_request():146] handle_request: status_report
+2025-11-27 09:36:07,850 DEBUG   HandlerThread:21808 [handler.py:handle_request():146] handle_request: status_report
+2025-11-27 09:36:10,362 DEBUG   HandlerThread:21808 [handler.py:handle_request():146] handle_request: internal_messages
+2025-11-27 09:36:10,377 DEBUG   HandlerThread:21808 [handler.py:handle_request():146] handle_request: stop_status
+2025-11-27 09:36:10,377 DEBUG   SenderThread:21808 [sender.py:send_request():407] send_request: stop_status
+2025-11-27 09:36:13,721 DEBUG   HandlerThread:21808 [handler.py:handle_request():146] handle_request: status_report
+2025-11-27 09:36:18,772 DEBUG   HandlerThread:21808 [handler.py:handle_request():146] handle_request: status_report
+2025-11-27 09:36:23,801 DEBUG   HandlerThread:21808 [handler.py:handle_request():146] handle_request: status_report
+2025-11-27 09:36:25,065 DEBUG   SenderThread:21808 [sender.py:send():380] send: stats
+2025-11-27 09:36:25,364 DEBUG   HandlerThread:21808 [handler.py:handle_request():146] handle_request: internal_messages
+2025-11-27 09:36:25,394 DEBUG   HandlerThread:21808 [handler.py:handle_request():146] handle_request: stop_status
+2025-11-27 09:36:25,395 DEBUG   SenderThread:21808 [sender.py:send_request():407] send_request: stop_status
+2025-11-27 09:36:29,735 DEBUG   HandlerThread:21808 [handler.py:handle_request():146] handle_request: status_report
+2025-11-27 09:36:34,766 DEBUG   HandlerThread:21808 [handler.py:handle_request():146] handle_request: status_report
+2025-11-27 09:36:39,788 DEBUG   HandlerThread:21808 [handler.py:handle_request():146] handle_request: status_report
+2025-11-27 09:36:40,360 INFO    Thread-16 :21808 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251127_093453-b2okf0qw\files\output.log
+2025-11-27 09:36:40,372 DEBUG   HandlerThread:21808 [handler.py:handle_request():146] handle_request: internal_messages
+2025-11-27 09:36:40,402 DEBUG   HandlerThread:21808 [handler.py:handle_request():146] handle_request: stop_status
+2025-11-27 09:36:40,402 DEBUG   SenderThread:21808 [sender.py:send_request():407] send_request: stop_status
+2025-11-27 09:36:42,387 INFO    Thread-16 :21808 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251127_093453-b2okf0qw\files\output.log
+2025-11-27 09:36:44,193 DEBUG   HandlerThread:21808 [handler.py:handle_request():146] handle_request: partial_history
+2025-11-27 09:36:44,193 DEBUG   SenderThread:21808 [sender.py:send():380] send: history
+2025-11-27 09:36:44,193 DEBUG   SenderThread:21808 [sender.py:send_request():407] send_request: summary_record
+2025-11-27 09:36:44,205 INFO    SenderThread:21808 [sender.py:_save_file():1380] saving file wandb-summary.json with policy end
+2025-11-27 09:36:44,422 INFO    Thread-16 :21808 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251127_093453-b2okf0qw\files\output.log
+2025-11-27 09:36:44,422 INFO    Thread-16 :21808 [dir_watcher.py:_on_file_created():271] file/dir created: wandb\wandb\run-20251127_093453-b2okf0qw\files\wandb-summary.json
+2025-11-27 09:36:45,084 DEBUG   HandlerThread:21808 [handler.py:handle_request():146] handle_request: status_report

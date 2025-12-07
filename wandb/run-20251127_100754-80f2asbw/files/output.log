@@ -1,0 +1,476 @@
+
+Step 1: 读取数据并构建四特征...
+Step 2: 构建四输入样本...
+f:\Codes\Wd-Pred\LSTM_prediction.py:80: FutureWarning: DataFrameGroupBy.apply operated on the grouping columns. This behavior is deprecated, and in a future version of pandas the grouping columns will be excluded from the operation. Either pass `include_groups=False` to exclude the groupings or explicitly select the grouping columns after groupby to silence this warning.
+  history_map = df.groupby('Username').apply(
+数据集划分：训练集 2770743, 验证集 395820, 测试集 791642
+Step 3: 构建四输入神经网络 (Vocab=321)...
+Step 4: 开始训练 (Epochs=10, Batch=2048)...
+Epoch 1/10
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+1353/1353 [==============================] - 221s 162ms/step - loss: 1.6738 - output_steps_loss: 1.5996 - output_success_loss: 0.1482 - output_success_accuracy: 0.9666 - val_loss: 1.5982 - val_output_steps_loss: 1.5405 - val_output_success_loss: 0.1154 - val_output_success_accuracy: 0.9667
+Epoch 2/10
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+1353/1353 [==============================] - 219s 162ms/step - loss: 1.3222 - output_steps_loss: 1.2638 - output_success_loss: 0.1168 - output_success_accuracy: 0.9670 - val_loss: 1.6788 - val_output_steps_loss: 1.6234 - val_output_success_loss: 0.1108 - val_output_success_accuracy: 0.9675
+Epoch 3/10
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+1353/1353 [==============================] - 229s 169ms/step - loss: 1.3081 - output_steps_loss: 1.2517 - output_success_loss: 0.1128 - output_success_accuracy: 0.9673 - val_loss: 1.6766 - val_output_steps_loss: 1.6216 - val_output_success_loss: 0.1099 - val_output_success_accuracy: 0.9678
+Epoch 4/10
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+1353/1353 [==============================] - ETA: 0s - loss: 1.2994 - output_steps_loss: 1.2436 - output_success_loss: 0.1117 - output_success_accuracy: 0.9675Restoring model weights from the end of the best epoch: 1.
+1353/1353 [==============================] - 220s 162ms/step - loss: 1.2994 - output_steps_loss: 1.2436 - output_success_loss: 0.1117 - output_success_accuracy: 0.9675 - val_loss: 1.6284 - val_output_steps_loss: 1.5736 - val_output_success_loss: 0.1096 - val_output_success_accuracy: 0.9678
+Epoch 4: early stopping
+✅ 模型已成功保存到文件夹: LSTM_Model
+✅ Loss曲线已保存至: visualization\LSTM_loss_curve.png
+✅ 模型已成功保存到文件夹: LSTM_Model
+Step 4: 开始批量预测，显示进度条...
+
+
+
+
+194/194 [==============================] - 10s 52ms/step
+Step 4: 开始批量预测，显示进度条...
+
+
+
+
+
+
+
+
+
+
+387/387 [==============================] - 21s 53ms/step
+========================================
+  LSTM模型验证和测试报告
+========================================
+---- 验证集指标 ----
+1. 平均步数误差 (MAE)    : 1.0117
+2. 均方根误差 (RMSE)     : 1.2412
+3. 胜负预测准确率        : 96.665%
+4. ROC曲线下面积 (AUC)   : 0.8506
+5. 大型误差率 (>1.5步)  : 23.978%
+---- 测试集指标 ----
+1. 平均步数误差 (MAE)    : 1.0120
+2. 均方根误差 (RMSE)     : 1.2408
+3. 胜负预测准确率        : 96.675%
+4. ROC曲线下面积 (AUC)   : 0.8520
+5. 大型误差率 (>1.5步)  : 24.070%
+========================================
+🔍 开始执行perform_validation函数...
+🔍 符合条件的用户数量: 138387, 抽样数量: 10000
+🔍 已抽取 10 个用户进行展示
+Step 5: 启动回测验证抽样报告 (样本数=10000, 输出至 outputs/lstm_output.txt)...
+------------------------------------------------------------
+User ID    | Bias  | Diff  | Real  | Pred  | Err   | Status
+------------------------------------------------------------
+839857     | 4.58  | 4.51  | 7    | 4.17  | 2.83  | ❌
+929304     | 4.42  | 4.14  | 4    | 3.68  | 0.32  | ✅
+15464      | 3.62  | 4.40  | 3    | 3.25  | 0.25  | ✅
+878530     | 4.25  | 3.77  | 3    | 3.37  | 0.37  | ✅
+751211     | 4.01  | 4.72  | 4    | 3.93  | 0.07  | ✅
+726102     | 2.86  | 4.03  | 2    | 2.62  | 0.62  | ✅
+816607     | 4.14  | 4.72  | 3    | 4.02  | 1.02  | ⚠️
+298332     | 4.10  | 4.28  | 3    | 3.59  | 0.59  | ✅
+640130     | 3.31  | 4.23  | 2    | 2.98  | 0.98  | ✅
+744357     | 3.94  | 4.72  | 3    | 3.86  | 0.86  | ✅
+... (其余 9990 条省略)
+✅ 抽样报告已成功导出至 outputs/lstm_output.txt 文件。
+✅ 预测趋势图已保存至: visualization\LSTM_prediction_trends.png

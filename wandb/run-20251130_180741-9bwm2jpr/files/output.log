@@ -1,0 +1,117 @@
+===== 加载所有预处理数据集 =====
+Step 1: 加载预处理后的数据 - train_data.csv
+  读取数据集完成，共3632544条记录，耗时: 2.59秒
+  创建单词ID完成，词汇表大小: 321，耗时: 17.88秒
+  读取单词难度数据...
+  读取用户水平数据...
+  构建历史数据映射...
+  数据加载和预处理完成，总耗时: 28.49秒
+  性能统计:
+    - 数据读取: 2.59秒
+    - 单词ID创建: 17.88秒
+    - 单词难度加载: 0.12秒
+    - 用户水平加载: 0.14秒
+    - 历史映射构建: 6.29秒
+Step 1: 加载预处理后的数据 - val_data.csv
+  读取数据集完成，共518935条记录，耗时: 0.36秒
+  创建单词ID完成，词汇表大小: 321，耗时: 2.78秒
+  读取单词难度数据...
+  读取用户水平数据...
+  构建历史数据映射...
+  数据加载和预处理完成，总耗时: 8.92秒
+  性能统计:
+    - 数据读取: 0.36秒
+    - 单词ID创建: 2.78秒
+    - 单词难度加载: 0.02秒
+    - 用户水平加载: 0.12秒
+    - 历史映射构建: 5.53秒
+Step 1: 加载预处理后的数据 - test_data.csv
+  读取数据集完成，共1037870条记录，耗时: 0.72秒
+  创建单词ID完成，词汇表大小: 321，耗时: 5.22秒
+  读取单词难度数据...
+  读取用户水平数据...
+  构建历史数据映射...
+  数据加载和预处理完成，总耗时: 12.18秒
+  性能统计:
+    - 数据读取: 0.72秒
+    - 单词ID创建: 5.22秒
+    - 单词难度加载: 0.03秒
+    - 用户水平加载: 0.12秒
+    - 历史映射构建: 5.86秒
+Step 2: 构建四输入样本...
+数据集构建完成: 共2468390个样本
+Step 2: 构建四输入样本...
+数据集构建完成: 共83482个样本
+Step 2: 构建四输入样本...
+数据集构建完成: 共374266个样本
+===== 所有数据集准备完成 =====
+数据集划分：训练集 2468390, 验证集 83482, 测试集 374266
+✅ 数据加载优化已应用 (cache + prefetch)
+Step 3: 检测到已保存模型 models/Transformer_Model.keras，尝试加载...
+❌ 模型加载失败: <class 'keras.src.models.functional.Functional'> could not be deserialized properly. Please ensure that components that are Python object instances (layers, models, etc.) returned by `get_config()` are explicitly deserialized in the model's `from_config()` method.
+
+config={'module': 'keras.src.models.functional', 'class_name': 'Functional', 'config': {}, 'registered_name': 'Functional', 'build_config': {'input_shape': None}, 'compile_config': {'optimizer': {'module': 'keras.optimizers', 'class_name': 'Adam', 'config': {'name': 'adam', 'learning_rate': 0.0010000000474974513, 'weight_decay': None, 'clipnorm': None, 'global_clipnorm': None, 'clipvalue': None, 'use_ema': False, 'ema_momentum': 0.99, 'ema_overwrite_frequency': None, 'loss_scale_factor': None, 'gradient_accumulation_steps': None, 'beta_1': 0.9, 'beta_2': 0.999, 'epsilon': 1e-07, 'amsgrad': False}, 'registered_name': None}, 'loss': {'output_steps': 'mse', 'output_success': {'module': 'builtins', 'class_name': 'function', 'config': 'focal_loss', 'registered_name': 'function'}}, 'loss_weights': {'output_steps': 1.0, 'output_success': 0.5}, 'metrics': {'output_success': ['accuracy']}, 'weighted_metrics': None, 'run_eagerly': False, 'steps_per_execution': 1, 'jit_compile': False}}.
+
+Exception encountered: Could not locate class 'TransformerBlock'. Make sure custom classes and functions are decorated with `@keras.saving.register_keras_serializable()`. If they are already decorated, make sure they are all imported so that the decorator is run before trying to load them. Full object config: {'module': None, 'class_name': 'TransformerBlock', 'config': {'key_dim': 2, 'num_heads': 6, 'ff_dim': 192, 'rate': 0.2, 'trainable': True, 'dtype': {'module': 'keras', 'class_name': 'DTypePolicy', 'config': {'name': 'mixed_float16'}, 'registered_name': None}}, 'registered_name': 'TransformerBlock', 'build_config': {'input_shape': [None, 8, 2]}, 'name': 'transformer_block', 'inbound_nodes': [{'args': [{'class_name': '__keras_tensor__', 'config': {'shape': [None, 8, 2], 'dtype': 'float32', 'keras_history': ['add', 0, 0]}}], 'kwargs': {'training': False}}]}. 将重新构建并训练模型。
+Step 3: 构建Transformer神经网络 (Vocab=321, Layers=3)...
+WARNING:tensorflow:From D:\Python\Python312\Lib\site-packages\keras\src\backend\tensorflow\core.py:232: The name tf.placeholder is deprecated. Please use tf.compat.v1.placeholder instead.
+
+D:\Python\Python312\Lib\site-packages\keras\src\layers\core\embedding.py:97: UserWarning: Argument `input_length` is deprecated. Just remove it.
+  warnings.warn(
+✅ 模型编译完成，使用Focal Loss (gamma=2.0, alpha=0.25)
+Step 4: 开始训练 (Epochs=10, Batch=4096, Patience=5)...
+提示: 当前使用CPU训练，速度可能较慢。建议使用支持CUDA的GPU以获得显著加速。
+Epoch 1/10
+[1m603/603[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m91s[0m 144ms/step - loss: 2.3688 - output_steps_loss: 2.3564 - output_success_accuracy: 0.9491 - output_success_loss: 0.0236 - val_loss: 1.2018 - val_output_steps_loss: 1.1917 - val_output_success_accuracy: 0.9704 - val_output_success_loss: 0.0191
+Epoch 2/10
+[1m603/603[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m87s[0m 144ms/step - loss: 1.3389 - output_steps_loss: 1.3297 - output_success_accuracy: 0.9685 - output_success_loss: 0.0186 - val_loss: 1.1959 - val_output_steps_loss: 1.1868 - val_output_success_accuracy: 0.9707 - val_output_success_loss: 0.0165
+Epoch 3/10
+[1m603/603[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m87s[0m 145ms/step - loss: 1.3164 - output_steps_loss: 1.3078 - output_success_accuracy: 0.9666 - output_success_loss: 0.0173 - val_loss: 1.1946 - val_output_steps_loss: 1.1857 - val_output_success_accuracy: 0.9704 - val_output_success_loss: 0.0161
+Epoch 4/10
+[1m603/603[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m87s[0m 145ms/step - loss: 1.2914 - output_steps_loss: 1.2824 - output_success_accuracy: 0.9663 - output_success_loss: 0.0179 - val_loss: 1.1968 - val_output_steps_loss: 1.1856 - val_output_success_accuracy: 0.9704 - val_output_success_loss: 0.0208
+Epoch 5/10
+[1m603/603[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m88s[0m 145ms/step - loss: 1.2585 - output_steps_loss: 1.2478 - output_success_accuracy: 0.9692 - output_success_loss: 0.0214 - val_loss: 1.1971 - val_output_steps_loss: 1.1862 - val_output_success_accuracy: 0.9704 - val_output_success_loss: 0.0202
+Epoch 6/10
+[1m603/603[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m88s[0m 145ms/step - loss: 1.2243 - output_steps_loss: 1.2148 - output_success_accuracy: 0.9692 - output_success_loss: 0.0191 - val_loss: 1.1959 - val_output_steps_loss: 1.1863 - val_output_success_accuracy: 0.9704 - val_output_success_loss: 0.0176
+Epoch 7/10
+[1m603/603[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m87s[0m 145ms/step - loss: 1.2092 - output_steps_loss: 1.2006 - output_success_accuracy: 0.9686 - output_success_loss: 0.0172 - val_loss: 1.1945 - val_output_steps_loss: 1.1855 - val_output_success_accuracy: 0.9689 - val_output_success_loss: 0.0162
+Epoch 8/10
+[1m603/603[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m100s[0m 166ms/step - loss: 1.2025 - output_steps_loss: 1.1942 - output_success_accuracy: 0.9663 - output_success_loss: 0.0166 - val_loss: 1.1949 - val_output_steps_loss: 1.1861 - val_output_success_accuracy: 0.9666 - val_output_success_loss: 0.0161
+Epoch 9/10
+[1m603/603[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m88s[0m 145ms/step - loss: 1.1999 - output_steps_loss: 1.1917 - output_success_accuracy: 0.9636 - output_success_loss: 0.0164 - val_loss: 1.1957 - val_output_steps_loss: 1.1868 - val_output_success_accuracy: 0.9622 - val_output_success_loss: 0.0160
+Epoch 10/10
+[1m603/603[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m87s[0m 145ms/step - loss: 1.1979 - output_steps_loss: 1.1897 - output_success_accuracy: 0.9622 - output_success_loss: 0.0163 - val_loss: 1.1964 - val_output_steps_loss: 1.1875 - val_output_success_accuracy: 0.9630 - val_output_success_loss: 0.0160
+✅ Loss曲线已保存至: visualization\Transformer_loss_curve.png
+
+✅ 模型已成功保存到: models/Transformer_Model.keras
+
+Step 4: 开始批量预测，显示进度条...
+[1m21/21[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m2s[0m 73ms/step
+
+Step 4: 开始批量预测，显示进度条...
+[1m92/92[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m6s[0m 63ms/step
+
+========================================
+  Transformer模型验证和测试报告
+========================================
+---- 验证集指标 ----
+1. 平均步数误差 (MAE)    : 0.8875
+2. 均方根误差 (RMSE)     : 1.0892
+3. 胜负预测准确率        : 96.888%
+4. ROC曲线下面积 (AUC)   : 0.8394
+5. 大型误差率 (>1.5步)  : 17.193%
+
+---- 测试集指标 ----
+1. 平均步数误差 (MAE)    : 0.8868
+2. 均方根误差 (RMSE)     : 1.0888
+3. 胜负预测准确率        : 96.869%
+4. ROC曲线下面积 (AUC)   : 0.8447
+5. 大型误差率 (>1.5步)  : 17.043%
+========================================
+Traceback (most recent call last):
+  File "f:\Codes\Wd-Pred\transformer_prediction.py", line 938, in <module>
+    main()
+  File "f:\Codes\Wd-Pred\transformer_prediction.py", line 874, in main
+    perform_validation(model, user_map, valid_users, LOOK_BACK,
+                             ^^^^^^^^
+UnboundLocalError: cannot access local variable 'user_map' where it is not associated with a value

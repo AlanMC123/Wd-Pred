@@ -1,0 +1,82 @@
+===== 加载所有预处理数据集 =====
+Step 1: 加载预处理后的数据 - train_data.csv
+  读取数据集完成，共3632544条记录，耗时: 2.50秒
+  创建单词ID完成，词汇表大小: 321，耗时: 17.98秒
+  读取单词难度数据...
+  读取用户水平数据...
+  构建历史数据映射...
+  数据加载和预处理完成，总耗时: 28.37秒
+  性能统计:
+    - 数据读取: 2.50秒
+    - 单词ID创建: 17.98秒
+    - 单词难度加载: 0.13秒
+    - 用户水平加载: 0.15秒
+    - 历史映射构建: 6.39秒
+Step 1: 加载预处理后的数据 - val_data.csv
+  读取数据集完成，共518935条记录，耗时: 0.37秒
+  创建单词ID完成，词汇表大小: 321，耗时: 2.73秒
+  读取单词难度数据...
+  读取用户水平数据...
+  构建历史数据映射...
+  数据加载和预处理完成，总耗时: 8.92秒
+  性能统计:
+    - 数据读取: 0.37秒
+    - 单词ID创建: 2.73秒
+    - 单词难度加载: 0.02秒
+    - 用户水平加载: 0.12秒
+    - 历史映射构建: 5.58秒
+Step 1: 加载预处理后的数据 - test_data.csv
+  读取数据集完成，共1037870条记录，耗时: 0.73秒
+  创建单词ID完成，词汇表大小: 321，耗时: 5.39秒
+  读取单词难度数据...
+  读取用户水平数据...
+  构建历史数据映射...
+  数据加载和预处理完成，总耗时: 12.06秒
+  性能统计:
+    - 数据读取: 0.73秒
+    - 单词ID创建: 5.39秒
+    - 单词难度加载: 0.03秒
+    - 用户水平加载: 0.12秒
+    - 历史映射构建: 5.55秒
+Step 2: 构建四输入样本...
+数据集构建完成: 共2468390个样本
+Step 2: 构建四输入样本...
+数据集构建完成: 共83482个样本
+Step 2: 构建四输入样本...
+数据集构建完成: 共374266个样本
+===== 所有数据集准备完成 =====
+数据集划分：训练集 2468390, 验证集 83482, 测试集 374266
+✅ 数据加载优化已应用 (cache + prefetch)
+Step 3: 构建Transformer神经网络 (Vocab=321, Layers=3)...
+WARNING:tensorflow:From D:\Python\Python312\Lib\site-packages\keras\src\backend\tensorflow\core.py:232: The name tf.placeholder is deprecated. Please use tf.compat.v1.placeholder instead.
+
+D:\Python\Python312\Lib\site-packages\keras\src\layers\core\embedding.py:97: UserWarning: Argument `input_length` is deprecated. Just remove it.
+  warnings.warn(
+✅ 模型编译完成，使用Focal Loss (gamma=2.0, alpha=0.25)
+Step 4: 开始训练 (Epochs=10, Batch=4096, Patience=5)...
+提示: 当前使用CPU训练，速度可能较慢。建议使用支持CUDA的GPU以获得显著加速。
+Epoch 1/10
+[1m603/603[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m91s[0m 144ms/step - loss: 1.9872 - output_steps_loss: 1.9763 - output_success_accuracy: 0.9673 - output_success_loss: 0.0209 - val_loss: 1.2008 - val_output_steps_loss: 1.1918 - val_output_success_accuracy: 0.9701 - val_output_success_loss: 0.0166
+Epoch 2/10
+[1m603/603[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m97s[0m 161ms/step - loss: 1.2762 - output_steps_loss: 1.2676 - output_success_accuracy: 0.9677 - output_success_loss: 0.0172 - val_loss: 1.2078 - val_output_steps_loss: 1.1990 - val_output_success_accuracy: 0.9688 - val_output_success_loss: 0.0158
+Epoch 3/10
+[1m603/603[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m92s[0m 153ms/step - loss: 1.2413 - output_steps_loss: 1.2330 - output_success_accuracy: 0.9657 - output_success_loss: 0.0166 - val_loss: 1.2129 - val_output_steps_loss: 1.2040 - val_output_success_accuracy: 0.9688 - val_output_success_loss: 0.0158
+Epoch 4/10
+[1m603/603[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m87s[0m 145ms/step - loss: 1.2169 - output_steps_loss: 1.2088 - output_success_accuracy: 0.9650 - output_success_loss: 0.0163 - val_loss: 1.2281 - val_output_steps_loss: 1.2189 - val_output_success_accuracy: 0.9700 - val_output_success_loss: 0.0162
+Epoch 5/10
+[1m603/603[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m87s[0m 145ms/step - loss: 1.2064 - output_steps_loss: 1.1984 - output_success_accuracy: 0.9647 - output_success_loss: 0.0160 - val_loss: 1.2402 - val_output_steps_loss: 1.2308 - val_output_success_accuracy: 0.9702 - val_output_success_loss: 0.0163
+Epoch 6/10
+[1m603/603[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m88s[0m 145ms/step - loss: 1.2018 - output_steps_loss: 1.1939 - output_success_accuracy: 0.9646 - output_success_loss: 0.0158 - val_loss: 1.2373 - val_output_steps_loss: 1.2280 - val_output_success_accuracy: 0.9702 - val_output_success_loss: 0.0161
+✅ Loss曲线已保存至: visualization\Transformer_loss_curve.png
+
+✅ 模型已成功保存到: models/Transformer_Model.keras
+
+Step 4: 开始批量预测，显示进度条...
+[1m21/21[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m2s[0m 71ms/step
+Traceback (most recent call last):
+  File "f:\Codes\Wd-Pred\transformer_prediction.py", line 937, in <module>
+    main()
+  File "f:\Codes\Wd-Pred\transformer_prediction.py", line 803, in main
+    'input_history': X_s[test_idx],
+                         ^^^^^^^^
+NameError: name 'test_idx' is not defined

@@ -1,0 +1,70 @@
+2025-11-26 23:14:38,878 INFO    StreamThr :8100 [internal.py:wandb_internal():86] W&B internal server running at pid: 8100, started at: 2025-11-26 23:14:38.878500
+2025-11-26 23:14:38,880 DEBUG   HandlerThread:8100 [handler.py:handle_request():146] handle_request: status
+2025-11-26 23:14:38,882 INFO    WriterThread:8100 [datastore.py:open_for_write():85] open: wandb\wandb\run-20251126_231438-t32u2laz\run-t32u2laz.wandb
+2025-11-26 23:14:38,884 DEBUG   SenderThread:8100 [sender.py:send():380] send: header
+2025-11-26 23:14:38,935 DEBUG   SenderThread:8100 [sender.py:send():380] send: run
+2025-11-26 23:14:42,534 INFO    SenderThread:8100 [retry.py:__call__():172] Retry attempt failed:
+urllib3.exceptions.SSLError: EOF occurred in violation of protocol (_ssl.c:1129)
+
+The above exception was the direct cause of the following exception:
+
+urllib3.exceptions.ProxyError: ('Unable to connect to proxy', SSLError(SSLEOFError(8, 'EOF occurred in violation of protocol (_ssl.c:1129)')))
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "D:\Python\Python39\lib\site-packages\requests\adapters.py", line 644, in send
+    resp = conn.urlopen(
+  File "D:\Python\Python39\lib\site-packages\urllib3\connectionpool.py", line 841, in urlopen
+    retries = retries.increment(
+  File "D:\Python\Python39\lib\site-packages\urllib3\util\retry.py", line 519, in increment
+    raise MaxRetryError(_pool, url, reason) from reason  # type: ignore[arg-type]
+urllib3.exceptions.MaxRetryError: HTTPSConnectionPool(host='api.wandb.ai', port=443): Max retries exceeded with url: /graphql (Caused by ProxyError('Unable to connect to proxy', SSLError(SSLEOFError(8, 'EOF occurred in violation of protocol (_ssl.c:1129)'))))
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "D:\Python\Python39\lib\site-packages\wandb\sdk\lib\retry.py", line 131, in __call__
+    result = self._call_fn(*args, **kwargs)
+  File "D:\Python\Python39\lib\site-packages\wandb\sdk\internal\internal_api.py", line 366, in execute
+    return self.client.execute(*args, **kwargs)  # type: ignore
+  File "D:\Python\Python39\lib\site-packages\wandb\vendor\gql-0.2.0\wandb_gql\client.py", line 52, in execute
+    result = self._get_result(document, *args, **kwargs)
+  File "D:\Python\Python39\lib\site-packages\wandb\vendor\gql-0.2.0\wandb_gql\client.py", line 60, in _get_result
+    return self.transport.execute(document, *args, **kwargs)
+  File "D:\Python\Python39\lib\site-packages\wandb\sdk\lib\gql_request.py", line 58, in execute
+    request = self.session.post(self.url, **post_args)
+  File "D:\Python\Python39\lib\site-packages\requests\sessions.py", line 637, in post
+    return self.request("POST", url, data=data, json=json, **kwargs)
+  File "D:\Python\Python39\lib\site-packages\requests\sessions.py", line 589, in request
+    resp = self.send(prep, **send_kwargs)
+  File "D:\Python\Python39\lib\site-packages\requests\sessions.py", line 703, in send
+    r = adapter.send(request, **kwargs)
+  File "D:\Python\Python39\lib\site-packages\requests\adapters.py", line 671, in send
+    raise ProxyError(e, request=request)
+requests.exceptions.ProxyError: HTTPSConnectionPool(host='api.wandb.ai', port=443): Max retries exceeded with url: /graphql (Caused by ProxyError('Unable to connect to proxy', SSLError(SSLEOFError(8, 'EOF occurred in violation of protocol (_ssl.c:1129)'))))
+2025-11-26 23:14:43,982 DEBUG   HandlerThread:8100 [handler.py:handle_request():146] handle_request: keepalive
+2025-11-26 23:14:49,020 DEBUG   HandlerThread:8100 [handler.py:handle_request():146] handle_request: keepalive
+2025-11-26 23:14:54,065 DEBUG   HandlerThread:8100 [handler.py:handle_request():146] handle_request: keepalive
+2025-11-26 23:14:59,102 DEBUG   HandlerThread:8100 [handler.py:handle_request():146] handle_request: keepalive
+2025-11-26 23:15:04,127 DEBUG   HandlerThread:8100 [handler.py:handle_request():146] handle_request: keepalive
+2025-11-26 23:15:09,198 DEBUG   HandlerThread:8100 [handler.py:handle_request():146] handle_request: keepalive
+2025-11-26 23:15:14,288 DEBUG   HandlerThread:8100 [handler.py:handle_request():146] handle_request: keepalive
+2025-11-26 23:15:19,340 DEBUG   HandlerThread:8100 [handler.py:handle_request():146] handle_request: keepalive
+2025-11-26 23:15:24,387 DEBUG   HandlerThread:8100 [handler.py:handle_request():146] handle_request: keepalive
+2025-11-26 23:15:29,422 DEBUG   HandlerThread:8100 [handler.py:handle_request():146] handle_request: keepalive
+2025-11-26 23:15:34,462 DEBUG   HandlerThread:8100 [handler.py:handle_request():146] handle_request: keepalive
+2025-11-26 23:15:39,495 DEBUG   HandlerThread:8100 [handler.py:handle_request():146] handle_request: keepalive
+2025-11-26 23:15:44,524 DEBUG   HandlerThread:8100 [handler.py:handle_request():146] handle_request: keepalive
+2025-11-26 23:15:49,565 DEBUG   HandlerThread:8100 [handler.py:handle_request():146] handle_request: keepalive
+2025-11-26 23:15:54,598 DEBUG   HandlerThread:8100 [handler.py:handle_request():146] handle_request: keepalive
+2025-11-26 23:15:59,649 DEBUG   HandlerThread:8100 [handler.py:handle_request():146] handle_request: keepalive
+2025-11-26 23:16:04,676 DEBUG   HandlerThread:8100 [handler.py:handle_request():146] handle_request: keepalive
+2025-11-26 23:16:09,698 DEBUG   HandlerThread:8100 [handler.py:handle_request():146] handle_request: cancel
+2025-11-26 23:16:09,698 DEBUG   HandlerThread:8100 [handler.py:handle_request():146] handle_request: cancel
+2025-11-26 23:16:09,698 DEBUG   SenderThread:8100 [sender.py:send():389] Record cancelled: run
+2025-11-26 23:16:09,698 DEBUG   HandlerThread:8100 [handler.py:handle_request():146] handle_request: status_report
+2025-11-26 23:16:09,852 DEBUG   HandlerThread:8100 [handler.py:handle_request():146] handle_request: shutdown
+2025-11-26 23:16:09,852 INFO    HandlerThread:8100 [handler.py:finish():866] shutting down handler
+2025-11-26 23:16:10,701 INFO    SenderThread:8100 [sender.py:finish():1536] shutting down sender
+2025-11-26 23:16:10,701 INFO    WriterThread:8100 [datastore.py:close():294] close: wandb\wandb\run-20251126_231438-t32u2laz\run-t32u2laz.wandb

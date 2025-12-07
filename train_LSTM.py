@@ -1,10 +1,9 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-\n
-"""
-重构版 LSTM 多输入预测脚本（去除冗余统计特征和单词难度）
-直接运行即开始训练（默认 RUN_MODE="train"）。
 
-重点保留：玩家历史序列 (LSTM)、Word Embedding、用户偏置、Wordle 序列 (LSTM)。
+"""
+LSTM 多输入预测脚本
+直接运行即开始训练。
+利用早停、Dropout、L2正则化防止过拟合。
+
 """
 
 import os
@@ -18,51 +17,56 @@ import matplotlib.pyplot as plt
 import wandb
 from typing import Dict, Tuple, List
 from tensorflow.keras.layers import (Input, Dense, Dropout, Embedding, Flatten,
-                                     LSTM, Bidirectional, Concatenate)
+                                     LSTM, Concatenate)
 from tensorflow.keras.models import Model
 from tensorflow.keras.callbacks import EarlyStopping, Callback
 from tensorflow.keras.preprocessing.text import Tokenizer
-from sklearn.metrics import mean_absolute_error, mean_squared_error, accuracy_score, roc_auc_score, roc_curve
+from sklearn.metrics import mean_absolute_error, mean_squared_error, accuracy_score
 from predict import plot_roc_curve, plot_scatter
-from tensorflow.keras.regularizers import l2 # 引入 L2 正则化
+from tensorflow.keras.regularizers import l2 
 
 
 # ==========================================================
 # 全局配置
 # ==========================================================
 
+# 数据集和特征文件路径
 TRAIN_FILE = "dataset/train_data.csv"
 VAL_FILE = "dataset/val_data.csv"
 TEST_FILE = "dataset/test_data.csv"
 PLAYER_FILE = "dataset/player_data.csv" 
 DIFFICULTY_FILE = "dataset/difficulty_data.csv"
 
+# 模型和报告输出路径
 MODEL_SAVE_PATH = "models/lstm/lstm_model.keras"
 TOKENIZER_PATH = "models/lstm/lstm_tokenizer.json"
 REPORT_SAVE_PATH = "outputs/lstm_output.txt"
 
+# 训练基本参数
 LOOK_BACK = 5
 BATCH_SIZE = 1024
 EPOCHS = 40
-LEARNING_RATE = 0.0005 # **最后调整：微调学习率**
+LEARNING_RATE = 0.0005
+LARGE_ERROR_THRESHOLD = 1.5
 
 # LSTM 架构参数
 LSTM_UNITS = 56
 DROPOUT_RATE = 0.45 
 EMBEDDING_DIM = 24
 
+# 词典参数
 OOV_TOKEN = "<OOV>"
 
-LARGE_ERROR_THRESHOLD = 1.5
+# 早停值
 PATIENCE = 4
 
-LOSS_WEIGHTS = {
-            "output_steps": 0.8, 
-            "output_success": 1
-        }
+# 损失函数权重
+LOSS_WEIGHTS = {"output_steps": 0.8, "output_success": 1}
+
 # Focal Loss 超参数
 FOCAL_LOSS_ALPHA = 0.25
 FOCAL_LOSS_GAMMA = 2.0
+
 # L2 正则化系数
 L2_REG_FACTOR = 0.001 
 
@@ -71,8 +75,11 @@ SEED = 42
 
 # Wordle固定参数
 MAX_TRIES = 6
-GRID_SEQ_FEAT_DIM = 8 # 与Transformer一致：3个累积颜色特征 + 5个位置绿色特征
+GRID_FEAT_LEN = 8 # 3个累积颜色特征 + 5个位置绿色特征
 
+# --------------------------
+# 基本函数
+# --------------------------
 def set_seed(seed):
     """设置所有随机种子以确保可重复性"""
     random.seed(seed)
@@ -94,20 +101,19 @@ def safe_read_csv(path, usecols=None):
     return pd.read_csv(path, usecols=usecols)
 
 # --------------------------
-# Wordle grid parsing helper: parse_grid_column 已移除
+# 网格序列解析器
 # --------------------------
-
-def parse_grid_sequence(grid_cell):
+def encode_guess_sequence(grid_cell):
     """
     将 grid 列表转换为一个时间序列特征矩阵。
-    返回形状为 (MAX_TRIES, GRID_SEQ_FEAT_DIM) 的浮点矩阵。
+    返回形状为 (MAX_TRIES, GRID_FEAT_LEN) 的浮点矩阵。
     与Transformer模型使用相同的8维累积特征：
     1. 累积绿色方块数（归一化）
     2. 累积黄色方块数（归一化）
     3. 累积灰色方块数（归一化）
     4-8. 每个位置累积绿色方块数（归一化）
     """
-    default_seq = np.zeros((MAX_TRIES, GRID_SEQ_FEAT_DIM), dtype=np.float32)
+    default_seq = np.zeros((MAX_TRIES, GRID_FEAT_LEN), dtype=np.float32)
     if pd.isna(grid_cell):
         return default_seq
     try:
@@ -126,7 +132,7 @@ def parse_grid_sequence(grid_cell):
     cumulative_yellows = 0
     cumulative_grays = 0
     cumulative_pos_green_counts = np.zeros(5, dtype=np.float32)
-    feature_sequence = np.zeros((MAX_TRIES, GRID_SEQ_FEAT_DIM), dtype=np.float32)
+    feature_sequence = np.zeros((MAX_TRIES, GRID_FEAT_LEN), dtype=np.float32)
     norm_base_cells = float(MAX_TRIES * 5)
     norm_base_rows = float(MAX_TRIES)
 
@@ -149,7 +155,7 @@ def parse_grid_sequence(grid_cell):
             cumulative_grays += grays_t
             cumulative_pos_green_counts += pos_green_counts_t
 
-        feat = np.zeros(GRID_SEQ_FEAT_DIM, dtype=np.float32)
+        feat = np.zeros(GRID_FEAT_LEN, dtype=np.float32)
         feat[0] = cumulative_greens / norm_base_cells
         feat[1] = cumulative_yellows / norm_base_cells
         feat[2] = cumulative_grays / norm_base_cells
@@ -178,7 +184,7 @@ def load_tokenizer():
     return tk
 
 # --------------------------
-# 特征附加（添加单词难度）
+# 单词难度、用户偏置特征附加
 # --------------------------
 def attach_features(df, tokenizer, user_map, diff_map):
     df = df.copy()
@@ -189,13 +195,12 @@ def attach_features(df, tokenizer, user_map, diff_map):
     # 添加单词难度
     df["word_difficulty"] = df["target"].map(diff_map).fillna(4.0).astype(float)
     df["user_bias"] = df["Username"].map(user_map).fillna(4.0).astype(float)
-
     # 解析 grid 序列
     if "processed_text" in df.columns:
-        df["grid_seq"] = df["processed_text"].apply(parse_grid_sequence)
+        df["grid_seq"] = df["processed_text"].apply(encode_guess_sequence)
     else:
         # 缺失时返回零序列
-        df["grid_seq"] = [np.zeros((MAX_TRIES, GRID_SEQ_FEAT_DIM), dtype=np.float32) for _ in range(len(df))]
+        df["grid_seq"] = [np.zeros((MAX_TRIES, GRID_FEAT_LEN), dtype=np.float32) for _ in range(len(df))]
 
     return df
 
@@ -238,7 +243,7 @@ def focal_loss(gamma=2.0, alpha=0.25):
 
 
 # --------------------------
-# 历史建表（添加单词难度）
+# 历史建表
 # --------------------------
 def build_history(df) -> Dict[str, List[Tuple]]:
     hist = {}
@@ -246,15 +251,15 @@ def build_history(df) -> Dict[str, List[Tuple]]:
     for u, g in df_sorted.groupby("Username", sort=False):
         # 历史记录 tuple 结构：(Trial, word_id, user_bias, word_difficulty, grid_seq)
         hist[u] = [(int(r["Trial"]),
-                    int(r["word_id"]),           # 索引 1
-                    float(r["user_bias"]),       # 索引 2
-                    float(r["word_difficulty"]), # 索引 3
-                    np.array(r["grid_seq"], dtype=np.float32))   # 索引 4
+                    int(r["word_id"]),
+                    float(r["user_bias"]),
+                    float(r["word_difficulty"]), 
+                    np.array(r["grid_seq"], dtype=np.float32))
                    for _, r in g.iterrows()]
     return hist
 
 # --------------------------
-# 滑窗生成样本（添加单词难度）
+# 滑窗生成样本
 # --------------------------
 def create_samples(history, look_back):
     X_seq, X_wid, X_bias, X_diff, X_grid_seq, y_steps, y_succ = [], [], [], [], [], [], []
@@ -288,7 +293,7 @@ def create_samples(history, look_back):
                 np.zeros((0, 1), np.int32),
                 np.zeros((0, 1), np.float32),
                 np.zeros((0, 1), np.float32),
-                np.zeros((0, MAX_TRIES, GRID_SEQ_FEAT_DIM), np.float32), 
+                np.zeros((0, MAX_TRIES, GRID_FEAT_LEN), np.float32), 
                 np.zeros((0,), np.float32),
                 np.zeros((0,), np.float32))
 
@@ -303,7 +308,7 @@ def create_samples(history, look_back):
     )
 
 # ==========================================================
-# LSTM 模型（添加单词难度输入）
+# LSTM 模型构建
 # ==========================================================
 def build_model(look_back, vocab_size):
     # 历史输入分支
@@ -324,7 +329,7 @@ def build_model(look_back, vocab_size):
     d1 = Dense(16, activation="relu", kernel_regularizer=l2(L2_REG_FACTOR))(diff_in)
 
     # Wordle 序列特征
-    grid_seq_in = Input((MAX_TRIES, GRID_SEQ_FEAT_DIM), name="input_grid_sequence")
+    grid_seq_in = Input((MAX_TRIES, GRID_FEAT_LEN), name="input_grid_sequence")
     g_seq = LSTM(LSTM_UNITS // 4, kernel_regularizer=l2(L2_REG_FACTOR))(grid_seq_in)
     g_seq = Dropout(DROPOUT_RATE)(g_seq)
     g2 = Dense(16, activation="relu", kernel_regularizer=l2(L2_REG_FACTOR))(g_seq)
@@ -364,7 +369,7 @@ def build_model(look_back, vocab_size):
     return model
 
 # ==========================================================
-# 评估函数 (添加单词难度输入)
+# 评估函数
 # ==========================================================
 def evaluate_model(model, Xs):
     # Xs 结构: (seq, wid, bias, diff, grid_seq, y_steps, y_succ)
@@ -440,16 +445,16 @@ def plot_loss(history, save_path_base):
     print(f"Steps Loss curve saved to: {steps_loss_path}")
 
     # -------------------
-    # 图 3: Success Loss (分类任务 - Binary Crossentropy)
+    # 图 3: Success Loss (分类任务 - Focal Loss)
     # -------------------
     plt.figure(figsize=(6, 6))
     if 'output_success_loss' in history.history:
         plt.plot(history.history['output_success_loss'], label='Training Success Loss')
         if 'val_output_success_loss' in history.history:
             plt.plot(history.history['val_output_success_loss'], label='Validation Success Loss')
-    plt.title('Success Prediction Component Loss (Binary Crossentropy)')
+    plt.title('Success Prediction Component Loss (Focal Loss)')
     plt.xlabel('Epochs')
-    plt.ylabel('Loss (BCE)')
+    plt.ylabel('Loss (Focal Loss)')
     plt.legend()
     plt.grid(True, alpha=0.3)
     plt.tight_layout()
@@ -493,7 +498,7 @@ def main_train():
             "dropout_rate": DROPOUT_RATE,
             "embedding_dim": EMBEDDING_DIM,
             "seed": SEED,
-            "grid_seq_feat_dim": GRID_SEQ_FEAT_DIM # 新增配置
+            "GRID_FEAT_LEN": GRID_FEAT_LEN # 新增配置
         },
         settings=wandb.Settings(_disable_stats=True)
     )
@@ -523,7 +528,7 @@ def main_train():
         # 使用平均尝试次数作为难度值
         diff_map = dict(zip(df_diff["word"], df_diff["avg_trial"]))
 
-    # 3. Tokenizer（train-only）
+    # 3. Tokenizer
     tokenizer = fit_tokenizer(train_df)
 
     # 4. 附加特征
@@ -531,12 +536,12 @@ def main_train():
     val_df = attach_features(val_df, tokenizer, user_map, diff_map)
     test_df = attach_features(test_df, tokenizer, user_map, diff_map)
 
-    # 5. Build histories
+    # 5. 构建用户历史行为序列
     hist_train = build_history(train_df)
     hist_val = build_history(val_df)
     hist_test = build_history(test_df)
 
-    # 6. Sliding samples (X_diff 和 X_grid 已移除)
+    # 6. Sliding samples
     # X_set 结构：(seq, wid, bias, grid_seq, y_steps, y_succ)
     X_train = create_samples(hist_train, LOOK_BACK)
     X_val = create_samples(hist_val, LOOK_BACK)
@@ -546,7 +551,7 @@ def main_train():
 
     vocab_size = len(tokenizer.word_index) + 1
 
-    # 7. Model
+    # 7. 模型构建
     model = build_model(LOOK_BACK, vocab_size)
     model.summary()
 
@@ -615,7 +620,7 @@ def main_train():
         "val_auc": val_auc
     })
 
-    # 绘制验证集AUC曲线
+    # 绘制验证集ROC曲线
     val_pred_steps, val_pred_prob = model.predict({
         "input_history": X_val[0],
         "input_word_id": X_val[1],
@@ -626,7 +631,7 @@ def main_train():
     val_roc_curve_path = "visualization/LSTM_validation_roc_curve.png"
     plot_roc_curve(X_val[6], val_pred_prob.flatten(), val_roc_curve_path)
     
-    # Plot validation scatter plot
+    # 绘制验证集散点图
     val_scatter_path = "visualization/LSTM_validation_scatter.png"
     plot_scatter(X_val[5], np.clip(val_pred_steps.flatten(), 0, 7), val_scatter_path, model_name="LSTM")
     
@@ -646,7 +651,7 @@ def main_train():
         "test_auc": test_auc
     })
 
-    # 绘制测试集AUC曲线
+    # 绘制测试集ROC曲线
     test_pred_steps, test_pred_prob = model.predict({
         "input_history": X_test[0],
         "input_word_id": X_test[1],
@@ -657,7 +662,7 @@ def main_train():
     test_roc_curve_path = "visualization/LSTM_test_roc_curve.png"
     plot_roc_curve(X_test[6], test_pred_prob.flatten(), test_roc_curve_path)
     
-    # Plot test scatter plot
+    # 绘制测试集散点图
     test_scatter_path = "visualization/LSTM_test_scatter.png"
     plot_scatter(X_test[5], np.clip(test_pred_steps.flatten(), 0, 7), test_scatter_path, model_name="LSTM")
     

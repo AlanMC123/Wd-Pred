@@ -1,4 +1,23 @@
-wandb/
-venv/
+# ==================== 核心：先排除wandb下所有文件 ====================
+wandb/*
+# ==================== 再放行实验记录目录（run-开头的文件夹） ====================
+!wandb/run-*/
+# ==================== 排除实验记录目录内的敏感/无用子文件（可选） ====================
+wandb/run-*/wandb-metadata.json
+wandb/run-*/wandb-history.jsonl
+# ==================== 必排除的敏感文件 ====================
+.wandb
+.wandbrc
+wandb/settings
+wandb/cache/
+wandb/latest-run/
+wandb/offline/
+wandb/tmp/
+wandb/*.log
+wandb/*.db
+
+# 数据集，太大了没必要上传
 dataset/
+
+# 缓存文件夹
 __pycache__/

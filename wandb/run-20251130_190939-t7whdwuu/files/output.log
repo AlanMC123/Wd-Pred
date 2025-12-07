@@ -1,0 +1,11 @@
+===== 加载所有预处理数据集 =====
+Traceback (most recent call last):
+  File "f:\Codes\Wd-Pred\transformer_prediction.py", line 959, in <module>
+    main()
+  File "f:\Codes\Wd-Pred\transformer_prediction.py", line 699, in main
+    train_data, val_data, test_data, vocab_size, _, user_map = load_and_prepare_all_datasets()  # 使用下划线忽略未使用的tokenizer变量
+                                                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "f:\Codes\Wd-Pred\transformer_prediction.py", line 256, in load_and_prepare_all_datasets
+    train_history_map, vocab_size, tokenizer, _, player_map = load_preprocessed_data(
+                                                              ^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: load_preprocessed_data() got an unexpected keyword argument 'tokenizer'

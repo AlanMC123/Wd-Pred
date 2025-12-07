@@ -1,0 +1,35 @@
+WandB 运行已启动: word-difficulty-prediction/lstm-model-grid-seq-refactored
+加载玩家数据: dataset/player_data.csv
+未加载单词难度数据 (diff_map 为空)。
+开始训练并保存 Tokenizer...
+Tokenizer 已保存到: models/lstm/lstm_tokenizer.json
+词汇表大小 (Vocab Size): 320
+Tokenizer 已加载: models/lstm/lstm_tokenizer.json
+开始附加 LSTM 模型特征...
+Traceback (most recent call last):
+  File "D:\Python\Python312\Lib\site-packages\pandas\core\indexes\base.py", line 3812, in get_loc
+    return self._engine.get_loc(casted_key)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "pandas/_libs/index.pyx", line 167, in pandas._libs.index.IndexEngine.get_loc
+  File "pandas/_libs/index.pyx", line 196, in pandas._libs.index.IndexEngine.get_loc
+  File "pandas/_libs/hashtable_class_helper.pxi", line 7088, in pandas._libs.hashtable.PyObjectHashTable.get_item
+  File "pandas/_libs/hashtable_class_helper.pxi", line 7096, in pandas._libs.hashtable.PyObjectHashTable.get_item
+KeyError: 'grid'
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "f:\Codes\Wd-Pred\LSTM_prediction.py", line 560, in <module>
+    main_train()
+  File "f:\Codes\Wd-Pred\LSTM_prediction.py", line 416, in main_train
+    train_df = attach_features(train_df, tokenizer, user_map)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "f:\Codes\Wd-Pred\LSTM_prediction.py", line 127, in attach_features
+    df["grid_sequence"] = df["grid"].apply(parse_grid_sequence)
+                          ~~^^^^^^^^
+  File "D:\Python\Python312\Lib\site-packages\pandas\core\frame.py", line 4113, in __getitem__
+    indexer = self.columns.get_loc(key)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Python\Python312\Lib\site-packages\pandas\core\indexes\base.py", line 3819, in get_loc
+    raise KeyError(key) from err
+KeyError: 'grid'

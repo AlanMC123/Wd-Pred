@@ -1,0 +1,21 @@
+2025-12-01 19:54:49,882 INFO    MainThread:39436 [wandb_setup.py:_flush():80] Current SDK version is 0.23.0
+2025-12-01 19:54:49,882 INFO    MainThread:39436 [wandb_setup.py:_flush():80] Configure stats pid to 39436
+2025-12-01 19:54:49,882 INFO    MainThread:39436 [wandb_setup.py:_flush():80] Loading settings from C:\Users\Asus\.config\wandb\settings
+2025-12-01 19:54:49,882 INFO    MainThread:39436 [wandb_setup.py:_flush():80] Loading settings from F:\Codes\Wd-Pred\wandb\settings
+2025-12-01 19:54:49,882 INFO    MainThread:39436 [wandb_setup.py:_flush():80] Loading settings from environment variables
+2025-12-01 19:54:49,890 INFO    MainThread:39436 [wandb_init.py:setup_run_log_directory():713] Logging user logs to F:\Codes\Wd-Pred\wandb\run-20251201_195449-1ffvf4f2\logs\debug.log
+2025-12-01 19:54:49,890 INFO    MainThread:39436 [wandb_init.py:setup_run_log_directory():714] Logging internal logs to F:\Codes\Wd-Pred\wandb\run-20251201_195449-1ffvf4f2\logs\debug-internal.log
+2025-12-01 19:54:49,890 INFO    MainThread:39436 [wandb_init.py:init():840] calling init triggers
+2025-12-01 19:54:49,891 INFO    MainThread:39436 [wandb_init.py:init():845] wandb.init called with sweep_config: {}
+config: {'model_type': 'LSTM_Grid_Seq', 'look_back': 8, 'batch_size': 1024, 'epochs': 15, 'learning_rate': 0.0005, 'lstm_units': 64, 'dropout_rate': 0.25, 'embedding_dim': 32, 'seed': 2000, 'grid_feat_len': 8, 'grid_seq_feat_dim': 4, '_wandb': {}}
+2025-12-01 19:54:49,891 INFO    MainThread:39436 [wandb_init.py:init():888] starting backend
+2025-12-01 19:54:50,293 INFO    MainThread:39436 [wandb_init.py:init():891] sending inform_init request
+2025-12-01 19:54:50,407 INFO    MainThread:39436 [wandb_init.py:init():899] backend started and connected
+2025-12-01 19:54:50,439 INFO    MainThread:39436 [wandb_init.py:init():969] updated telemetry
+2025-12-01 19:54:50,534 INFO    MainThread:39436 [wandb_init.py:init():993] communicating run to backend with 90.0 second timeout
+2025-12-01 19:54:51,396 INFO    MainThread:39436 [wandb_init.py:init():1040] starting run threads in backend
+2025-12-01 19:54:51,538 INFO    MainThread:39436 [wandb_run.py:_console_start():2504] atexit reg
+2025-12-01 19:54:51,538 INFO    MainThread:39436 [wandb_run.py:_redirect():2352] redirect: wrap_raw
+2025-12-01 19:54:51,538 INFO    MainThread:39436 [wandb_run.py:_redirect():2421] Wrapping output streams.
+2025-12-01 19:54:51,538 INFO    MainThread:39436 [wandb_run.py:_redirect():2444] Redirects installed.
+2025-12-01 19:54:51,540 INFO    MainThread:39436 [wandb_init.py:init():1080] run started, returning control to user process

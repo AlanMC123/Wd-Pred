@@ -1,0 +1,6 @@
+
+Step 1: 读取数据并构建四特征...
+Step 2: 构建四输入样本...
+f:\Codes\Wd-Pred\LSTM_prediction.py:79: FutureWarning: DataFrameGroupBy.apply operated on the grouping columns. This behavior is deprecated, and in a future version of pandas the grouping columns will be excluded from the operation. Either pass `include_groups=False` to exclude the groupings or explicitly select the grouping columns after groupby to silence this warning.
+  history_map = df.groupby('Username').apply(
+数据集划分：训练集 2770743, 验证集 395820, 测试集 791642

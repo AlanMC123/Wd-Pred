@@ -1,0 +1,26 @@
+2025-12-06 21:32:19,366 INFO    MainThread:7984 [wandb_setup.py:_flush():80] Current SDK version is 0.23.0
+2025-12-06 21:32:19,367 INFO    MainThread:7984 [wandb_setup.py:_flush():80] Configure stats pid to 7984
+2025-12-06 21:32:19,367 INFO    MainThread:7984 [wandb_setup.py:_flush():80] Loading settings from C:\Users\Asus\.config\wandb\settings
+2025-12-06 21:32:19,367 INFO    MainThread:7984 [wandb_setup.py:_flush():80] Loading settings from F:\Codes\Wd-Pred\wandb\settings
+2025-12-06 21:32:19,367 INFO    MainThread:7984 [wandb_setup.py:_flush():80] Loading settings from environment variables
+2025-12-06 21:32:19,367 INFO    MainThread:7984 [wandb_init.py:setup_run_log_directory():713] Logging user logs to F:\Codes\Wd-Pred\wandb\run-20251206_213219-1qj16wzm\logs\debug.log
+2025-12-06 21:32:19,367 INFO    MainThread:7984 [wandb_init.py:setup_run_log_directory():714] Logging internal logs to F:\Codes\Wd-Pred\wandb\run-20251206_213219-1qj16wzm\logs\debug-internal.log
+2025-12-06 21:32:19,367 INFO    MainThread:7984 [wandb_init.py:init():840] calling init triggers
+2025-12-06 21:32:19,367 INFO    MainThread:7984 [wandb_init.py:init():845] wandb.init called with sweep_config: {}
+config: {'model_type': 'LSTM_Grid_Seq_Simplified', 'look_back': 5, 'batch_size': 1024, 'epochs': 40, 'learning_rate': 0.0005, 'lstm_units': 56, 'dropout_rate': 0.45, 'embedding_dim': 24, 'seed': 42, 'grid_seq_feat_dim': 8, '_wandb': {}}
+2025-12-06 21:32:19,367 INFO    MainThread:7984 [wandb_init.py:init():888] starting backend
+2025-12-06 21:32:20,157 INFO    MainThread:7984 [wandb_init.py:init():891] sending inform_init request
+2025-12-06 21:32:20,209 INFO    MainThread:7984 [wandb_init.py:init():899] backend started and connected
+2025-12-06 21:32:20,223 INFO    MainThread:7984 [wandb_init.py:init():969] updated telemetry
+2025-12-06 21:32:20,293 INFO    MainThread:7984 [wandb_init.py:init():993] communicating run to backend with 90.0 second timeout
+2025-12-06 21:32:21,085 INFO    MainThread:7984 [wandb_init.py:init():1040] starting run threads in backend
+2025-12-06 21:32:21,178 INFO    MainThread:7984 [wandb_run.py:_console_start():2504] atexit reg
+2025-12-06 21:32:21,178 INFO    MainThread:7984 [wandb_run.py:_redirect():2352] redirect: wrap_raw
+2025-12-06 21:32:21,178 INFO    MainThread:7984 [wandb_run.py:_redirect():2421] Wrapping output streams.
+2025-12-06 21:32:21,178 INFO    MainThread:7984 [wandb_run.py:_redirect():2444] Redirects installed.
+2025-12-06 21:32:21,181 INFO    MainThread:7984 [wandb_init.py:init():1080] run started, returning control to user process
+2025-12-06 21:35:07,648 INFO    MainThread:7984 [wandb_run.py:_finish():2270] finishing run anony-mouse-242507206924556988/word-difficulty-prediction/1qj16wzm
+2025-12-06 21:35:07,648 INFO    MainThread:7984 [wandb_run.py:_atexit_cleanup():2469] got exitcode: 0
+2025-12-06 21:35:07,648 INFO    MainThread:7984 [wandb_run.py:_restore():2451] restore
+2025-12-06 21:35:07,648 INFO    MainThread:7984 [wandb_run.py:_restore():2457] restore done
+2025-12-06 21:35:09,695 INFO    MainThread:7984 [wandb_run.py:_footer_sync_info():3853] logging synced files

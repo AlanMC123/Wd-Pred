@@ -1,0 +1,379 @@
+
+Step 1: 读取数据并构建四特征...
+Step 2: 构建四输入样本...
+f:\Codes\Wd-Pred\transformer_prediction.py:88: FutureWarning: DataFrameGroupBy.apply operated on the grouping columns. This behavior is deprecated, and in a future version of pandas the grouping columns will be excluded from the operation. Either pass `include_groups=False` to exclude the groupings or explicitly select the grouping columns after groupby to silence this warning.
+  history_map = df.groupby('Username').apply(
+数据集划分：训练集 2770743, 验证集 395820, 测试集 791642
+Step 3: 构建Transformer神经网络 (Vocab=321, Layers=2)...
+Step 4: 开始训练 (Epochs=10, Batch=2048, Patience=4)...
+Epoch 1/10
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+1353/1353 [==============================] - 70s 50ms/step - loss: 1.6000 - output_steps_loss: 1.5337 - output_success_loss: 0.1327 - output_steps_accuracy: 0.3160 - output_success_accuracy: 0.9639 - val_loss: 1.5352 - val_output_steps_loss: 1.4796 - val_output_success_loss: 0.1111 - val_output_steps_accuracy: 0.3412 - val_output_success_accuracy: 0.9676
+Epoch 2/10
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+1353/1353 [==============================] - 67s 49ms/step - loss: 1.5401 - output_steps_loss: 1.4842 - output_success_loss: 0.1118 - output_steps_accuracy: 0.3408 - output_success_accuracy: 0.9675 - val_loss: 1.5307 - val_output_steps_loss: 1.4754 - val_output_success_loss: 0.1105 - val_output_steps_accuracy: 0.3441 - val_output_success_accuracy: 0.9678
+Epoch 3/10
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+1353/1353 [==============================] - 78s 57ms/step - loss: 1.5368 - output_steps_loss: 1.4811 - output_success_loss: 0.1113 - output_steps_accuracy: 0.3422 - output_success_accuracy: 0.9675 - val_loss: 1.5284 - val_output_steps_loss: 1.4733 - val_output_success_loss: 0.1102 - val_output_steps_accuracy: 0.3451 - val_output_success_accuracy: 0.9679
+Epoch 4/10
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+1353/1353 [==============================] - 73s 54ms/step - loss: 1.5356 - output_steps_loss: 1.4801 - output_success_loss: 0.1110 - output_steps_accuracy: 0.3423 - output_success_accuracy: 0.9676 - val_loss: 1.5288 - val_output_steps_loss: 1.4735 - val_output_success_loss: 0.1106 - val_output_steps_accuracy: 0.3448 - val_output_success_accuracy: 0.9678
+Epoch 5/10
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+1353/1353 [==============================] - 73s 54ms/step - loss: 1.5345 - output_steps_loss: 1.4791 - output_success_loss: 0.1108 - output_steps_accuracy: 0.3431 - output_success_accuracy: 0.9676 - val_loss: 1.5293 - val_output_steps_loss: 1.4741 - val_output_success_loss: 0.1106 - val_output_steps_accuracy: 0.3446 - val_output_success_accuracy: 0.9678
+Epoch 6/10
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+1353/1353 [==============================] - 77s 57ms/step - loss: 1.5338 - output_steps_loss: 1.4784 - output_success_loss: 0.1107 - output_steps_accuracy: 0.3434 - output_success_accuracy: 0.9677 - val_loss: 1.5281 - val_output_steps_loss: 1.4729 - val_output_success_loss: 0.1102 - val_output_steps_accuracy: 0.3457 - val_output_success_accuracy: 0.9679
+Epoch 7/10
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+1353/1353 [==============================] - 75s 55ms/step - loss: 1.5333 - output_steps_loss: 1.4780 - output_success_loss: 0.1106 - output_steps_accuracy: 0.3439 - output_success_accuracy: 0.9677 - val_loss: 1.5276 - val_output_steps_loss: 1.4725 - val_output_success_loss: 0.1102 - val_output_steps_accuracy: 0.3456 - val_output_success_accuracy: 0.9678
+Epoch 8/10
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+1353/1353 [==============================] - 72s 53ms/step - loss: 1.5329 - output_steps_loss: 1.4776 - output_success_loss: 0.1106 - output_steps_accuracy: 0.3439 - output_success_accuracy: 0.9677 - val_loss: 1.5287 - val_output_steps_loss: 1.4734 - val_output_success_loss: 0.1106 - val_output_steps_accuracy: 0.3458 - val_output_success_accuracy: 0.9678
+Epoch 9/10
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+1353/1353 [==============================] - 74s 55ms/step - loss: 1.5329 - output_steps_loss: 1.4776 - output_success_loss: 0.1106 - output_steps_accuracy: 0.3437 - output_success_accuracy: 0.9677 - val_loss: 1.5284 - val_output_steps_loss: 1.4732 - val_output_success_loss: 0.1106 - val_output_steps_accuracy: 0.3461 - val_output_success_accuracy: 0.9678
+Epoch 10/10
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+1353/1353 [==============================] - 74s 54ms/step - loss: 1.5329 - output_steps_loss: 1.4776 - output_success_loss: 0.1105 - output_steps_accuracy: 0.3436 - output_success_accuracy: 0.9678 - val_loss: 1.5292 - val_output_steps_loss: 1.4740 - val_output_success_loss: 0.1104 - val_output_steps_accuracy: 0.3453 - val_output_success_accuracy: 0.9678
+✅ 准确率曲线已保存至: visualization\Transformer_accuracy_curve.png
+✅ Loss曲线已保存至: visualization\Transformer_loss_curve.png
+✅ 模型已成功保存到文件夹: Transformer_Model
+Step 4: 开始批量预测，显示进度条...
+
+159/194 [=======================>......] - ETA: 0s
+Traceback (most recent call last):
+  File "f:\Codes\Wd-Pred\transformer_prediction.py", line 783, in <module>
+    main()
+  File "f:\Codes\Wd-Pred\transformer_prediction.py", line 654, in main
+    val_large_error_rate = np.mean(np.abs(val_labels['output_steps'] - val_pred_steps_cont) > LARGE_ERROR_THRESHOLD)
+ValueError: operands could not be broadcast together with shapes (395820,7) (395820,)
+Traceback (most recent call last):
+  File "f:\Codes\Wd-Pred\transformer_prediction.py", line 783, in <module>
+    main()
+  File "f:\Codes\Wd-Pred\transformer_prediction.py", line 654, in main
+    val_large_error_rate = np.mean(np.abs(val_labels['output_steps'] - val_pred_steps_cont) > LARGE_ERROR_THRESHOLD)
+
+194/194 [==============================] - 5s 23ms/step

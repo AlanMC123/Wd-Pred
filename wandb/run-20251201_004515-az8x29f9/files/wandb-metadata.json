@@ -1,0 +1,39 @@
+{
+  "os": "Windows-11-10.0.26100-SP0",
+  "python": "CPython 3.12.9",
+  "startedAt": "2025-11-30T16:45:15.038687Z",
+  "program": "f:\\Codes\\Wd-Pred\\LSTM_prediction.py",
+  "codePath": "LSTM_prediction.py",
+  "codePathLocal": "LSTM_prediction.py",
+  "git": {
+    "remote": "https://github.com/AlanMC123/Wd-Pred.git",
+    "commit": "e82eb56ee09136435ec77154b20c75b95600c75c"
+  },
+  "root": "F:\\Codes\\Wd-Pred",
+  "host": "KanchoTX5Pro",
+  "executable": "D:\\Python\\Python312\\python.exe",
+  "cpu_count": 24,
+  "cpu_count_logical": 32,
+  "gpu": "NVIDIA GeForce RTX 4070 Laptop GPU",
+  "gpu_count": 1,
+  "disk": {
+    "/": {
+      "total": "749329182720",
+      "used": "368686383104"
+    }
+  },
+  "memory": {
+    "total": "68319449088"
+  },
+  "gpu_nvidia": [
+    {
+      "name": "NVIDIA GeForce RTX 4070 Laptop GPU",
+      "memoryTotal": "8585740288",
+      "cudaCores": 4608,
+      "architecture": "Ada",
+      "uuid": "GPU-91ab717b-1e4f-0366-eefd-b8f5234000cc"
+    }
+  ],
+  "cudaVersion": "12.8",
+  "writerId": "33k3x12c78sdpuorawq5fj5ncl6pxr6i"
+}

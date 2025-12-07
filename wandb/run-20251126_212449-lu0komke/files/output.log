@@ -1,0 +1,186 @@
+
+Step 1: 读取数据并构建四特征...
+Step 2: 构建四输入样本...
+f:\Codes\Wd-Pred\transformer_prediction.py:84: FutureWarning: DataFrameGroupBy.apply operated on the grouping columns. This behavior is deprecated, and in a future version of pandas the grouping columns will be excluded from the operation. Either pass `include_groups=False` to exclude the groupings or explicitly select the grouping columns after groupby to silence this warning.
+  history_map = df.groupby('Username').apply(
+数据集划分：训练集 2770743, 验证集 395820, 测试集 791642
+Step 3: 构建Transformer神经网络 (Vocab=321)...
+Step 4: 开始训练 (Epochs=10, Batch=2048)...
+Epoch 1/10
+
+
+
+
+
+
+
+
+
+
+
+
+1353/1353 [==============================] - 26s 18ms/step - loss: 1.7726 - output_steps_loss: 1.6970 - output_success_loss: 0.1512 - output_success_accuracy: 0.9667 - val_loss: 1.3165 - val_output_steps_loss: 1.2583 - val_output_success_loss: 0.1164 - val_output_success_accuracy: 0.9664
+Epoch 2/10
+
+
+
+
+
+
+
+
+
+
+
+
+1353/1353 [==============================] - 26s 19ms/step - loss: 1.3322 - output_steps_loss: 1.2736 - output_success_loss: 0.1172 - output_success_accuracy: 0.9667 - val_loss: 1.2985 - val_output_steps_loss: 1.2424 - val_output_success_loss: 0.1123 - val_output_success_accuracy: 0.9664
+Epoch 3/10
+
+
+
+
+
+
+
+
+
+
+
+1353/1353 [==============================] - 26s 19ms/step - loss: 1.3053 - output_steps_loss: 1.2484 - output_success_loss: 0.1138 - output_success_accuracy: 0.9667 - val_loss: 1.3035 - val_output_steps_loss: 1.2473 - val_output_success_loss: 0.1123 - val_output_success_accuracy: 0.9664
+Epoch 4/10
+
+
+
+
+
+
+
+
+
+
+
+
+1353/1353 [==============================] - 26s 19ms/step - loss: 1.2989 - output_steps_loss: 1.2425 - output_success_loss: 0.1128 - output_success_accuracy: 0.9667 - val_loss: 1.2896 - val_output_steps_loss: 1.2338 - val_output_success_loss: 0.1117 - val_output_success_accuracy: 0.9664
+Epoch 5/10
+
+
+
+
+
+
+
+
+
+
+
+
+1353/1353 [==============================] - 26s 19ms/step - loss: 1.2959 - output_steps_loss: 1.2399 - output_success_loss: 0.1121 - output_success_accuracy: 0.9667 - val_loss: 1.2902 - val_output_steps_loss: 1.2345 - val_output_success_loss: 0.1113 - val_output_success_accuracy: 0.9676
+Epoch 6/10
+
+
+
+
+
+
+
+
+
+
+
+1353/1353 [==============================] - 25s 18ms/step - loss: 1.2939 - output_steps_loss: 1.2381 - output_success_loss: 0.1116 - output_success_accuracy: 0.9674 - val_loss: 1.2907 - val_output_steps_loss: 1.2351 - val_output_success_loss: 0.1112 - val_output_success_accuracy: 0.9677
+Epoch 7/10
+
+
+
+
+
+
+
+
+
+
+
+
+1353/1353 [==============================] - 25s 18ms/step - loss: 1.2925 - output_steps_loss: 1.2369 - output_success_loss: 0.1113 - output_success_accuracy: 0.9676 - val_loss: 1.2935 - val_output_steps_loss: 1.2379 - val_output_success_loss: 0.1111 - val_output_success_accuracy: 0.9678
+Epoch 8/10
+
+
+
+
+
+
+
+
+
+
+
+
+1353/1353 [==============================] - 26s 19ms/step - loss: 1.2917 - output_steps_loss: 1.2361 - output_success_loss: 0.1112 - output_success_accuracy: 0.9677 - val_loss: 1.2934 - val_output_steps_loss: 1.2380 - val_output_success_loss: 0.1110 - val_output_success_accuracy: 0.9678
+Epoch 9/10
+
+
+
+
+
+
+
+
+
+
+
+
+1353/1353 [==============================] - 27s 20ms/step - loss: 1.2909 - output_steps_loss: 1.2354 - output_success_loss: 0.1110 - output_success_accuracy: 0.9677 - val_loss: 1.2975 - val_output_steps_loss: 1.2421 - val_output_success_loss: 0.1108 - val_output_success_accuracy: 0.9678
+Epoch 10/10
+
+
+
+
+
+
+
+
+
+
+
+
+
+1353/1353 [==============================] - 27s 20ms/step - loss: 1.2903 - output_steps_loss: 1.2349 - output_success_loss: 0.1107 - output_success_accuracy: 0.9678 - val_loss: 1.3001 - val_output_steps_loss: 1.2448 - val_output_success_loss: 0.1106 - val_output_success_accuracy: 0.9678
+✅ Loss曲线已保存至: visualization\Transformer_loss_curve.png
+✅ 模型已成功保存到文件夹: Transformer_Model
+Step 4: 开始批量预测，显示进度条...
+194/194 [==============================] - 2s 8ms/step
+Step 4: 开始批量预测，显示进度条...
+387/387 [==============================] - 3s 8ms/step
+========================================
+  Transformer模型验证和测试报告
+========================================
+---- 验证集指标 ----
+1. 平均步数误差 (MAE)    : 0.9075
+2. 均方根误差 (RMSE)     : 1.1157
+3. 胜负预测准确率        : 96.783%
+4. ROC曲线下面积 (AUC)   : 0.8670
+5. 大型误差率 (>1.5步)  : 18.300%
+---- 测试集指标 ----
+1. 平均步数误差 (MAE)    : 0.9079
+2. 均方根误差 (RMSE)     : 1.1155
+3. 胜负预测准确率        : 96.781%
+4. ROC曲线下面积 (AUC)   : 0.8691
+5. 大型误差率 (>1.5步)  : 18.178%
+========================================
+Step 5: 启动回测验证抽样报告 (样本数=10000, 输出至 output.txt)...
+------------------------------------------------------------
+User ID    | Bias  | Diff  | Real  | Pred  | Err   | Status
+------------------------------------------------------------
+870706     | 4.86  | 4.22  | 5    | 4.69  | 0.31  | ✅
+445925     | 6.00  | 4.18  | 3    | 5.80  | 2.80  | ❌
+364100     | 4.33  | 3.91  | 3    | 3.80  | 0.80  | ✅
+812027     | 3.50  | 4.54  | 2    | 3.93  | 1.93  | ❌
+196940     | 5.56  | 4.24  | 3    | 5.31  | 2.31  | ❌
+507465     | 4.12  | 4.04  | 6    | 3.99  | 2.01  | ❌
+178505     | 2.82  | 4.09  | 3    | 3.13  | 0.13  | ✅
+73046      | 4.00  | 3.52  | 3    | 3.53  | 0.53  | ✅
+576210     | 3.41  | 4.57  | 5    | 4.02  | 0.98  | ✅
+909156     | 3.75  | 4.59  | 3    | 4.17  | 1.17  | ⚠️
+... (其余 9990 条省略)
+✅ 抽样报告已成功导出至 outputs/transformer_output.txt 文件。
+✅ 预测趋势图已保存至: visualization\Transformer_prediction_trends.png

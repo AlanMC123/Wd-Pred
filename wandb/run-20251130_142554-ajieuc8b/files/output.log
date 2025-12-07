@@ -1,0 +1,71 @@
+Step 1: 读取数据并构建四特征...
+f:\Codes\Wd-Pred\transformer_prediction.py:99: FutureWarning: DataFrameGroupBy.apply operated on the grouping columns. This behavior is deprecated, and in a future version of pandas the grouping columns will be excluded from the operation. Either pass `include_groups=False` to exclude the groupings or explicitly select the grouping columns after groupby to silence this warning.
+  history_map = df.groupby('Username').apply(
+Step 2: 构建四输入样本...
+数据集划分：训练集 2770743, 验证集 395820, 测试集 791642
+✅ 数据加载优化已应用 (cache + prefetch)
+Step 3: 构建Transformer神经网络 (Vocab=321, Layers=2)...
+WARNING:tensorflow:From D:\Python\Python312\Lib\site-packages\keras\src\backend\tensorflow\core.py:232: The name tf.placeholder is deprecated. Please use tf.compat.v1.placeholder instead.
+
+D:\Python\Python312\Lib\site-packages\keras\src\layers\core\embedding.py:97: UserWarning: Argument `input_length` is deprecated. Just remove it.
+  warnings.warn(
+✅ 模型编译完成，使用Focal Loss (gamma=2.0, alpha=0.25)
+Step 4: 开始训练 (Epochs=15, Batch=2048, Patience=4)...
+提示: 当前使用CPU训练，速度可能较慢。建议使用支持CUDA的GPU以获得显著加速。
+Epoch 1/15
+[1m1353/1353[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m75s[0m 53ms/step - loss: 1.6877 - output_steps_loss: 1.6773 - output_success_accuracy: 0.9658 - output_success_loss: 0.0209 - val_loss: 1.2638 - val_output_steps_loss: 1.2555 - val_output_success_accuracy: 0.9669 - val_output_success_loss: 0.0171
+Epoch 2/15
+[1m1353/1353[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m62s[0m 46ms/step - loss: 1.2742 - output_steps_loss: 1.2656 - output_success_accuracy: 0.9619 - output_success_loss: 0.0173 - val_loss: 1.3032 - val_output_steps_loss: 1.2947 - val_output_success_accuracy: 0.9672 - val_output_success_loss: 0.0173
+Epoch 3/15
+[1m1353/1353[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m63s[0m 47ms/step - loss: 1.2570 - output_steps_loss: 1.2486 - output_success_accuracy: 0.9616 - output_success_loss: 0.0168 - val_loss: 1.2911 - val_output_steps_loss: 1.2826 - val_output_success_accuracy: 0.9675 - val_output_success_loss: 0.0175
+Epoch 4/15
+[1m1353/1353[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m63s[0m 46ms/step - loss: 1.2519 - output_steps_loss: 1.2437 - output_success_accuracy: 0.9616 - output_success_loss: 0.0165 - val_loss: 1.2711 - val_output_steps_loss: 1.2627 - val_output_success_accuracy: 0.9675 - val_output_success_loss: 0.0174
+Epoch 5/15
+[1m1353/1353[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m64s[0m 47ms/step - loss: 1.2487 - output_steps_loss: 1.2405 - output_success_accuracy: 0.9617 - output_success_loss: 0.0164 - val_loss: 1.2701 - val_output_steps_loss: 1.2618 - val_output_success_accuracy: 0.9674 - val_output_success_loss: 0.0170
+✅ Loss曲线已保存至: visualization\Transformer_loss_curve.png
+
+✅ 模型已成功保存到: Transformer_Model.keras
+
+Step 4: 开始批量预测，显示进度条...
+[1m194/194[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m4s[0m 20ms/step
+
+Step 4: 开始批量预测，显示进度条...
+[1m387/387[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m7s[0m 19ms/step
+
+========================================
+  Transformer模型验证和测试报告
+========================================
+---- 验证集指标 ----
+1. 平均步数误差 (MAE)    : 0.9139
+2. 均方根误差 (RMSE)     : 1.1204
+3. 胜负预测准确率        : 96.695%
+4. ROC曲线下面积 (AUC)   : 0.8476
+5. 大型误差率 (>1.5步)  : 18.548%
+
+---- 测试集指标 ----
+1. 平均步数误差 (MAE)    : 0.9144
+2. 均方根误差 (RMSE)     : 1.1202
+3. 胜负预测准确率        : 96.695%
+4. ROC曲线下面积 (AUC)   : 0.8501
+5. 大型误差率 (>1.5步)  : 18.497%
+========================================
+
+
+Step 5: 启动回测验证抽样报告 (样本数=10000, 输出至 output.txt)...
+------------------------------------------------------------
+User ID    | Bias  | Diff  | Real  | Pred  | Err   | Status
+------------------------------------------------------------
+704475     | 4.47  | 4.29  | 5    | 4.31  | 0.69  | ✅
+268463     | 5.72  | 4.37  | 5    | 5.50  | 0.50  | ✅
+135509     | 3.97  | 4.72  | 2    | 4.34  | 2.34  | ❌
+645398     | 3.86  | 4.72  | 3    | 4.24  | 1.24  | ⚠️
+15464      | 3.62  | 4.40  | 3    | 3.67  | 0.67  | ✅
+726841     | 4.28  | 3.63  | 2    | 3.58  | 1.58  | ❌
+849490     | 5.10  | 3.52  | 4    | 4.16  | 0.16  | ✅
+292923     | 4.44  | 3.96  | 5    | 3.99  | 1.01  | ⚠️
+251632     | 4.30  | 4.09  | 6    | 3.94  | 2.06  | ❌
+5135       | 3.30  | 4.72  | 4    | 3.73  | 0.27  | ✅
+... (其余 9990 条省略)
+
+✅ 抽样报告已成功导出至 outputs/transformer_output.txt 文件。
+✅ 预测趋势图已保存至: visualization\Transformer_prediction_trends.png

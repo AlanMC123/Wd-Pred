@@ -1,0 +1,19 @@
+Traceback (most recent call last):
+  File "f:\Codes\Wd-Pred\train_LSTM.py", line 729, in <module>
+    main_train()
+  File "f:\Codes\Wd-Pred\train_LSTM.py", line 535, in main_train
+    hist_train = build_history(train_df)
+                 ^^^^^^^^^^^^^^^^^^^^^^^
+  File "f:\Codes\Wd-Pred\train_LSTM.py", line 248, in build_history
+    hist[u] = [(int(r["Trial"]),
+                    ~^^^^^^^^^
+  File "D:\Python\Python312\Lib\site-packages\pandas\core\series.py", line 1133, in __getitem__
+    return self._get_value(key)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "D:\Python\Python312\Lib\site-packages\pandas\core\series.py", line 1249, in _get_value
+    loc = self.index.get_loc(label)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Python\Python312\Lib\site-packages\pandas\core\indexes\base.py", line 3812, in get_loc
+    return self._engine.get_loc(casted_key)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+KeyboardInterrupt

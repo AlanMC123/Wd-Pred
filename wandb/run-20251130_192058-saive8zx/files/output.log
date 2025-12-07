@@ -1,0 +1,33 @@
+===== 加载所有预处理数据集 =====
+Step 1: 加载预处理后的数据 - train_data.csv
+  读取数据集完成，共3632544条记录，耗时: 2.52秒
+  正在拟合新的 Tokenizer...
+  创建单词ID完成，词汇表大小: 321，耗时: 19.04秒
+  读取单词难度数据...
+  读取用户水平数据...
+  构建历史数据映射...
+Traceback (most recent call last):
+  File "f:\Codes\Wd-Pred\transformer_prediction.py", line 947, in <module>
+    main()
+  File "f:\Codes\Wd-Pred\transformer_prediction.py", line 687, in main
+    train_data, val_data, test_data, vocab_size, _, user_map = load_and_prepare_all_datasets()  # 使用下划线忽略未使用的tokenizer变量
+                                                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "f:\Codes\Wd-Pred\transformer_prediction.py", line 244, in load_and_prepare_all_datasets
+    train_history_map, vocab_size, tokenizer, _, player_map = load_preprocessed_data(
+                                                              ^^^^^^^^^^^^^^^^^^^^^^^
+  File "f:\Codes\Wd-Pred\transformer_prediction.py", line 150, in load_preprocessed_data
+    history_map[user] = list(zip(group['Trial'], group['word_difficulty'], group['word_id'], group['user_bias']))
+                                                 ~~~~~^^^^^^^^^^^^^^^^^^^
+  File "D:\Python\Python312\Lib\site-packages\pandas\core\frame.py", line 4089, in __getitem__
+    return self._get_item_cache(key)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Python\Python312\Lib\site-packages\pandas\core\frame.py", line 4650, in _get_item_cache
+    res = self._ixs(loc, axis=1)
+          ^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Python\Python312\Lib\site-packages\pandas\core\frame.py", line 4021, in _ixs
+    col_mgr = self._mgr.iget(i)
+              ^^^^^^^^^^^^^^^^^
+  File "D:\Python\Python312\Lib\site-packages\pandas\core\internals\managers.py", line 1039, in iget
+    bp = BlockPlacement(slice(0, len(values)))
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+KeyboardInterrupt

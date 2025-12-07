@@ -1,0 +1,62 @@
+_wandb:
+    value:
+        cli_version: 0.23.0
+        e:
+            8aataz1rfybw6hs3he4gvl3aghlggxem:
+                codePath: train_LSTM.py
+                codePathLocal: train_LSTM.py
+                executable: D:\Python\Python312\python.exe
+                git:
+                    commit: 70bf80677128679bc38089b710d9ce739568469f
+                    remote: https://github.com/AlanMC123/Wd-Pred.git
+                host: KanchoTX5Pro
+                os: Windows-11-10.0.26100-SP0
+                program: f:\Codes\Wd-Pred\train_LSTM.py
+                python: CPython 3.12.9
+                root: F:\Codes\Wd-Pred
+                startedAt: "2025-12-06T13:58:51.059431Z"
+                writerId: 8aataz1rfybw6hs3he4gvl3aghlggxem
+        m: []
+        python_version: 3.12.9
+        t:
+            "1":
+                - 2
+                - 3
+                - 5
+                - 49
+                - 53
+            "2":
+                - 2
+                - 3
+                - 5
+                - 49
+                - 53
+            "3":
+                - 13
+                - 16
+            "4": 3.12.9
+            "5": 0.23.0
+            "8":
+                - 3
+            "12": 0.23.0
+            "13": windows-amd64
+batch_size:
+    value: 1024
+dropout_rate:
+    value: 0.45
+embedding_dim:
+    value: 24
+epochs:
+    value: 40
+grid_seq_feat_dim:
+    value: 8
+learning_rate:
+    value: 0.0005
+look_back:
+    value: 5
+lstm_units:
+    value: 56
+model_type:
+    value: LSTM_Grid_Seq_Simplified
+seed:
+    value: 42

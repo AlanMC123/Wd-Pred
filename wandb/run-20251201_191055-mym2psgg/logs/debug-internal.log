@@ -1,0 +1,12 @@
+{"time":"2025-12-01T19:10:55.9482454+08:00","level":"INFO","msg":"stream: starting","core version":"0.23.0"}
+{"time":"2025-12-01T19:10:56.4424371+08:00","level":"INFO","msg":"stream: created new stream","id":"mym2psgg"}
+{"time":"2025-12-01T19:10:56.4424371+08:00","level":"INFO","msg":"handler: started","stream_id":"mym2psgg"}
+{"time":"2025-12-01T19:10:56.4444945+08:00","level":"INFO","msg":"stream: started","id":"mym2psgg"}
+{"time":"2025-12-01T19:10:56.4444945+08:00","level":"INFO","msg":"writer: started","stream_id":"mym2psgg"}
+{"time":"2025-12-01T19:10:56.4444945+08:00","level":"INFO","msg":"sender: started","stream_id":"mym2psgg"}
+{"time":"2025-12-01T19:12:16.5167904+08:00","level":"INFO","msg":"fileTransfer: Close: file transfer manager closed"}
+{"time":"2025-12-01T19:12:17.0812416+08:00","level":"INFO","msg":"handler: operation stats","stats":{}}
+{"time":"2025-12-01T19:12:17.0883184+08:00","level":"INFO","msg":"stream: closing","id":"mym2psgg"}
+{"time":"2025-12-01T19:12:17.0883184+08:00","level":"INFO","msg":"handler: closed","stream_id":"mym2psgg"}
+{"time":"2025-12-01T19:12:17.0883184+08:00","level":"INFO","msg":"sender: closed","stream_id":"mym2psgg"}
+{"time":"2025-12-01T19:12:17.0883184+08:00","level":"INFO","msg":"stream: closed","id":"mym2psgg"}

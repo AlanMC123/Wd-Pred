@@ -106,4 +106,4 @@ def clean_dataset(percentage):
     return output_file
 
 if __name__ == "__main__":
-    clean_dataset(1/10)
+    clean_dataset(1/10) # 随机选取10%的用户，减少处理负担

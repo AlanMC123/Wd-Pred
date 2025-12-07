@@ -1,0 +1,7 @@
+Traceback (most recent call last):
+  File "f:\Codes\Wd-Pred\transformer_prediction.py", line 941, in <module>
+    main()
+  File "f:\Codes\Wd-Pred\transformer_prediction.py", line 681, in main
+    user_map, vocab_size, _, _ = process_data_and_extract_features(FILE_PATH, MAX_ROWS)
+                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+NameError: name 'process_data_and_extract_features' is not defined

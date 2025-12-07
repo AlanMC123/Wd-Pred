@@ -1,11 +1,9 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
+
 """
-Fixed Transformer prediction script with robust AUC direction handling.
-基于原 transformer_prediction.py 修复：
-- 强化 success head
-- 自动检测/修正 pred_prob 方向，避免 AUC 倒置
-- 评估时打印相关性诊断信息
+Transformer 多输入预测脚本
+直接运行即开始训练。
+利用早停、Dropout、L2正则化防止过拟合。
+
 """
 
 import os
@@ -28,24 +26,29 @@ from sklearn.metrics import mean_absolute_error, mean_squared_error, accuracy_sc
 from predict import plot_roc_curve, plot_scatter
 
 # ==========================================================
-# Global config (kept same as original, adjust paths if needed)
+# 全局配置
 # ==========================================================
 
+# 数据集和特征文件路径
 TRAIN_FILE = "dataset/train_data.csv"
 VAL_FILE = "dataset/val_data.csv"
 TEST_FILE = "dataset/test_data.csv"
-
 DIFFICULTY_FILE = "dataset/difficulty.csv"
 PLAYER_FILE = "dataset/player_data.csv"
 
+# 模型和报告输出路径
+MODEL_SAVE_PATH = "models/transformer/transformer_model.keras"
+TOKENIZER_PATH = "models/transformer/transformer_tokenizer.json"
+REPORT_SAVE_PATH = "outputs/transformer_output.txt"
+
+# 训练基本参数
 LOOK_BACK = 5
 BATCH_SIZE = 1024
 EPOCHS = 30
 LEARNING_RATE = 0.0002
+LARGE_ERROR_THRESHOLD = 1.5
 
-MODEL_SAVE_PATH = "models/transformer/transformer_model.keras"
-TOKENIZER_PATH = "models/transformer/transformer_tokenizer.json"
-
+# Transformer 架构参数
 PROJECT_DIM = 16
 NUM_HEADS = 6
 FF_DIM = 16
@@ -53,21 +56,24 @@ TRANSFORMER_LAYERS = 1
 DROPOUT_RATE = 0.45
 EMBEDDING_DIM = 16
 
-LOSS_WEIGHTS = {"output_steps": 0.2, "output_success": 1.0}
-
+# 词典参数
 OOV_TOKEN = "<OOV>"
 
-LARGE_ERROR_THRESHOLD = 1.5
+# 早停值
 PATIENCE = 3
-REPORT_SAVE_PATH = "outputs/transformer_output.txt"
 
+# 损失函数权重
+LOSS_WEIGHTS = {"output_steps": 0.2, "output_success": 1.0}
+
+# 固定随机种子
 SEED = 42
 
+# Wordle固定参数
 MAX_TRIES = 6
-GRID_FEAT_LEN = 8
+GRID_FEAT_LEN = 8 # 3个累积颜色特征 + 5个位置绿色特征
 
 # ==========================================================
-# Utilities
+# 基本函数
 # ==========================================================
 def set_seed(seed):
     random.seed(seed)
@@ -89,9 +95,18 @@ def safe_read_csv(path, usecols=None):
     return pd.read_csv(path, usecols=usecols)
 
 # --------------------------
-# Wordle guess sequence encoding
+# 网格序列解析器
 # --------------------------
 def encode_guess_sequence(grid_cell):
+    """
+    将 grid 列表转换为一个时间序列特征矩阵。
+    返回形状为 (MAX_TRIES, GRID_FEAT_LEN) 的浮点矩阵。
+    与Transformer模型使用相同的8维累积特征：
+    1. 累积绿色方块数（归一化）
+    2. 累积黄色方块数（归一化）
+    3. 累积灰色方块数（归一化）
+    4-8. 每个位置累积绿色方块数（归一化）
+    """
     default_seq = np.zeros((MAX_TRIES, GRID_FEAT_LEN), dtype=np.float32)
     if pd.isna(grid_cell):
         return default_seq
@@ -162,7 +177,7 @@ def load_tokenizer():
     return tk
 
 # --------------------------
-# attach features
+# 单词难度、用户偏置特征附加
 # --------------------------
 def attach_features(df, tokenizer, user_map, diff_map):
     df = df.copy()
@@ -181,7 +196,7 @@ def attach_features(df, tokenizer, user_map, diff_map):
     return df
 
 # --------------------------
-# history & samples
+# 历史建表
 # --------------------------
 def build_history(df) -> Dict[str, List[Tuple]]:
     hist = {}
@@ -195,6 +210,9 @@ def build_history(df) -> Dict[str, List[Tuple]]:
                    for _, r in g.iterrows()]
     return hist
 
+# --------------------------
+# 滑窗生成样本
+# --------------------------
 def create_samples(history, look_back):
     X_seq, X_wid, X_bias, X_diff, X_guess_seq, y_steps, y_succ = [], [], [], [], [], [], []
     for user, events in history.items():
@@ -242,7 +260,7 @@ def create_samples(history, look_back):
     )
 
 # ==========================================================
-# Transformer block
+# Transformer 模块
 # ==========================================================
 class TransformerBlock(tf.keras.layers.Layer):
     def __init__(self, embed_dim, num_heads, ff_dim, rate=0.1, **kwargs):
@@ -281,7 +299,7 @@ class TransformerBlock(tf.keras.layers.Layer):
         return cls(**config)
 
 # ==========================================================
-# Build model (modified success head and loss_weights)
+# Transformer 模型构建
 # ==========================================================
 def build_model(look_back, vocab_size, project_dim=PROJECT_DIM, num_heads=NUM_HEADS,
                 ff_dim=FF_DIM, n_layers=TRANSFORMER_LAYERS, dropout_rate=DROPOUT_RATE):
@@ -323,7 +341,7 @@ def build_model(look_back, vocab_size, project_dim=PROJECT_DIM, num_heads=NUM_HE
     z = Dense(64, activation="relu")(z)
     z = Dropout(dropout_rate)(z)
 
-    # --- Regression Head (新增 Dropout) ---
+    # --- Regression Head ---
     steps = Dense(32, "relu")(z)
     steps = Dropout(0.2)(steps) # 新增 Steps Head Dropout
     out_steps = Dense(1, "linear", name="output_steps")(steps)
@@ -339,7 +357,6 @@ def build_model(look_back, vocab_size, project_dim=PROJECT_DIM, num_heads=NUM_HE
     model = Model([h_in, wid_in, bias_in, diff_in, guess_seq_in], [out_steps, out_succ])
     model.compile(
         optimizer=tf.keras.optimizers.Adam(LEARNING_RATE),
-        # --- 更改为 MSE ---
         loss={"output_steps": "mse", "output_success": "binary_crossentropy"},
         loss_weights = LOSS_WEIGHTS,
         metrics={"output_success": "accuracy"}
@@ -347,7 +364,7 @@ def build_model(look_back, vocab_size, project_dim=PROJECT_DIM, num_heads=NUM_HE
     return model
 
 # ==========================================================
-# Evaluation helpers with AUC direction handling
+# 评估函数
 # ==========================================================
 def find_best_threshold(y_true, prob):
     """
@@ -359,7 +376,7 @@ def find_best_threshold(y_true, prob):
     # 找到最大的 F1 Score 对应的索引
     ix = np.argmax(fscores)
     
-    # 确保 ix 不会超出 thresholds 的范围 (thresholds 比 precision/recall 少一个点)
+    # 确保 ix 不会超出 thresholds 的范围 
     best_threshold = thresholds[ix] if ix < len(thresholds) else thresholds[-1] 
     
     # 检查最佳 F1 对应的索引是否对应一个有效的阈值
@@ -385,24 +402,24 @@ def evaluate_model(model, Xs):
     rmse = np.sqrt(mean_squared_error(y_steps, np.clip(pred_steps, 0, 7)))
     naive_acc = accuracy_score(y_succ.astype(int), (pred_prob >= 0.5).astype(int))
 
-    # AUC best (保留 AUC 自动修正逻辑)
+    # AUC best
     from predict import calculate_auc_best
     auc, used_prob, inverted = calculate_auc_best(y_succ, pred_prob)
     
-    # --- 修正: 自动寻找最佳阈值并用其计算准确率 ---
+    # 自动寻找最佳阈值并用其计算准确率 
     best_threshold = find_best_threshold(y_succ, used_prob)
     
     # 使用最佳阈值计算准确率
     acc = accuracy_score(y_succ.astype(int), (used_prob >= best_threshold).astype(int))
     # -----------------------------------------------
 
-    # correlation check (diagnostic)
+    # 计算相关系数（预测概率与成功标签）
     try:
         corr = np.corrcoef(pred_prob, y_succ)[0,1]
     except:
         corr = float("nan")
 
-    # 打印诊断信息，包括最佳阈值
+    # 打印诊断信息，包括最佳阈值、准确率、AUC
     print(f"MAE={mae:.4f}, RMSE={rmse:.4f}, naive_ACC={naive_acc:.4f}, best_threshold={best_threshold:.4f}, ACC_best_thresh={acc:.4f}, AUC={auc:.4f}, corr(pred_prob,y)={corr:.4f}")
     if inverted:
         print("⚠️ Note: pred_prob appears inverted relative to labels. evaluate_model used -pred_prob for AUC/ACC calculation.")
@@ -436,16 +453,16 @@ def plot_loss(history, save_path_base):
     print(f"Total Loss curve saved to: {total_loss_path}")
     
     # -------------------
-    # 图 2: Steps Loss (回归任务 - MAE)
+    # 图 2: Steps Loss (回归任务 - MSE)
     # -------------------
     plt.figure(figsize=(6, 6))
     if 'output_steps_loss' in history.history:
         plt.plot(history.history['output_steps_loss'], label='Training Steps Loss')
         if 'val_output_steps_loss' in history.history:
             plt.plot(history.history['val_output_steps_loss'], label='Validation Steps Loss')
-    plt.title('Steps Prediction Component Loss (MAE)')
+    plt.title('Steps Prediction Component Loss (MSE)')
     plt.xlabel('Epochs')
-    plt.ylabel('Loss (MAE)')
+    plt.ylabel('Loss (MSE)')
     plt.legend()
     plt.grid(True, alpha=0.3)
     plt.tight_layout()
@@ -485,7 +502,7 @@ class WandbEpochLogger(Callback):
         wandb.log(metrics, step=epoch)
 
 # ==========================================================
-# Main training / predict (kept behavior but using fixed functions)
+# 主程序
 # ==========================================================
 def main_train():
     set_seed(SEED)
@@ -598,7 +615,7 @@ def main_train():
     model.save(MODEL_SAVE_PATH)
     print(f"Model saved to {MODEL_SAVE_PATH}")
 
-    # Validation
+    # 验证评估
     print("\n=== Validation ===")
     val_mae, val_rmse, val_acc, val_auc = evaluate_model(model, X_val)
     wandb.log({"val_mae": val_mae, "val_rmse": val_rmse, "val_accuracy": val_acc, "val_auc": val_auc})
@@ -611,7 +628,7 @@ def main_train():
     val_roc_curve_path = "visualization/Transformer_validation_roc_curve.png"
     plot_roc_curve(X_val[6], val_pred_prob.flatten(), val_roc_curve_path)
     
-    # Plot validation scatter plot
+    # 验证集预测步骤数散点图
     val_scatter_path = "visualization/Transformer_validation_scatter.png"
     plot_scatter(X_val[5], np.clip(val_pred_steps.flatten(), 0, 7), val_scatter_path, model_name="Transformer")
     
@@ -620,7 +637,7 @@ def main_train():
     except Exception:
         pass
 
-    # Test
+    # 测试集评估
     print("\n=== Test ===")
     test_mae, test_rmse, test_acc, test_auc = evaluate_model(model, X_test)
     wandb.log({"test_mae": test_mae, "test_rmse": test_rmse, "test_accuracy": test_acc, "test_auc": test_auc})
@@ -633,7 +650,7 @@ def main_train():
     test_roc_curve_path = "visualization/Transformer_test_roc_curve.png"
     plot_roc_curve(X_test[6], test_pred_prob.flatten(), test_roc_curve_path)
     
-    # Plot test scatter plot
+    # 测试集预测步骤数散点图
     test_scatter_path = "visualization/Transformer_test_scatter.png"
     plot_scatter(X_test[5], np.clip(test_pred_steps.flatten(), 0, 7), test_scatter_path, model_name="Transformer")
     
@@ -642,7 +659,7 @@ def main_train():
     except Exception:
         pass
 
-    # large error stats
+    # 验证集和测试集大错误率计算
     val_pred_steps = val_pred_steps.flatten()
     val_large_error_rate = compute_large_error_rate(X_val[5], np.clip(val_pred_steps, 0, 7), LARGE_ERROR_THRESHOLD)
 

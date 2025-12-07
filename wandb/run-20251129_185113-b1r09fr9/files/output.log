@@ -1,0 +1,23 @@
+
+Step 1: 读取数据并构建四特征...
+Step 2: 构建四输入样本...
+f:\Codes\Wd-Pred\transformer_prediction.py:90: FutureWarning: DataFrameGroupBy.apply operated on the grouping columns. This behavior is deprecated, and in a future version of pandas the grouping columns will be excluded from the operation. Either pass `include_groups=False` to exclude the groupings or explicitly select the grouping columns after groupby to silence this warning.
+  history_map = df.groupby('Username').apply(
+数据集划分：训练集 2770743, 验证集 395820, 测试集 791642
+Step 3: 检测到已保存模型 Transformer_Model，尝试加载...
+✅ 模型加载成功，跳过训练。
+Step 4: 开始批量预测，显示进度条...
+
+194/194 [==============================] - 3s 15ms/step
+Traceback (most recent call last):
+  File "f:\Codes\Wd-Pred\transformer_prediction.py", line 785, in <module>
+    # 记录到WandB
+  File "f:\Codes\Wd-Pred\transformer_prediction.py", line 656, in main
+    'input_difficulty': X_d[val_idx],
+ValueError: operands could not be broadcast together with shapes (395820,7) (395820,)
+Traceback (most recent call last):
+  File "f:\Codes\Wd-Pred\transformer_prediction.py", line 785, in <module>
+    # 记录到WandB
+  File "f:\Codes\Wd-Pred\transformer_prediction.py", line 656, in main
+    'input_difficulty': X_d[val_idx],
+ValueError: operands could not be broadcast together with shapes (395820,7) (395820,)

@@ -1,0 +1,186 @@
+Train=139858, Val=7048, Test=27864
+[1mModel: "functional"[0m
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃[1m [0m[1mLayer (type)                 [0m[1m [0m┃[1m [0m[1mOutput Shape             [0m[1m [0m┃[1m [0m[1m        Param #[0m[1m [0m┃[1m [0m[1mConnected to              [0m[1m [0m┃
+┡━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━┩
+│ input_grid_sequence           │ ([38;5;45mNone[0m, [38;5;34m6[0m, [38;5;34m4[0m)              │               [38;5;34m0[0m │ -                          │
+│ ([38;5;33mInputLayer[0m)                  │                           │                 │                            │
+├───────────────────────────────┼───────────────────────────┼─────────────────┼────────────────────────────┤
+│ input_history ([38;5;33mInputLayer[0m)    │ ([38;5;45mNone[0m, [38;5;34m5[0m, [38;5;34m2[0m)              │               [38;5;34m0[0m │ -                          │
+├───────────────────────────────┼───────────────────────────┼─────────────────┼────────────────────────────┤
+│ input_word_id ([38;5;33mInputLayer[0m)    │ ([38;5;45mNone[0m, [38;5;34m1[0m)                 │               [38;5;34m0[0m │ -                          │
+├───────────────────────────────┼───────────────────────────┼─────────────────┼────────────────────────────┤
+│ lstm_1 ([38;5;33mLSTM[0m)                 │ ([38;5;45mNone[0m, [38;5;34m14[0m)                │           [38;5;34m1,064[0m │ input_grid_sequence[[38;5;34m0[0m][[38;5;34m0[0m]  │
+├───────────────────────────────┼───────────────────────────┼─────────────────┼────────────────────────────┤
+│ lstm ([38;5;33mLSTM[0m)                   │ ([38;5;45mNone[0m, [38;5;34m56[0m)                │          [38;5;34m13,216[0m │ input_history[[38;5;34m0[0m][[38;5;34m0[0m]        │
+├───────────────────────────────┼───────────────────────────┼─────────────────┼────────────────────────────┤
+│ embedding ([38;5;33mEmbedding[0m)         │ ([38;5;45mNone[0m, [38;5;34m1[0m, [38;5;34m24[0m)             │           [38;5;34m7,656[0m │ input_word_id[[38;5;34m0[0m][[38;5;34m0[0m]        │
+├───────────────────────────────┼───────────────────────────┼─────────────────┼────────────────────────────┤
+│ input_user_bias ([38;5;33mInputLayer[0m)  │ ([38;5;45mNone[0m, [38;5;34m1[0m)                 │               [38;5;34m0[0m │ -                          │
+├───────────────────────────────┼───────────────────────────┼─────────────────┼────────────────────────────┤
+│ dropout_1 ([38;5;33mDropout[0m)           │ ([38;5;45mNone[0m, [38;5;34m14[0m)                │               [38;5;34m0[0m │ lstm_1[[38;5;34m0[0m][[38;5;34m0[0m]               │
+├───────────────────────────────┼───────────────────────────┼─────────────────┼────────────────────────────┤
+│ dropout ([38;5;33mDropout[0m)             │ ([38;5;45mNone[0m, [38;5;34m56[0m)                │               [38;5;34m0[0m │ lstm[[38;5;34m0[0m][[38;5;34m0[0m]                 │
+├───────────────────────────────┼───────────────────────────┼─────────────────┼────────────────────────────┤
+│ flatten ([38;5;33mFlatten[0m)             │ ([38;5;45mNone[0m, [38;5;34m24[0m)                │               [38;5;34m0[0m │ embedding[[38;5;34m0[0m][[38;5;34m0[0m]            │
+├───────────────────────────────┼───────────────────────────┼─────────────────┼────────────────────────────┤
+│ dense ([38;5;33mDense[0m)                 │ ([38;5;45mNone[0m, [38;5;34m16[0m)                │              [38;5;34m32[0m │ input_user_bias[[38;5;34m0[0m][[38;5;34m0[0m]      │
+├───────────────────────────────┼───────────────────────────┼─────────────────┼────────────────────────────┤
+│ dense_1 ([38;5;33mDense[0m)               │ ([38;5;45mNone[0m, [38;5;34m16[0m)                │             [38;5;34m240[0m │ dropout_1[[38;5;34m0[0m][[38;5;34m0[0m]            │
+├───────────────────────────────┼───────────────────────────┼─────────────────┼────────────────────────────┤
+│ concatenate ([38;5;33mConcatenate[0m)     │ ([38;5;45mNone[0m, [38;5;34m112[0m)               │               [38;5;34m0[0m │ dropout[[38;5;34m0[0m][[38;5;34m0[0m],             │
+│                               │                           │                 │ flatten[[38;5;34m0[0m][[38;5;34m0[0m],             │
+│                               │                           │                 │ dense[[38;5;34m0[0m][[38;5;34m0[0m], dense_1[[38;5;34m0[0m][[38;5;34m0[0m] │
+├───────────────────────────────┼───────────────────────────┼─────────────────┼────────────────────────────┤
+│ dense_2 ([38;5;33mDense[0m)               │ ([38;5;45mNone[0m, [38;5;34m64[0m)                │           [38;5;34m7,232[0m │ concatenate[[38;5;34m0[0m][[38;5;34m0[0m]          │
+├───────────────────────────────┼───────────────────────────┼─────────────────┼────────────────────────────┤
+│ dropout_2 ([38;5;33mDropout[0m)           │ ([38;5;45mNone[0m, [38;5;34m64[0m)                │               [38;5;34m0[0m │ dense_2[[38;5;34m0[0m][[38;5;34m0[0m]              │
+├───────────────────────────────┼───────────────────────────┼─────────────────┼────────────────────────────┤
+│ dense_4 ([38;5;33mDense[0m)               │ ([38;5;45mNone[0m, [38;5;34m32[0m)                │           [38;5;34m2,080[0m │ dropout_2[[38;5;34m0[0m][[38;5;34m0[0m]            │
+├───────────────────────────────┼───────────────────────────┼─────────────────┼────────────────────────────┤
+│ dropout_3 ([38;5;33mDropout[0m)           │ ([38;5;45mNone[0m, [38;5;34m32[0m)                │               [38;5;34m0[0m │ dense_4[[38;5;34m0[0m][[38;5;34m0[0m]              │
+├───────────────────────────────┼───────────────────────────┼─────────────────┼────────────────────────────┤
+│ dense_3 ([38;5;33mDense[0m)               │ ([38;5;45mNone[0m, [38;5;34m32[0m)                │           [38;5;34m2,080[0m │ dropout_2[[38;5;34m0[0m][[38;5;34m0[0m]            │
+├───────────────────────────────┼───────────────────────────┼─────────────────┼────────────────────────────┤
+│ dense_5 ([38;5;33mDense[0m)               │ ([38;5;45mNone[0m, [38;5;34m16[0m)                │             [38;5;34m528[0m │ dropout_3[[38;5;34m0[0m][[38;5;34m0[0m]            │
+├───────────────────────────────┼───────────────────────────┼─────────────────┼────────────────────────────┤
+│ output_steps ([38;5;33mDense[0m)          │ ([38;5;45mNone[0m, [38;5;34m1[0m)                 │              [38;5;34m33[0m │ dense_3[[38;5;34m0[0m][[38;5;34m0[0m]              │
+├───────────────────────────────┼───────────────────────────┼─────────────────┼────────────────────────────┤
+│ output_success ([38;5;33mDense[0m)        │ ([38;5;45mNone[0m, [38;5;34m1[0m)                 │              [38;5;34m17[0m │ dense_5[[38;5;34m0[0m][[38;5;34m0[0m]              │
+└───────────────────────────────┴───────────────────────────┴─────────────────┴────────────────────────────┘
+[1m Total params: [0m[38;5;34m34,178[0m (133.51 KB)
+[1m Trainable params: [0m[38;5;34m34,178[0m (133.51 KB)
+[1m Non-trainable params: [0m[38;5;34m0[0m (0.00 B)
+Epoch 1/50
+[1m137/137[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m4s[0m 15ms/step - loss: 3.3421 - output_steps_loss: 6.3270 - output_success_accuracy: 0.9190 - output_success_loss: 0.0324 - val_loss: 0.7483 - val_output_steps_loss: 1.2082 - val_output_success_accuracy: 0.9719 - val_output_success_loss: 0.0221
+Epoch 2/50
+[1m137/137[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m2s[0m 14ms/step - loss: 1.0656 - output_steps_loss: 1.8600 - output_success_accuracy: 0.9617 - output_success_loss: 0.0273 - val_loss: 0.6734 - val_output_steps_loss: 1.1081 - val_output_success_accuracy: 0.9719 - val_output_success_loss: 0.0217
+Epoch 3/50
+[1m137/137[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m2s[0m 14ms/step - loss: 0.9785 - output_steps_loss: 1.7262 - output_success_accuracy: 0.9618 - output_success_loss: 0.0263 - val_loss: 0.6423 - val_output_steps_loss: 1.0762 - val_output_success_accuracy: 0.9719 - val_output_success_loss: 0.0214
+Epoch 4/50
+[1m137/137[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m2s[0m 14ms/step - loss: 0.9365 - output_steps_loss: 1.6683 - output_success_accuracy: 0.9618 - output_success_loss: 0.0253 - val_loss: 0.6238 - val_output_steps_loss: 1.0597 - val_output_success_accuracy: 0.9719 - val_output_success_loss: 0.0209
+Epoch 5/50
+[1m137/137[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m2s[0m 14ms/step - loss: 0.8949 - output_steps_loss: 1.6006 - output_success_accuracy: 0.9618 - output_success_loss: 0.0246 - val_loss: 0.6094 - val_output_steps_loss: 1.0420 - val_output_success_accuracy: 0.9719 - val_output_success_loss: 0.0201
+Epoch 6/50
+[1m137/137[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m2s[0m 15ms/step - loss: 0.8660 - output_steps_loss: 1.5554 - output_success_accuracy: 0.9618 - output_success_loss: 0.0237 - val_loss: 0.6074 - val_output_steps_loss: 1.0518 - val_output_success_accuracy: 0.9719 - val_output_success_loss: 0.0192
+Epoch 7/50
+[1m137/137[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m2s[0m 14ms/step - loss: 0.8464 - output_steps_loss: 1.5278 - output_success_accuracy: 0.9619 - output_success_loss: 0.0229 - val_loss: 0.5930 - val_output_steps_loss: 1.0342 - val_output_success_accuracy: 0.9719 - val_output_success_loss: 0.0182
+Epoch 8/50
+[1m137/137[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m2s[0m 14ms/step - loss: 0.8299 - output_steps_loss: 1.5050 - output_success_accuracy: 0.9617 - output_success_loss: 0.0222 - val_loss: 0.5871 - val_output_steps_loss: 1.0319 - val_output_success_accuracy: 0.9719 - val_output_success_loss: 0.0175
+Epoch 9/50
+[1m137/137[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m2s[0m 14ms/step - loss: 0.8110 - output_steps_loss: 1.4756 - output_success_accuracy: 0.9615 - output_success_loss: 0.0217 - val_loss: 0.5852 - val_output_steps_loss: 1.0360 - val_output_success_accuracy: 0.9719 - val_output_success_loss: 0.0169
+Epoch 10/50
+[1m137/137[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m2s[0m 14ms/step - loss: 0.7966 - output_steps_loss: 1.4537 - output_success_accuracy: 0.9612 - output_success_loss: 0.0215 - val_loss: 0.5801 - val_output_steps_loss: 1.0325 - val_output_success_accuracy: 0.9720 - val_output_success_loss: 0.0165
+Epoch 11/50
+[1m137/137[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m2s[0m 14ms/step - loss: 0.7846 - output_steps_loss: 1.4362 - output_success_accuracy: 0.9605 - output_success_loss: 0.0211 - val_loss: 0.5784 - val_output_steps_loss: 1.0351 - val_output_success_accuracy: 0.9720 - val_output_success_loss: 0.0163
+Epoch 12/50
+[1m137/137[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m2s[0m 14ms/step - loss: 0.7675 - output_steps_loss: 1.4078 - output_success_accuracy: 0.9605 - output_success_loss: 0.0208 - val_loss: 0.5744 - val_output_steps_loss: 1.0322 - val_output_success_accuracy: 0.9722 - val_output_success_loss: 0.0161
+Epoch 13/50
+[1m137/137[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m2s[0m 14ms/step - loss: 0.7555 - output_steps_loss: 1.3886 - output_success_accuracy: 0.9602 - output_success_loss: 0.0206 - val_loss: 0.5733 - val_output_steps_loss: 1.0346 - val_output_success_accuracy: 0.9723 - val_output_success_loss: 0.0159
+Epoch 14/50
+[1m137/137[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m2s[0m 14ms/step - loss: 0.7414 - output_steps_loss: 1.3654 - output_success_accuracy: 0.9597 - output_success_loss: 0.0204 - val_loss: 0.5707 - val_output_steps_loss: 1.0341 - val_output_success_accuracy: 0.9723 - val_output_success_loss: 0.0157
+Epoch 15/50
+[1m137/137[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m2s[0m 14ms/step - loss: 0.7315 - output_steps_loss: 1.3495 - output_success_accuracy: 0.9593 - output_success_loss: 0.0202 - val_loss: 0.5692 - val_output_steps_loss: 1.0348 - val_output_success_accuracy: 0.9723 - val_output_success_loss: 0.0155
+Epoch 16/50
+[1m137/137[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m2s[0m 14ms/step - loss: 0.7215 - output_steps_loss: 1.3335 - output_success_accuracy: 0.9586 - output_success_loss: 0.0201 - val_loss: 0.5662 - val_output_steps_loss: 1.0326 - val_output_success_accuracy: 0.9722 - val_output_success_loss: 0.0154
+Epoch 17/50
+[1m137/137[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m2s[0m 14ms/step - loss: 0.7131 - output_steps_loss: 1.3206 - output_success_accuracy: 0.9585 - output_success_loss: 0.0199 - val_loss: 0.5657 - val_output_steps_loss: 1.0348 - val_output_success_accuracy: 0.9720 - val_output_success_loss: 0.0153
+Epoch 18/50
+[1m137/137[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m2s[0m 14ms/step - loss: 0.7065 - output_steps_loss: 1.3105 - output_success_accuracy: 0.9585 - output_success_loss: 0.0197 - val_loss: 0.5652 - val_output_steps_loss: 1.0369 - val_output_success_accuracy: 0.9720 - val_output_success_loss: 0.0152
+Epoch 19/50
+[1m137/137[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m2s[0m 14ms/step - loss: 0.7004 - output_steps_loss: 1.3009 - output_success_accuracy: 0.9583 - output_success_loss: 0.0195 - val_loss: 0.5637 - val_output_steps_loss: 1.0364 - val_output_success_accuracy: 0.9720 - val_output_success_loss: 0.0152
+Epoch 20/50
+[1m137/137[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m2s[0m 14ms/step - loss: 0.6979 - output_steps_loss: 1.2993 - output_success_accuracy: 0.9586 - output_success_loss: 0.0194 - val_loss: 0.5639 - val_output_steps_loss: 1.0397 - val_output_success_accuracy: 0.9718 - val_output_success_loss: 0.0151
+Epoch 21/50
+[1m137/137[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m2s[0m 14ms/step - loss: 0.6955 - output_steps_loss: 1.2968 - output_success_accuracy: 0.9590 - output_success_loss: 0.0195 - val_loss: 0.5621 - val_output_steps_loss: 1.0386 - val_output_success_accuracy: 0.9711 - val_output_success_loss: 0.0151
+Epoch 22/50
+[1m137/137[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m1s[0m 10ms/step - loss: 0.6935 - output_steps_loss: 1.2954 - output_success_accuracy: 0.9587 - output_success_loss: 0.0193 - val_loss: 0.5624 - val_output_steps_loss: 1.0415 - val_output_success_accuracy: 0.9715 - val_output_success_loss: 0.0151
+Epoch 23/50
+[1m137/137[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m1s[0m 10ms/step - loss: 0.6906 - output_steps_loss: 1.2921 - output_success_accuracy: 0.9588 - output_success_loss: 0.0193 - val_loss: 0.5615 - val_output_steps_loss: 1.0420 - val_output_success_accuracy: 0.9711 - val_output_success_loss: 0.0151
+Epoch 24/50
+[1m137/137[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m1s[0m 10ms/step - loss: 0.6891 - output_steps_loss: 1.2913 - output_success_accuracy: 0.9583 - output_success_loss: 0.0193 - val_loss: 0.5594 - val_output_steps_loss: 1.0399 - val_output_success_accuracy: 0.9713 - val_output_success_loss: 0.0150
+Epoch 25/50
+[1m137/137[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m1s[0m 11ms/step - loss: 0.6862 - output_steps_loss: 1.2873 - output_success_accuracy: 0.9587 - output_success_loss: 0.0193 - val_loss: 0.5593 - val_output_steps_loss: 1.0414 - val_output_success_accuracy: 0.9712 - val_output_success_loss: 0.0150
+Epoch 26/50
+[1m137/137[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m1s[0m 10ms/step - loss: 0.6858 - output_steps_loss: 1.2882 - output_success_accuracy: 0.9586 - output_success_loss: 0.0192 - val_loss: 0.5582 - val_output_steps_loss: 1.0409 - val_output_success_accuracy: 0.9720 - val_output_success_loss: 0.0151
+Epoch 27/50
+[1m137/137[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m1s[0m 10ms/step - loss: 0.6839 - output_steps_loss: 1.2861 - output_success_accuracy: 0.9588 - output_success_loss: 0.0192 - val_loss: 0.5567 - val_output_steps_loss: 1.0394 - val_output_success_accuracy: 0.9715 - val_output_success_loss: 0.0150
+Epoch 28/50
+[1m137/137[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m2s[0m 11ms/step - loss: 0.6827 - output_steps_loss: 1.2849 - output_success_accuracy: 0.9584 - output_success_loss: 0.0192 - val_loss: 0.5575 - val_output_steps_loss: 1.0426 - val_output_success_accuracy: 0.9711 - val_output_success_loss: 0.0150
+Epoch 29/50
+[1m137/137[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m2s[0m 14ms/step - loss: 0.6828 - output_steps_loss: 1.2871 - output_success_accuracy: 0.9588 - output_success_loss: 0.0191 - val_loss: 0.5556 - val_output_steps_loss: 1.0402 - val_output_success_accuracy: 0.9713 - val_output_success_loss: 0.0149
+Epoch 30/50
+[1m137/137[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m2s[0m 14ms/step - loss: 0.6801 - output_steps_loss: 1.2826 - output_success_accuracy: 0.9588 - output_success_loss: 0.0191 - val_loss: 0.5553 - val_output_steps_loss: 1.0407 - val_output_success_accuracy: 0.9713 - val_output_success_loss: 0.0150
+Epoch 31/50
+[1m137/137[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m2s[0m 14ms/step - loss: 0.6792 - output_steps_loss: 1.2819 - output_success_accuracy: 0.9587 - output_success_loss: 0.0191 - val_loss: 0.5557 - val_output_steps_loss: 1.0426 - val_output_success_accuracy: 0.9720 - val_output_success_loss: 0.0150
+Epoch 32/50
+[1m137/137[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m2s[0m 14ms/step - loss: 0.6786 - output_steps_loss: 1.2819 - output_success_accuracy: 0.9587 - output_success_loss: 0.0190 - val_loss: 0.5530 - val_output_steps_loss: 1.0385 - val_output_success_accuracy: 0.9715 - val_output_success_loss: 0.0149
+Epoch 33/50
+[1m137/137[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m2s[0m 14ms/step - loss: 0.6761 - output_steps_loss: 1.2782 - output_success_accuracy: 0.9586 - output_success_loss: 0.0190 - val_loss: 0.5538 - val_output_steps_loss: 1.0409 - val_output_success_accuracy: 0.9718 - val_output_success_loss: 0.0149
+Epoch 34/50
+[1m137/137[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m2s[0m 14ms/step - loss: 0.6757 - output_steps_loss: 1.2781 - output_success_accuracy: 0.9584 - output_success_loss: 0.0190 - val_loss: 0.5525 - val_output_steps_loss: 1.0392 - val_output_success_accuracy: 0.9712 - val_output_success_loss: 0.0148
+Epoch 35/50
+[1m137/137[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m2s[0m 12ms/step - loss: 0.6750 - output_steps_loss: 1.2778 - output_success_accuracy: 0.9582 - output_success_loss: 0.0190 - val_loss: 0.5523 - val_output_steps_loss: 1.0396 - val_output_success_accuracy: 0.9720 - val_output_success_loss: 0.0149
+Epoch 36/50
+[1m137/137[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m1s[0m 10ms/step - loss: 0.6737 - output_steps_loss: 1.2761 - output_success_accuracy: 0.9586 - output_success_loss: 0.0189 - val_loss: 0.5523 - val_output_steps_loss: 1.0406 - val_output_success_accuracy: 0.9715 - val_output_success_loss: 0.0149
+Epoch 37/50
+[1m137/137[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m1s[0m 10ms/step - loss: 0.6729 - output_steps_loss: 1.2754 - output_success_accuracy: 0.9585 - output_success_loss: 0.0189 - val_loss: 0.5507 - val_output_steps_loss: 1.0382 - val_output_success_accuracy: 0.9709 - val_output_success_loss: 0.0149
+Epoch 38/50
+[1m137/137[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m1s[0m 10ms/step - loss: 0.6720 - output_steps_loss: 1.2742 - output_success_accuracy: 0.9582 - output_success_loss: 0.0189 - val_loss: 0.5508 - val_output_steps_loss: 1.0392 - val_output_success_accuracy: 0.9711 - val_output_success_loss: 0.0149
+Epoch 39/50
+[1m137/137[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m1s[0m 10ms/step - loss: 0.6711 - output_steps_loss: 1.2739 - output_success_accuracy: 0.9588 - output_success_loss: 0.0189 - val_loss: 0.5513 - val_output_steps_loss: 1.0409 - val_output_success_accuracy: 0.9715 - val_output_success_loss: 0.0149
+Epoch 40/50
+[1m137/137[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m1s[0m 10ms/step - loss: 0.6701 - output_steps_loss: 1.2722 - output_success_accuracy: 0.9583 - output_success_loss: 0.0189 - val_loss: 0.5501 - val_output_steps_loss: 1.0392 - val_output_success_accuracy: 0.9708 - val_output_success_loss: 0.0148
+Epoch 41/50
+[1m137/137[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m1s[0m 10ms/step - loss: 0.6700 - output_steps_loss: 1.2725 - output_success_accuracy: 0.9580 - output_success_loss: 0.0189 - val_loss: 0.5517 - val_output_steps_loss: 1.0430 - val_output_success_accuracy: 0.9706 - val_output_success_loss: 0.0149
+Epoch 42/50
+[1m137/137[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m1s[0m 10ms/step - loss: 0.6693 - output_steps_loss: 1.2719 - output_success_accuracy: 0.9586 - output_success_loss: 0.0189 - val_loss: 0.5520 - val_output_steps_loss: 1.0440 - val_output_success_accuracy: 0.9711 - val_output_success_loss: 0.0150
+Epoch 43/50
+[1m137/137[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m1s[0m 10ms/step - loss: 0.6688 - output_steps_loss: 1.2712 - output_success_accuracy: 0.9584 - output_success_loss: 0.0188 - val_loss: 0.5499 - val_output_steps_loss: 1.0406 - val_output_success_accuracy: 0.9709 - val_output_success_loss: 0.0148
+Epoch 44/50
+[1m137/137[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m1s[0m 10ms/step - loss: 0.6683 - output_steps_loss: 1.2712 - output_success_accuracy: 0.9584 - output_success_loss: 0.0189 - val_loss: 0.5497 - val_output_steps_loss: 1.0406 - val_output_success_accuracy: 0.9709 - val_output_success_loss: 0.0149
+Epoch 45/50
+[1m137/137[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m1s[0m 10ms/step - loss: 0.6678 - output_steps_loss: 1.2703 - output_success_accuracy: 0.9586 - output_success_loss: 0.0188 - val_loss: 0.5517 - val_output_steps_loss: 1.0452 - val_output_success_accuracy: 0.9715 - val_output_success_loss: 0.0149
+Epoch 46/50
+[1m137/137[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m1s[0m 10ms/step - loss: 0.6679 - output_steps_loss: 1.2707 - output_success_accuracy: 0.9585 - output_success_loss: 0.0188 - val_loss: 0.5479 - val_output_steps_loss: 1.0380 - val_output_success_accuracy: 0.9716 - val_output_success_loss: 0.0147
+Epoch 47/50
+[1m137/137[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m1s[0m 10ms/step - loss: 0.6669 - output_steps_loss: 1.2691 - output_success_accuracy: 0.9583 - output_success_loss: 0.0188 - val_loss: 0.5499 - val_output_steps_loss: 1.0423 - val_output_success_accuracy: 0.9709 - val_output_success_loss: 0.0149
+Epoch 48/50
+[1m137/137[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m1s[0m 10ms/step - loss: 0.6671 - output_steps_loss: 1.2709 - output_success_accuracy: 0.9579 - output_success_loss: 0.0188 - val_loss: 0.5488 - val_output_steps_loss: 1.0406 - val_output_success_accuracy: 0.9711 - val_output_success_loss: 0.0149
+Epoch 49/50
+[1m137/137[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m1s[0m 10ms/step - loss: 0.6661 - output_steps_loss: 1.2689 - output_success_accuracy: 0.9584 - output_success_loss: 0.0188 - val_loss: 0.5488 - val_output_steps_loss: 1.0411 - val_output_success_accuracy: 0.9708 - val_output_success_loss: 0.0148
+Epoch 50/50
+[1m137/137[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m1s[0m 10ms/step - loss: 0.6665 - output_steps_loss: 1.2698 - output_success_accuracy: 0.9580 - output_success_loss: 0.0188 - val_loss: 0.5473 - val_output_steps_loss: 1.0384 - val_output_success_accuracy: 0.9712 - val_output_success_loss: 0.0148
+Loss curve saved to: visualization/LSTM_loss_curve.png
+Model saved to models/lstm/lstm_model.keras
+
+=== Validation ===
+[1m7/7[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m0s[0m 30ms/step 
+MAE=0.8189, RMSE=1.0197, ACC=0.9712, AUC=0.8701
+AUC curve saved to: visualization/LSTM_validation_roc_curve.png
+
+=== Test ===
+[1m28/28[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m0s[0m 6ms/step
+MAE=0.8776, RMSE=1.0896, ACC=0.9716, AUC=0.7893
+AUC curve saved to: visualization/LSTM_test_roc_curve.png
+
+📄 Report saved to: outputs/lstm_output.txt
+
+========================================
+ LSTM Model Validation and Test Report
+ (Simplified Features)
+========================================
+---- Validation Set Metrics ----
+1. Mean Absolute Error (MAE)    : 0.8189
+2. Root Mean Squared Error (RMSE)     : 1.0197
+3. Win/Loss Prediction Accuracy        : 97.120%
+4. Area Under ROC Curve (AUC)   : 0.8701
+5. Large Error Rate (>1.5 steps)  : 14.387%
+
+---- Test Set Metrics ----
+1. Mean Absolute Error (MAE)    : 0.8776
+2. Root Mean Squared Error (RMSE)     : 1.0896
+3. Win/Loss Prediction Accuracy        : 97.158%
+4. Area Under ROC Curve (AUC)   : 0.7893
+5. Large Error Rate (>1.5 steps)  : 17.255%
+========================================

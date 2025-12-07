@@ -1,0 +1,536 @@
+✅ WandB 初始化成功
+📊 开始数据处理...
+Step 1: 读取数据并构建四特征...
+f:\Codes\Wd-Pred\LSTM_train.py:81: FutureWarning: DataFrameGroupBy.apply operated on the grouping columns. This behavior is deprecated, and in a future version of pandas the grouping columns will be excluded from the operation. Either pass `include_groups=False` to exclude the groupings or explicitly select the grouping columns after groupby to silence this warning.
+  history_map = df.groupby('Username').apply(
+✅ 数据处理完成，词汇表大小: 321
+Step 2: 构建四输入样本...
+✅ 数据集构建完成，样本数量: 3958205
+✅ 训练集大小: 3166564, 验证集大小: 791641
+Step 3: 构建四输入LSTM神经网络 (Vocab=321)...
+  LSTM配置: 2层, 每层64个单元, Dropout=0.2
+Model: "model"
+__________________________________________________________________________________________________
+ Layer (type)                Output Shape                 Param #   Connected to
+==================================================================================================
+ input_history (InputLayer)  [(None, 8, 2)]               0         []
+ lstm (LSTM)                 (None, 8, 64)                17152     ['input_history[0][0]']
+ dropout (Dropout)           (None, 8, 64)                0         ['lstm[0][0]']
+ input_word_id (InputLayer)  [(None, 1)]                  0         []
+ lstm_1 (LSTM)               (None, 64)                   33024     ['dropout[0][0]']
+ input_difficulty (InputLay  [(None, 1)]                  0         []
+ er)
+ embedding (Embedding)       (None, 1, 64)                20544     ['input_word_id[0][0]']
+ input_user_bias (InputLaye  [(None, 1)]                  0         []
+ r)
+ dropout_1 (Dropout)         (None, 64)                   0         ['lstm_1[0][0]']
+ dense (Dense)               (None, 16)                   32        ['input_difficulty[0][0]']
+ flatten (Flatten)           (None, 64)                   0         ['embedding[0][0]']
+ dense_1 (Dense)             (None, 16)                   32        ['input_user_bias[0][0]']
+ concatenate (Concatenate)   (None, 160)                  0         ['dropout_1[0][0]',
+                                                                     'dense[0][0]',
+                                                                     'flatten[0][0]',
+                                                                     'dense_1[0][0]']
+ dense_2 (Dense)             (None, 64)                   10304     ['concatenate[0][0]']
+ dropout_2 (Dropout)         (None, 64)                   0         ['dense_2[0][0]']
+ dense_3 (Dense)             (None, 32)                   2080      ['dropout_2[0][0]']
+ dense_4 (Dense)             (None, 16)                   1040      ['dropout_2[0][0]']
+ output_steps (Dense)        (None, 1)                    33        ['dense_3[0][0]']
+ output_success (Dense)      (None, 1)                    17        ['dense_4[0][0]']
+==================================================================================================
+Total params: 84258 (329.13 KB)
+Trainable params: 84258 (329.13 KB)
+Non-trainable params: 0 (0.00 Byte)
+__________________________________________________________________________________________________
+🚀 开始训练 (Epochs=15, Batch=2048)...
+Epoch 1/15
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+1547/1547 [==============================] - 189s 121ms/step - loss: 1.6737 - output_steps_loss: 1.5983 - output_success_loss: 0.1508 - output_success_accuracy: 0.9660 - val_loss: 1.2973 - val_output_steps_loss: 1.2387 - val_output_success_loss: 0.1172 - val_output_success_accuracy: 0.9664
+Epoch 2/15
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+1547/1547 [==============================] - 188s 122ms/step - loss: 1.3236 - output_steps_loss: 1.2655 - output_success_loss: 0.1162 - output_success_accuracy: 0.9667 - val_loss: 1.3189 - val_output_steps_loss: 1.2637 - val_output_success_loss: 0.1104 - val_output_success_accuracy: 0.9664
+Epoch 3/15
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+1547/1547 [==============================] - 187s 121ms/step - loss: 1.2985 - output_steps_loss: 1.2426 - output_success_loss: 0.1118 - output_success_accuracy: 0.9667 - val_loss: 1.2966 - val_output_steps_loss: 1.2417 - val_output_success_loss: 0.1099 - val_output_success_accuracy: 0.9664
+Epoch 4/15
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+1547/1547 [==============================] - 208s 134ms/step - loss: 1.2933 - output_steps_loss: 1.2380 - output_success_loss: 0.1107 - output_success_accuracy: 0.9669 - val_loss: 1.3032 - val_output_steps_loss: 1.2487 - val_output_success_loss: 0.1090 - val_output_success_accuracy: 0.9678
+Epoch 5/15
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+1547/1547 [==============================] - 212s 137ms/step - loss: 1.2905 - output_steps_loss: 1.2355 - output_success_loss: 0.1100 - output_success_accuracy: 0.9677 - val_loss: 1.2906 - val_output_steps_loss: 1.2362 - val_output_success_loss: 0.1089 - val_output_success_accuracy: 0.9678
+Epoch 6/15
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

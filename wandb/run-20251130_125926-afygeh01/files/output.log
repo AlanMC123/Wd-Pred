@@ -1,0 +1,16 @@
+Step 1: 读取数据并构建四特征...
+f:\Codes\Wd-Pred\transformer_prediction.py:99: FutureWarning: DataFrameGroupBy.apply operated on the grouping columns. This behavior is deprecated, and in a future version of pandas the grouping columns will be excluded from the operation. Either pass `include_groups=False` to exclude the groupings or explicitly select the grouping columns after groupby to silence this warning.
+  history_map = df.groupby('Username').apply(
+Step 2: 构建四输入样本...
+数据集划分：训练集 2770743, 验证集 395820, 测试集 791642
+✅ 数据加载优化已应用 (cache + prefetch)
+Step 3: 构建Transformer神经网络 (Vocab=321, Layers=2)...
+WARNING:tensorflow:From D:\Python\Python312\Lib\site-packages\keras\src\backend\tensorflow\core.py:232: The name tf.placeholder is deprecated. Please use tf.compat.v1.placeholder instead.
+
+D:\Python\Python312\Lib\site-packages\keras\src\layers\core\embedding.py:97: UserWarning: Argument `input_length` is deprecated. Just remove it.
+  warnings.warn(
+✅ 模型编译完成，使用Focal Loss (gamma=2.0, alpha=0.25)
+Step 4: 开始训练 (Epochs=15, Batch=1024, Patience=4)...
+提示: 当前使用CPU训练，速度可能较慢。建议使用支持CUDA的GPU以获得显著加速。
+Epoch 1/15
+[1m1707/2706[0m [32m━━━━━━━━━━━━[0m[37m━━━━━━━━[0m [1m29s[0m 30ms/step - loss: 2.8549 - output_steps_loss: 2.8433 - output_success_accuracy: 0.9661 - output_success_loss: 0.0232

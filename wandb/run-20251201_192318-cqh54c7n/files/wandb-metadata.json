@@ -1,0 +1,16 @@
+{
+  "os": "Windows-11-10.0.26100-SP0",
+  "python": "CPython 3.12.9",
+  "startedAt": "2025-12-01T11:23:18.803673Z",
+  "program": "f:\\Codes\\Wd-Pred\\LSTM_prediction.py",
+  "codePath": "LSTM_prediction.py",
+  "codePathLocal": "LSTM_prediction.py",
+  "git": {
+    "remote": "https://github.com/AlanMC123/Wd-Pred.git",
+    "commit": "9321dfdf18582007f9c6b80a73093e7061561088"
+  },
+  "root": "F:\\Codes\\Wd-Pred",
+  "host": "KanchoTX5Pro",
+  "executable": "D:\\Python\\Python312\\python.exe",
+  "writerId": "c62t8qk1aiwlljhftafvyc0zsnaus1ut"
+}

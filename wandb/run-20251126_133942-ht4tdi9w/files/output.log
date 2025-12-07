@@ -1,0 +1,40 @@
+
+Step 1: 读取数据并构建四特征...
+f:\Codes\Wd-Pred\LSTM_prediction.py:67: FutureWarning: DataFrameGroupBy.apply operated on the grouping columns. This behavior is deprecated, and in a future version of pandas the grouping columns will be excluded from the operation. Either pass `include_groups=False` to exclude the groupings or explicitly select the grouping columns after groupby to silence this warning.
+  history_map = df.groupby('Username').apply(
+Step 2: 构建四输入样本...
+Step 3: 检测到已保存模型 LSTM_Model，尝试加载...
+✅ 模型加载成功，跳过训练。
+✅ 模型已成功保存到文件夹: LSTM_Model
+Step 4: 开始批量预测，显示进度条...
+
+
+
+
+877/877 [==============================] - 10s 11ms/step
+========================================
+  LSTM模型验证报告 (Validation Report)
+========================================
+1. 平均步数误差 (MAE)    : 1.0121
+2. 均方根误差 (RMSE)     : 1.2421
+3. 胜负预测准确率        : 96.406%
+4. ROC曲线下面积 (AUC)   : 0.8754
+5. 大型误差率 (>1.5步)  : 24.088%
+========================================
+Step 5: 启动回测验证抽样报告 (样本数=100000, 输出至 output.txt)...
+------------------------------------------------------------
+User ID    | Bias  | Diff  | Real  | Pred  | Err   | Status
+------------------------------------------------------------
+400967     | 4.56  | 4.44  | 3    | 4.24  | 1.24  | ⚠️
+39038      | 4.00  | 3.90  | 4    | 3.14  | 0.86  | ✅
+741958     | 5.32  | 4.69  | 7    | 4.67  | 2.33  | ❌
+439315     | 3.14  | 4.31  | 4    | 2.89  | 1.11  | ⚠️
+139671     | 4.86  | 3.53  | 4    | 3.63  | 0.37  | ✅
+357580     | 4.14  | 4.32  | 6    | 3.80  | 2.20  | ❌
+782517     | 4.21  | 3.91  | 5    | 3.30  | 1.70  | ❌
+447053     | 4.42  | 4.69  | 7    | 4.23  | 2.77  | ❌
+334681     | 2.57  | 3.29  | 2    | 2.02  | 0.02  | ✅
+467366     | 3.98  | 4.69  | 6    | 3.87  | 2.13  | ❌
+... (其余 99990 条省略)
+✅ 抽样报告已成功导出至 outputs/lstm_output.txt 文件。
+✅ 预测趋势图已保存至: visualization\LSTM_prediction_trends.png

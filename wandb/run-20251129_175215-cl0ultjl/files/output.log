@@ -1,0 +1,212 @@
+
+Step 1: 读取数据并构建四特征...
+f:\Codes\Wd-Pred\transformer_prediction.py:86: FutureWarning: DataFrameGroupBy.apply operated on the grouping columns. This behavior is deprecated, and in a future version of pandas the grouping columns will be excluded from the operation. Either pass `include_groups=False` to exclude the groupings or explicitly select the grouping columns after groupby to silence this warning.
+  history_map = df.groupby('Username').apply(
+Step 2: 构建四输入样本...
+数据集划分：训练集 2770743, 验证集 395820, 测试集 791642
+Step 3: 构建Transformer神经网络 (Vocab=321, Layers=2)...
+Step 4: 开始训练 (Epochs=10, Batch=2048, Patience=4)...
+Epoch 1/10
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+1353/1353 [==============================] - 53s 37ms/step - loss: 1.7704 - output_steps_loss: 1.6915 - output_success_loss: 0.1577 - output_success_accuracy: 0.9648 - val_loss: 1.3017 - val_output_steps_loss: 1.2431 - val_output_success_loss: 0.1172 - val_output_success_accuracy: 0.9664
+Epoch 2/10
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+1353/1353 [==============================] - 51s 37ms/step - loss: 1.3185 - output_steps_loss: 1.2603 - output_success_loss: 0.1165 - output_success_accuracy: 0.9667 - val_loss: 1.2953 - val_output_steps_loss: 1.2393 - val_output_success_loss: 0.1119 - val_output_success_accuracy: 0.9664
+Epoch 3/10
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+1353/1353 [==============================] - 51s 38ms/step - loss: 1.3049 - output_steps_loss: 1.2482 - output_success_loss: 0.1135 - output_success_accuracy: 0.9667 - val_loss: 1.2899 - val_output_steps_loss: 1.2341 - val_output_success_loss: 0.1116 - val_output_success_accuracy: 0.9664
+Epoch 4/10
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+1353/1353 [==============================] - 54s 40ms/step - loss: 1.2996 - output_steps_loss: 1.2434 - output_success_loss: 0.1125 - output_success_accuracy: 0.9673 - val_loss: 1.2902 - val_output_steps_loss: 1.2346 - val_output_success_loss: 0.1111 - val_output_success_accuracy: 0.9675
+Epoch 5/10
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+1353/1353 [==============================] - 53s 39ms/step - loss: 1.2964 - output_steps_loss: 1.2404 - output_success_loss: 0.1119 - output_success_accuracy: 0.9675 - val_loss: 1.2951 - val_output_steps_loss: 1.2396 - val_output_success_loss: 0.1110 - val_output_success_accuracy: 0.9678
+Epoch 6/10
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+1353/1353 [==============================] - 54s 40ms/step - loss: 1.2937 - output_steps_loss: 1.2379 - output_success_loss: 0.1115 - output_success_accuracy: 0.9676 - val_loss: 1.3000 - val_output_steps_loss: 1.2445 - val_output_success_loss: 0.1110 - val_output_success_accuracy: 0.9677
+Epoch 7/10
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+1353/1353 [==============================] - 53s 39ms/step - loss: 1.2923 - output_steps_loss: 1.2367 - output_success_loss: 0.1112 - output_success_accuracy: 0.9677 - val_loss: 1.3130 - val_output_steps_loss: 1.2576 - val_output_success_loss: 0.1108 - val_output_success_accuracy: 0.9678
+✅ Loss曲线已保存至: visualization\Transformer_loss_curve.png
+✅ 模型已成功保存到文件夹: Transformer_Model
+Step 4: 开始批量预测，显示进度条...
+129/194 [==================>...........] - ETA: 1s
+Traceback (most recent call last):
+  File "f:\Codes\Wd-Pred\transformer_prediction.py", line 754, in <module>
+    main()
+  File "f:\Codes\Wd-Pred\transformer_prediction.py", line 620, in main
+    val_pred_steps, val_pred_success_prob, val_mae, val_rmse = evaluate_model_and_get_preds(model, val_inputs, val_labels)
+ValueError: too many values to unpack (expected 4)
+Traceback (most recent call last):
+  File "f:\Codes\Wd-Pred\transformer_prediction.py", line 754, in <module>
+    main()
+  File "f:\Codes\Wd-Pred\transformer_prediction.py", line 620, in main
+    val_pred_steps, val_pred_success_prob, val_mae, val_rmse = evaluate_model_and_get_preds(model, val_inputs, val_labels)
+
+194/194 [==============================] - 3s 16ms/step

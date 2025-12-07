@@ -1,0 +1,18 @@
+Train=119454, Val=3772, Test=20074
+Traceback (most recent call last):
+  File "f:\Codes\Wd-Pred\LSTM_prediction.py", line 767, in <module>
+    main_train()
+  File "f:\Codes\Wd-Pred\LSTM_prediction.py", line 560, in main_train
+    model = build_model(LOOK_BACK, vocab_size)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "f:\Codes\Wd-Pred\LSTM_prediction.py", line 327, in build_model
+    x = TransformerBlock(project_dim, num_heads, ff_dim, dropout_rate)(x)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Python\Python312\Lib\site-packages\keras\src\utils\traceback_utils.py", line 122, in error_handler
+    raise e.with_traceback(filtered_tb) from None
+  File "D:\Python\Python312\Lib\inspect.py", line 3277, in bind
+    return self._bind(args, kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Python\Python312\Lib\inspect.py", line 3190, in _bind
+    raise TypeError(msg) from None
+TypeError: missing a required argument: 'training'

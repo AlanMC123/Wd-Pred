@@ -1,0 +1,83 @@
+_wandb:
+    value:
+        cli_version: 0.23.0
+        e:
+            fwg33pnbnh4sjcdlog14o37w7htycv0h:
+                codePath: transformer_prediction.py
+                codePathLocal: transformer_prediction.py
+                cpu_count: 24
+                cpu_count_logical: 32
+                cudaVersion: "12.8"
+                disk:
+                    /:
+                        total: "749329182720"
+                        used: "384991567872"
+                executable: D:\Python\Python312\python.exe
+                git:
+                    commit: 21fbaf0800fae8ec5066a94e48839896910ef468
+                    remote: https://github.com/AlanMC123/Wd-Pred.git
+                gpu: NVIDIA GeForce RTX 4070 Laptop GPU
+                gpu_count: 1
+                gpu_nvidia:
+                    - architecture: Ada
+                      cudaCores: 4608
+                      memoryTotal: "8585740288"
+                      name: NVIDIA GeForce RTX 4070 Laptop GPU
+                      uuid: GPU-91ab717b-1e4f-0366-eefd-b8f5234000cc
+                host: KanchoTX5Pro
+                memory:
+                    total: "68319449088"
+                os: Windows-11-10.0.26100-SP0
+                program: f:\Codes\Wd-Pred\transformer_prediction.py
+                python: CPython 3.12.9
+                root: wandb
+                startedAt: "2025-11-30T09:47:02.064039Z"
+                writerId: fwg33pnbnh4sjcdlog14o37w7htycv0h
+        m: []
+        python_version: 3.12.9
+        t:
+            "1":
+                - 2
+                - 3
+                - 5
+                - 49
+                - 53
+            "2":
+                - 2
+                - 3
+                - 5
+                - 49
+                - 53
+            "3":
+                - 13
+                - 19
+            "4": 3.12.9
+            "5": 0.23.0
+            "8":
+                - 3
+            "12": 0.23.0
+            "13": windows-amd64
+batch_size:
+    value: 4096
+dropout_rate:
+    value: 0.2
+embedding_dim:
+    value: 32
+epochs:
+    value: 10
+ff_dim:
+    value: 192
+key_dim:
+    value: 48
+large_error_threshold:
+    value: 1.5
+learning_rate:
+    value: 0.001
+look_back:
+    value: 8
+num_heads:
+    value: 6
+patience:
+    value: 5
+transformer_layers:
+    value: 3

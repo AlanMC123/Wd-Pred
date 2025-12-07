@@ -1,0 +1,23 @@
+Step 1: 读取数据并构建四特征...
+f:\Codes\Wd-Pred\transformer_prediction.py:91: FutureWarning: DataFrameGroupBy.apply operated on the grouping columns. This behavior is deprecated, and in a future version of pandas the grouping columns will be excluded from the operation. Either pass `include_groups=False` to exclude the groupings or explicitly select the grouping columns after groupby to silence this warning.
+  history_map = df.groupby('Username').apply(
+Step 2: 构建四输入样本...
+数据集划分：训练集 2770743, 验证集 395820, 测试集 791642
+Step 3: 构建Transformer神经网络 (Vocab=321, Layers=4)...
+Traceback (most recent call last):
+  File "f:\Codes\Wd-Pred\transformer_prediction.py", line 765, in <module>
+    main()
+  File "f:\Codes\Wd-Pred\transformer_prediction.py", line 573, in main
+    model = build_transformer_model(LOOK_BACK, vocab_size, EMBEDDING_DIM, NUM_HEADS, KEY_DIM, FF_DIM,
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "f:\Codes\Wd-Pred\transformer_prediction.py", line 213, in build_transformer_model
+    x1 = transformer_block(x1)
+         ^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Python\Python312\Lib\site-packages\keras\src\utils\traceback_utils.py", line 122, in error_handler
+    raise e.with_traceback(filtered_tb) from None
+  File "D:\Python\Python312\Lib\inspect.py", line 3277, in bind
+    return self._bind(args, kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Python\Python312\Lib\inspect.py", line 3190, in _bind
+    raise TypeError(msg) from None
+TypeError: missing a required argument: 'training'

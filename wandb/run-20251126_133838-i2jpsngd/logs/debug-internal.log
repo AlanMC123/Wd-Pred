@@ -1,0 +1,67 @@
+2025-11-26 13:38:38,259 INFO    StreamThr :41708 [internal.py:wandb_internal():86] W&B internal server running at pid: 41708, started at: 2025-11-26 13:38:38.259584
+2025-11-26 13:38:38,259 DEBUG   HandlerThread:41708 [handler.py:handle_request():146] handle_request: status
+2025-11-26 13:38:38,264 INFO    WriterThread:41708 [datastore.py:open_for_write():85] open: wandb\wandb\run-20251126_133838-i2jpsngd\run-i2jpsngd.wandb
+2025-11-26 13:38:38,265 DEBUG   SenderThread:41708 [sender.py:send():380] send: header
+2025-11-26 13:38:38,317 DEBUG   SenderThread:41708 [sender.py:send():380] send: run
+2025-11-26 13:38:39,192 INFO    SenderThread:41708 [dir_watcher.py:__init__():211] watching files in: wandb\wandb\run-20251126_133838-i2jpsngd\files
+2025-11-26 13:38:39,193 INFO    SenderThread:41708 [sender.py:_start_run_threads():1124] run started: i2jpsngd with start time 1764135518.259584
+2025-11-26 13:38:39,201 DEBUG   HandlerThread:41708 [handler.py:handle_request():146] handle_request: check_version
+2025-11-26 13:38:39,202 DEBUG   SenderThread:41708 [sender.py:send_request():407] send_request: check_version
+2025-11-26 13:38:39,980 DEBUG   HandlerThread:41708 [handler.py:handle_request():146] handle_request: run_start
+2025-11-26 13:38:40,019 DEBUG   HandlerThread:41708 [system_info.py:__init__():32] System info init
+2025-11-26 13:38:40,019 DEBUG   HandlerThread:41708 [system_info.py:__init__():47] System info init done
+2025-11-26 13:38:40,019 INFO    HandlerThread:41708 [system_monitor.py:start():194] Starting system monitor
+2025-11-26 13:38:40,019 INFO    SystemMonitor:41708 [system_monitor.py:_start():158] Starting system asset monitoring threads
+2025-11-26 13:38:40,019 INFO    HandlerThread:41708 [system_monitor.py:probe():214] Collecting system info
+2025-11-26 13:38:40,032 INFO    SystemMonitor:41708 [interfaces.py:start():190] Started cpu monitoring
+2025-11-26 13:38:40,032 INFO    SystemMonitor:41708 [interfaces.py:start():190] Started disk monitoring
+2025-11-26 13:38:40,032 INFO    SystemMonitor:41708 [interfaces.py:start():190] Started gpu monitoring
+2025-11-26 13:38:40,046 INFO    SystemMonitor:41708 [interfaces.py:start():190] Started memory monitoring
+2025-11-26 13:38:40,053 DEBUG   HandlerThread:41708 [system_info.py:probe():196] Probing system
+2025-11-26 13:38:40,072 INFO    SystemMonitor:41708 [interfaces.py:start():190] Started network monitoring
+2025-11-26 13:38:40,073 DEBUG   HandlerThread:41708 [system_info.py:_probe_git():181] Probing git
+2025-11-26 13:38:40,231 DEBUG   HandlerThread:41708 [system_info.py:_probe_git():189] Probing git done
+2025-11-26 13:38:40,232 DEBUG   HandlerThread:41708 [system_info.py:probe():244] Probing system done
+2025-11-26 13:38:40,232 DEBUG   HandlerThread:41708 [system_monitor.py:probe():223] {'os': 'Windows-10-10.0.26100-SP0', 'python': '3.9.11', 'heartbeatAt': '2025-11-26T05:38:40.072596', 'startedAt': '2025-11-26T05:38:38.251124', 'docker': None, 'cuda': None, 'args': (), 'state': 'running', 'program': 'F:\\Codes\\Wd-Pred\\LSTM_prediction.py', 'codePathLocal': 'LSTM_prediction.py', 'codePath': 'LSTM_prediction.py', 'git': {'remote': 'https://github.com/AlanMC123/Wd-Pred.git', 'commit': '813e0f5820b929a83523851c97a7c27d1a00fa7a'}, 'email': 'alan_123@yeah.net', 'root': 'F:/Codes/Wd-Pred', 'host': 'KanchoTX5Pro', 'username': 'Asus', 'executable': 'D:\\Python\\Python39\\python.exe', 'cpu_count': 24, 'cpu_count_logical': 32, 'cpu_freq': {'current': 2200.0, 'min': 0.0, 'max': 2200.0}, 'cpu_freq_per_core': [{'current': 2200.0, 'min': 0.0, 'max': 2200.0}], 'disk': {'/': {'total': 697.8671836853027, 'used': 348.7074394226074}}, 'gpu': 'NVIDIA GeForce RTX 4070 Laptop GPU', 'gpu_count': 1, 'gpu_devices': [{'name': 'NVIDIA GeForce RTX 4070 Laptop GPU', 'memory_total': 8585740288}], 'memory': {'total': 63.627445220947266}}
+2025-11-26 13:38:40,232 INFO    HandlerThread:41708 [system_monitor.py:probe():224] Finished collecting system info
+2025-11-26 13:38:40,232 INFO    HandlerThread:41708 [system_monitor.py:probe():227] Publishing system info
+2025-11-26 13:38:40,232 DEBUG   HandlerThread:41708 [system_info.py:_save_pip():52] Saving list of pip packages installed into the current environment
+2025-11-26 13:38:40,232 DEBUG   HandlerThread:41708 [system_info.py:_save_pip():68] Saving pip packages done
+2025-11-26 13:38:40,233 INFO    HandlerThread:41708 [system_monitor.py:probe():229] Finished publishing system info
+2025-11-26 13:38:40,237 DEBUG   SenderThread:41708 [sender.py:send():380] send: files
+2025-11-26 13:38:40,237 INFO    SenderThread:41708 [sender.py:_save_file():1380] saving file wandb-metadata.json with policy now
+2025-11-26 13:38:40,247 DEBUG   HandlerThread:41708 [handler.py:handle_request():146] handle_request: stop_status
+2025-11-26 13:38:40,247 DEBUG   SenderThread:41708 [sender.py:send_request():407] send_request: stop_status
+2025-11-26 13:38:40,247 DEBUG   HandlerThread:41708 [handler.py:handle_request():146] handle_request: internal_messages
+2025-11-26 13:38:41,092 DEBUG   SenderThread:41708 [sender.py:send():380] send: telemetry
+2025-11-26 13:38:41,092 DEBUG   SenderThread:41708 [sender.py:send():380] send: telemetry
+2025-11-26 13:38:41,092 DEBUG   SenderThread:41708 [sender.py:send():380] send: config
+2025-11-26 13:38:41,092 DEBUG   SenderThread:41708 [sender.py:send():380] send: config
+2025-11-26 13:38:41,093 DEBUG   SenderThread:41708 [sender.py:send():380] send: config
+2025-11-26 13:38:41,093 DEBUG   SenderThread:41708 [sender.py:send():380] send: config
+2025-11-26 13:38:41,093 DEBUG   SenderThread:41708 [sender.py:send():380] send: config
+2025-11-26 13:38:41,214 INFO    Thread-16 :41708 [dir_watcher.py:_on_file_created():271] file/dir created: wandb\wandb\run-20251126_133838-i2jpsngd\files\wandb-metadata.json
+2025-11-26 13:38:41,214 INFO    Thread-16 :41708 [dir_watcher.py:_on_file_created():271] file/dir created: wandb\wandb\run-20251126_133838-i2jpsngd\files\requirements.txt
+2025-11-26 13:38:41,214 INFO    Thread-16 :41708 [dir_watcher.py:_on_file_created():271] file/dir created: wandb\wandb\run-20251126_133838-i2jpsngd\files\output.log
+2025-11-26 13:38:41,625 INFO    wandb-upload_0:41708 [upload_job.py:push():131] Uploaded file C:\Users\Asus\AppData\Local\Temp\tmpa5185q2owandb\xhu9g713-wandb-metadata.json
+2025-11-26 13:38:43,232 INFO    Thread-16 :41708 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251126_133838-i2jpsngd\files\output.log
+2025-11-26 13:38:44,125 DEBUG   HandlerThread:41708 [handler.py:handle_request():146] handle_request: status_report
+2025-11-26 13:38:49,189 DEBUG   HandlerThread:41708 [handler.py:handle_request():146] handle_request: status_report
+2025-11-26 13:38:54,244 DEBUG   HandlerThread:41708 [handler.py:handle_request():146] handle_request: status_report
+2025-11-26 13:38:55,268 DEBUG   HandlerThread:41708 [handler.py:handle_request():146] handle_request: stop_status
+2025-11-26 13:38:55,269 DEBUG   SenderThread:41708 [sender.py:send_request():407] send_request: stop_status
+2025-11-26 13:38:55,312 DEBUG   HandlerThread:41708 [handler.py:handle_request():146] handle_request: internal_messages
+2025-11-26 13:38:59,865 DEBUG   HandlerThread:41708 [handler.py:handle_request():146] handle_request: status_report
+2025-11-26 13:39:04,903 DEBUG   HandlerThread:41708 [handler.py:handle_request():146] handle_request: status_report
+2025-11-26 13:39:09,935 DEBUG   HandlerThread:41708 [handler.py:handle_request():146] handle_request: status_report
+2025-11-26 13:39:10,293 DEBUG   HandlerThread:41708 [handler.py:handle_request():146] handle_request: stop_status
+2025-11-26 13:39:10,393 DEBUG   HandlerThread:41708 [handler.py:handle_request():146] handle_request: internal_messages
+2025-11-26 13:39:10,422 DEBUG   SenderThread:41708 [sender.py:send_request():407] send_request: stop_status
+2025-11-26 13:39:10,471 INFO    Thread-16 :41708 [dir_watcher.py:_on_file_modified():288] file/dir modified: wandb\wandb\run-20251126_133838-i2jpsngd\files\config.yaml
+2025-11-26 13:39:15,827 DEBUG   HandlerThread:41708 [handler.py:handle_request():146] handle_request: status_report
+2025-11-26 13:39:20,874 DEBUG   HandlerThread:41708 [handler.py:handle_request():146] handle_request: status_report
+2025-11-26 13:39:25,328 DEBUG   HandlerThread:41708 [handler.py:handle_request():146] handle_request: stop_status
+2025-11-26 13:39:25,328 DEBUG   SenderThread:41708 [sender.py:send_request():407] send_request: stop_status
+2025-11-26 13:39:25,425 DEBUG   HandlerThread:41708 [handler.py:handle_request():146] handle_request: internal_messages
+2025-11-26 13:39:26,850 DEBUG   HandlerThread:41708 [handler.py:handle_request():146] handle_request: status_report
+2025-11-26 13:39:31,899 DEBUG   HandlerThread:41708 [handler.py:handle_request():146] handle_request: status_report

@@ -1,0 +1,12 @@
+{"time":"2025-12-01T16:51:32.7700059+08:00","level":"INFO","msg":"stream: starting","core version":"0.23.0"}
+{"time":"2025-12-01T16:51:33.2683706+08:00","level":"INFO","msg":"stream: created new stream","id":"q5rdigeo"}
+{"time":"2025-12-01T16:51:33.2683706+08:00","level":"INFO","msg":"handler: started","stream_id":"q5rdigeo"}
+{"time":"2025-12-01T16:51:33.2695251+08:00","level":"INFO","msg":"stream: started","id":"q5rdigeo"}
+{"time":"2025-12-01T16:51:33.2695251+08:00","level":"INFO","msg":"writer: started","stream_id":"q5rdigeo"}
+{"time":"2025-12-01T16:51:33.2695251+08:00","level":"INFO","msg":"sender: started","stream_id":"q5rdigeo"}
+{"time":"2025-12-01T16:52:38.2319118+08:00","level":"INFO","msg":"fileTransfer: Close: file transfer manager closed"}
+{"time":"2025-12-01T16:52:38.7706235+08:00","level":"INFO","msg":"handler: operation stats","stats":{}}
+{"time":"2025-12-01T16:52:38.7737047+08:00","level":"INFO","msg":"stream: closing","id":"q5rdigeo"}
+{"time":"2025-12-01T16:52:38.7737047+08:00","level":"INFO","msg":"handler: closed","stream_id":"q5rdigeo"}
+{"time":"2025-12-01T16:52:38.7737047+08:00","level":"INFO","msg":"sender: closed","stream_id":"q5rdigeo"}
+{"time":"2025-12-01T16:52:38.7737047+08:00","level":"INFO","msg":"stream: closed","id":"q5rdigeo"}

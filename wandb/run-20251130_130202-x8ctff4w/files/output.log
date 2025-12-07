@@ -1,0 +1,71 @@
+Step 1: 读取数据并构建四特征...
+f:\Codes\Wd-Pred\transformer_prediction.py:99: FutureWarning: DataFrameGroupBy.apply operated on the grouping columns. This behavior is deprecated, and in a future version of pandas the grouping columns will be excluded from the operation. Either pass `include_groups=False` to exclude the groupings or explicitly select the grouping columns after groupby to silence this warning.
+  history_map = df.groupby('Username').apply(
+Step 2: 构建四输入样本...
+数据集划分：训练集 2770743, 验证集 395820, 测试集 791642
+✅ 数据加载优化已应用 (cache + prefetch)
+Step 3: 构建Transformer神经网络 (Vocab=321, Layers=2)...
+WARNING:tensorflow:From D:\Python\Python312\Lib\site-packages\keras\src\backend\tensorflow\core.py:232: The name tf.placeholder is deprecated. Please use tf.compat.v1.placeholder instead.
+
+D:\Python\Python312\Lib\site-packages\keras\src\layers\core\embedding.py:97: UserWarning: Argument `input_length` is deprecated. Just remove it.
+  warnings.warn(
+✅ 模型编译完成，使用Focal Loss (gamma=2.0, alpha=0.25)
+Step 4: 开始训练 (Epochs=15, Batch=2048, Patience=4)...
+提示: 当前使用CPU训练，速度可能较慢。建议使用支持CUDA的GPU以获得显著加速。
+Epoch 1/15
+[1m1353/1353[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m66s[0m 46ms/step - loss: 1.7713 - output_steps_loss: 1.7609 - output_success_accuracy: 0.9664 - output_success_loss: 0.0208 - val_loss: 1.2533 - val_output_steps_loss: 1.2448 - val_output_success_accuracy: 0.9675 - val_output_success_loss: 0.0173
+Epoch 2/15
+[1m1353/1353[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m63s[0m 46ms/step - loss: 1.3005 - output_steps_loss: 1.2918 - output_success_accuracy: 0.9624 - output_success_loss: 0.0174 - val_loss: 1.2660 - val_output_steps_loss: 1.2576 - val_output_success_accuracy: 0.9670 - val_output_success_loss: 0.0170
+Epoch 3/15
+[1m1353/1353[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m64s[0m 47ms/step - loss: 1.2574 - output_steps_loss: 1.2491 - output_success_accuracy: 0.9616 - output_success_loss: 0.0167 - val_loss: 1.2709 - val_output_steps_loss: 1.2625 - val_output_success_accuracy: 0.9673 - val_output_success_loss: 0.0170
+Epoch 4/15
+[1m1353/1353[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m65s[0m 48ms/step - loss: 1.2517 - output_steps_loss: 1.2434 - output_success_accuracy: 0.9616 - output_success_loss: 0.0165 - val_loss: 1.2685 - val_output_steps_loss: 1.2603 - val_output_success_accuracy: 0.9670 - val_output_success_loss: 0.0168
+Epoch 5/15
+[1m1353/1353[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m63s[0m 47ms/step - loss: 1.2489 - output_steps_loss: 1.2407 - output_success_accuracy: 0.9617 - output_success_loss: 0.0164 - val_loss: 1.2627 - val_output_steps_loss: 1.2545 - val_output_success_accuracy: 0.9668 - val_output_success_loss: 0.0167
+✅ Loss曲线已保存至: visualization\Transformer_loss_curve.png
+
+❌ 模型保存失败: Invalid filepath extension for saving. Please add either a `.keras` extension for the native Keras format (recommended) or a `.h5` extension. Use `model.export(filepath)` if you want to export a SavedModel for use with TFLite/TFServing/etc. Received: filepath=Transformer_Model.
+
+Step 4: 开始批量预测，显示进度条...
+[1m194/194[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m4s[0m 20ms/step
+
+Step 4: 开始批量预测，显示进度条...
+[1m387/387[0m [32m━━━━━━━━━━━━━━━━━━━━[0m[37m[0m [1m7s[0m 19ms/step
+
+========================================
+  Transformer模型验证和测试报告
+========================================
+---- 验证集指标 ----
+1. 平均步数误差 (MAE)    : 0.9095
+2. 均方根误差 (RMSE)     : 1.1157
+3. 胜负预测准确率        : 96.755%
+4. ROC曲线下面积 (AUC)   : 0.8456
+5. 大型误差率 (>1.5步)  : 18.331%
+
+---- 测试集指标 ----
+1. 平均步数误差 (MAE)    : 0.9100
+2. 均方根误差 (RMSE)     : 1.1154
+3. 胜负预测准确率        : 96.757%
+4. ROC曲线下面积 (AUC)   : 0.8478
+5. 大型误差率 (>1.5步)  : 18.271%
+========================================
+
+
+Step 5: 启动回测验证抽样报告 (样本数=10000, 输出至 output.txt)...
+------------------------------------------------------------
+User ID    | Bias  | Diff  | Real  | Pred  | Err   | Status
+------------------------------------------------------------
+606307     | 4.57  | 4.35  | 2    | 4.51  | 2.51  | ❌
+192962     | 4.43  | 4.22  | 6    | 4.24  | 1.76  | ❌
+458294     | 4.00  | 4.60  | 5    | 4.34  | 0.66  | ✅
+345743     | 4.88  | 3.73  | 5    | 4.28  | 0.72  | ✅
+449504     | 5.00  | 4.34  | 5    | 4.89  | 0.11  | ✅
+716888     | 4.42  | 3.87  | 3    | 3.93  | 0.93  | ✅
+936738     | 4.60  | 4.17  | 4    | 4.34  | 0.34  | ✅
+407793     | 1.92  | 4.66  | 3    | 2.30  | 0.70  | ✅
+836785     | 4.69  | 4.08  | 2    | 4.34  | 2.34  | ❌
+807420     | 2.89  | 4.35  | 2    | 3.00  | 1.00  | ⚠️
+... (其余 9990 条省略)
+
+✅ 抽样报告已成功导出至 outputs/transformer_output.txt 文件。
+✅ 预测趋势图已保存至: visualization\Transformer_prediction_trends.png

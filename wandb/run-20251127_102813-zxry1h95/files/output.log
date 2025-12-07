@@ -1,0 +1,578 @@
+
+Step 1: 读取数据并构建四特征...
+Step 2: 构建四输入样本...
+f:\Codes\Wd-Pred\LSTM_prediction.py:80: FutureWarning: DataFrameGroupBy.apply operated on the grouping columns. This behavior is deprecated, and in a future version of pandas the grouping columns will be excluded from the operation. Either pass `include_groups=False` to exclude the groupings or explicitly select the grouping columns after groupby to silence this warning.
+  history_map = df.groupby('Username').apply(
+数据集划分：训练集 2770743, 验证集 395820, 测试集 791642
+Step 3: 构建四输入神经网络 (Vocab=321)...
+Step 4: 开始训练 (Epochs=10, Batch=2048)...
+Epoch 1/10
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+1353/1353 [==============================] - 206s 151ms/step - loss: 1.7863 - output_steps_loss: 1.7122 - output_success_loss: 0.1483 - output_success_accuracy: 0.9666 - val_loss: 1.3236 - val_output_steps_loss: 1.2650 - val_output_success_loss: 0.1171 - val_output_success_accuracy: 0.9664
+Epoch 2/10
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+1353/1353 [==============================] - 219s 162ms/step - loss: 1.3354 - output_steps_loss: 1.2761 - output_success_loss: 0.1186 - output_success_accuracy: 0.9667 - val_loss: 1.3528 - val_output_steps_loss: 1.2967 - val_output_success_loss: 0.1123 - val_output_success_accuracy: 0.9664
+Epoch 3/10
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+1353/1353 [==============================] - 224s 165ms/step - loss: 1.3043 - output_steps_loss: 1.2476 - output_success_loss: 0.1134 - output_success_accuracy: 0.9668 - val_loss: 1.3538 - val_output_steps_loss: 1.2980 - val_output_success_loss: 0.1115 - val_output_success_accuracy: 0.9675
+Epoch 4/10
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+1353/1353 [==============================] - 225s 166ms/step - loss: 1.2962 - output_steps_loss: 1.2401 - output_success_loss: 0.1121 - output_success_accuracy: 0.9674 - val_loss: 1.3817 - val_output_steps_loss: 1.3262 - val_output_success_loss: 0.1111 - val_output_success_accuracy: 0.9676
+Epoch 5/10
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+1353/1353 [==============================] - ETA: 0s - loss: 1.2931 - output_steps_loss: 1.2373 - output_success_loss: 0.1117 - output_success_accuracy: 0.9675Restoring model weights from the end of the best epoch: 1.
+1353/1353 [==============================] - 215s 159ms/step - loss: 1.2931 - output_steps_loss: 1.2373 - output_success_loss: 0.1117 - output_success_accuracy: 0.9675 - val_loss: 1.3608 - val_output_steps_loss: 1.3053 - val_output_success_loss: 0.1110 - val_output_success_accuracy: 0.9677
+Epoch 5: early stopping
+✅ 模型已成功保存到文件夹: LSTM_Model
+✅ Loss曲线已保存至: visualization\LSTM_loss_curve.png
+✅ 模型已成功保存到文件夹: LSTM_Model
+Step 4: 开始批量预测，显示进度条...
+
+
+
+
+194/194 [==============================] - 11s 54ms/step
+Step 4: 开始批量预测，显示进度条...
+
+
+
+
+
+
+
+
+
+
+387/387 [==============================] - 20s 52ms/step
+========================================
+  LSTM模型验证和测试报告
+========================================
+---- 验证集指标 ----
+1. 平均步数误差 (MAE)    : 0.9164
+2. 均方根误差 (RMSE)     : 1.1247
+3. 胜负预测准确率        : 96.637%
+4. ROC曲线下面积 (AUC)   : 0.8485
+5. 大型误差率 (>1.5步)  : 18.693%
+---- 测试集指标 ----
+1. 平均步数误差 (MAE)    : 0.9168
+2. 均方根误差 (RMSE)     : 1.1243
+3. 胜负预测准确率        : 96.650%
+4. ROC曲线下面积 (AUC)   : 0.8503
+5. 大型误差率 (>1.5步)  : 18.631%
+========================================
+🔍 开始执行perform_validation函数...
+🔍 符合条件的用户数量: 138387, 抽样数量: 10000
+🔍 已抽取 10 个用户进行展示
+Step 5: 启动回测验证抽样报告 (样本数=10000, 输出至 outputs/lstm_output.txt)...
+------------------------------------------------------------
+User ID    | Bias  | Diff  | Real  | Pred  | Err   | Status
+------------------------------------------------------------
+911951     | 5.19  | 4.43  | 6    | 5.08  | 0.92  | ✅
+95476      | 5.00  | 4.58  | 3    | 5.27  | 2.27  | ❌
+538898     | 4.53  | 4.38  | 6    | 4.37  | 1.63  | ❌
+45900      | 3.82  | 4.08  | 3    | 3.40  | 0.40  | ✅
+917293     | 3.70  | 4.57  | 2    | 3.94  | 1.94  | ❌
+916201     | 4.65  | 4.24  | 6    | 4.43  | 1.57  | ❌
+157385     | 5.27  | 4.24  | 5    | 4.95  | 0.05  | ✅
+35045      | 4.42  | 4.72  | 5    | 4.74  | 0.26  | ✅
+767814     | 4.24  | 3.74  | 3    | 3.50  | 0.50  | ✅
+531066     | 3.30  | 3.92  | 3    | 2.89  | 0.11  | ✅
+... (其余 9990 条省略)
+✅ 抽样报告已成功导出至 outputs/lstm_output.txt 文件。
+✅ 预测趋势图已保存至: visualization\LSTM_prediction_trends.png

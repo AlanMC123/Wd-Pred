@@ -1,0 +1,6 @@
+{"time":"2025-12-02T08:53:53.5016341+08:00","level":"INFO","msg":"stream: starting","core version":"0.23.0"}
+{"time":"2025-12-02T08:53:54.0940543+08:00","level":"INFO","msg":"stream: created new stream","id":"mp3va801"}
+{"time":"2025-12-02T08:53:54.0946437+08:00","level":"INFO","msg":"handler: started","stream_id":"mp3va801"}
+{"time":"2025-12-02T08:53:54.0964994+08:00","level":"INFO","msg":"stream: started","id":"mp3va801"}
+{"time":"2025-12-02T08:53:54.0964994+08:00","level":"INFO","msg":"sender: started","stream_id":"mp3va801"}
+{"time":"2025-12-02T08:53:54.0964994+08:00","level":"INFO","msg":"writer: started","stream_id":"mp3va801"}

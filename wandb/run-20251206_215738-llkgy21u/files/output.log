@@ -1,0 +1,7 @@
+Traceback (most recent call last):
+  File "f:\Codes\Wd-Pred\train_LSTM.py", line 728, in <module>
+    main_train()
+  File "f:\Codes\Wd-Pred\train_LSTM.py", line 520, in main_train
+    if os.path.exists(DIFFICULTY_FILE):
+                      ^^^^^^^^^^^^^^^
+NameError: name 'DIFFICULTY_FILE' is not defined

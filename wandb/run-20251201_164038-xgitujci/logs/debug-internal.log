@@ -1,0 +1,12 @@
+{"time":"2025-12-01T16:40:38.4947155+08:00","level":"INFO","msg":"stream: starting","core version":"0.23.0"}
+{"time":"2025-12-01T16:40:39.0791396+08:00","level":"INFO","msg":"stream: created new stream","id":"xgitujci"}
+{"time":"2025-12-01T16:40:39.0791396+08:00","level":"INFO","msg":"handler: started","stream_id":"xgitujci"}
+{"time":"2025-12-01T16:40:39.0801936+08:00","level":"INFO","msg":"stream: started","id":"xgitujci"}
+{"time":"2025-12-01T16:40:39.0801936+08:00","level":"INFO","msg":"writer: started","stream_id":"xgitujci"}
+{"time":"2025-12-01T16:40:39.0801936+08:00","level":"INFO","msg":"sender: started","stream_id":"xgitujci"}
+{"time":"2025-12-01T16:41:42.3985955+08:00","level":"INFO","msg":"fileTransfer: Close: file transfer manager closed"}
+{"time":"2025-12-01T16:41:42.9213826+08:00","level":"INFO","msg":"handler: operation stats","stats":{}}
+{"time":"2025-12-01T16:41:42.9247646+08:00","level":"INFO","msg":"stream: closing","id":"xgitujci"}
+{"time":"2025-12-01T16:41:42.9247646+08:00","level":"INFO","msg":"handler: closed","stream_id":"xgitujci"}
+{"time":"2025-12-01T16:41:42.9247646+08:00","level":"INFO","msg":"sender: closed","stream_id":"xgitujci"}
+{"time":"2025-12-01T16:41:42.9247646+08:00","level":"INFO","msg":"stream: closed","id":"xgitujci"}

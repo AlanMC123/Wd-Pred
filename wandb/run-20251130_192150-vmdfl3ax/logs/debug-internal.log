@@ -1,0 +1,6 @@
+{"time":"2025-11-30T19:21:50.4028472+08:00","level":"INFO","msg":"stream: starting","core version":"0.23.0"}
+{"time":"2025-11-30T19:21:51.0376208+08:00","level":"INFO","msg":"stream: created new stream","id":"vmdfl3ax"}
+{"time":"2025-11-30T19:21:51.0383626+08:00","level":"INFO","msg":"handler: started","stream_id":"vmdfl3ax"}
+{"time":"2025-11-30T19:21:51.0389098+08:00","level":"INFO","msg":"stream: started","id":"vmdfl3ax"}
+{"time":"2025-11-30T19:21:51.0389098+08:00","level":"INFO","msg":"sender: started","stream_id":"vmdfl3ax"}
+{"time":"2025-11-30T19:21:51.0389098+08:00","level":"INFO","msg":"writer: started","stream_id":"vmdfl3ax"}
