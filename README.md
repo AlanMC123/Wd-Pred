@@ -1,14 +1,8 @@
 # Wordle 游戏预测模型
 
-这是一个用于预测 Wordle 游戏玩家表现的深度学习项目，使用 LSTM 和 Transformer 两种模型架构，通过分析玩家历史游戏数据来预测未来游戏的表现。
+## 项目简介
 
-## 项目概述
-
-该项目旨在通过机器学习模型预测玩家在 Wordle 游戏中的表现，包括：
-- 预测玩家完成游戏所需的步数
-- 预测玩家成功完成游戏的概率
-- 分析单词难度对玩家表现的影响
-- 提供交互式仪表盘展示预测结果
+这是一个用于预测 Wordle 游戏玩家表现的深度学习项目，采用 LSTM 和 Transformer 两种先进的模型架构，通过分析玩家历史游戏数据来预测未来游戏的表现。该项目能够预测玩家完成游戏所需的步数以及成功完成游戏的概率，并提供交互式仪表盘进行可视化展示。
 
 ## 目录结构
 
@@ -24,6 +18,12 @@
 │   └── transformer/        # Transformer 模型
 │       └── transformer_model.keras # Transformer 模型文件
 ├── outputs/                # 模型输出结果
+│   ├── LSTM_outcome.txt           # LSTM 整体评估结果
+│   ├── LSTM_test_outcome.txt      # LSTM 测试集评估结果
+│   ├── LSTM_validation_outcome.txt # LSTM 验证集评估结果
+│   ├── Transformer_outcome.txt    # Transformer 整体评估结果
+│   ├── Transformer_test_outcome.txt # Transformer 测试集评估结果
+│   ├── Transformer_validation_outcome.txt # Transformer 验证集评估结果
 │   ├── lstm_output.txt     # LSTM 模型输出
 │   └── transformer_output.txt # Transformer 模型输出
 ├── structure/              # 模型结构可视化
@@ -40,13 +40,13 @@
 │   ├── LSTM_validation_roc_curve.png # LSTM 验证 ROC 曲线
 │   ├── LSTM_validation_scatter.png # LSTM 验证散点图
 │   └── Transformer_test_scatter.png # Transformer 测试散点图
-├── dashboard.py            # Streamlit 仪表盘
+├── dashboard.py            # Streamlit 交互式仪表盘
 ├── data_division.py        # 数据分割脚本
-├── data_seizing.py         # 数据处理脚本
-├── difficulty_analysis.py  # 难度分析脚本
+├── data_seizing.py         # 数据预处理和特征提取脚本
+├── difficulty_analysis.py  # 单词难度分析脚本
 ├── predict.py              # 预测脚本
 ├── requirements.txt        # 项目依赖
-├── structure_visualization.py # 结构可视化脚本
+├── structure_visualization.py # 模型结构可视化脚本
 ├── summary.py              # 结果汇总脚本
 ├── train_LSTM.py           # LSTM 模型训练脚本
 └── train_transformer.py    # Transformer 模型训练脚本
@@ -74,51 +74,52 @@
 3. 确保数据集存在：
    ```
    ├── dataset/
-   │   ├── train_data.csv
-   │   ├── val_data.csv
-   │   ├── test_data.csv
-   │   ├── player_data.csv
-   │   └── difficulty.csv
+   │   ├── train_data.csv       # 训练集数据
+   │   ├── val_data.csv         # 验证集数据
+   │   ├── test_data.csv        # 测试集数据
+   │   ├── player_data.csv      # 玩家数据
+   │   └── difficulty.csv       # 单词难度数据
    ```
 
 ## 核心功能
 
 ### 1. 数据处理
-- **data_division.py**: 将原始数据分割为训练集、验证集和测试集
-- **data_seizing.py**: 数据预处理和特征提取
-- **difficulty_analysis.py**: 分析单词难度并生成难度排名
+- **data_division.py**: 将原始数据分割为训练集、验证集和测试集，采用分层抽样确保数据分布均匀
+- **data_seizing.py**: 数据预处理和特征提取，包括文本处理、特征工程等
+- **difficulty_analysis.py**: 分析单词难度，生成单词难度排名和可视化结果
 
 ### 2. 模型训练
-- **train_LSTM.py**: 训练 LSTM 模型，使用多输入架构预测玩家表现
-- **train_transformer.py**: 训练 Transformer 模型，利用自注意力机制捕获长期依赖关系
+- **train_LSTM.py**: 训练 LSTM 模型，使用多输入架构预测玩家表现，包括历史表现序列、单词ID嵌入、用户偏差、单词难度和网格序列特征
+- **train_transformer.py**: 训练 Transformer 模型，利用自注意力机制捕获长期依赖关系，采用类似的多输入设计
 
 ### 3. 预测功能
-- **predict.py**: 使用训练好的模型进行预测
-- **dashboard.py**: 交互式仪表盘，用于可视化预测结果和模型性能
+- **predict.py**: 使用训练好的模型进行预测，输出预测结果和评估指标
+- **dashboard.py**: 交互式仪表盘，支持选择模型类型、玩家ID和单词，实时展示预测结果和可视化
 
-### 4. 可视化
-- **structure_visualization.py**: 生成模型结构可视化
-- **summary.py**: 汇总模型训练和测试结果
+### 4. 可视化与评估
+- **structure_visualization.py**: 生成模型结构可视化，便于理解模型架构
+- **summary.py**: 汇总模型训练和测试结果，生成评估报告
 
 ## 模型架构
 
 ### LSTM 模型
-- 多输入架构，包括：
-  - 历史表现序列
-  - 单词 ID 嵌入
-  - 用户偏差
-  - 单词难度
-  - 网格序列特征
-- 双输出头：
-  - 回归头：预测完成步数
-  - 分类头：预测成功概率
-- 使用 Focal Loss 和 MSE 损失函数
+- **多输入架构**：
+  - 历史表现序列：包含玩家过去5场游戏的表现
+  - 单词ID嵌入：将单词转换为向量表示
+  - 用户偏差：反映玩家的整体水平
+  - 单词难度：反映单词的难易程度
+  - 网格序列特征：包含游戏过程中的颜色反馈信息
+- **双输出头**：
+  - 回归头：预测完成游戏所需的步数
+  - 分类头：预测成功完成游戏的概率
+- **损失函数**：结合 Focal Loss（分类）和 MSE（回归）
+- **正则化**：采用 Dropout 和 L2 正则化防止过拟合
 
 ### Transformer 模型
-- 基于自注意力机制的架构
-- 包含 Transformer 编码器块
-- 多输入设计，与 LSTM 模型类似
-- 双输出头设计
+- **自注意力机制**：捕获长期依赖关系，更好地理解玩家历史表现
+- **Transformer 编码器块**：包含多头注意力层和前馈神经网络
+- **多输入设计**：与 LSTM 模型类似，处理相同的输入特征
+- **双输出头**：回归头预测步数，分类头预测成功概率
 
 ## 使用方法
 
@@ -140,11 +141,22 @@ python difficulty_analysis.py
 python train_LSTM.py
 ```
 
+训练过程中会生成：
+- 训练好的模型文件：`models/lstm/lstm_model.keras`
+- 分词器文件：`models/lstm/lstm_tokenizer.json`
+- 评估结果：`outputs/LSTM_*.txt`
+- 可视化结果：`visualization/LSTM_*.png`
+
 #### 训练 Transformer 模型：
 
 ```bash
 python train_transformer.py
 ```
+
+训练过程中会生成：
+- 训练好的模型文件：`models/transformer/transformer_model.keras`
+- 评估结果：`outputs/Transformer_*.txt`
+- 可视化结果：`visualization/Transformer_*.png`
 
 ### 3. 运行预测
 
@@ -153,6 +165,11 @@ python train_transformer.py
 ```bash
 python predict.py
 ```
+
+该脚本支持：
+- 选择模型类型（LSTM 或 Transformer）
+- 批量预测
+- 生成评估报告
 
 #### 使用交互式仪表盘：
 
@@ -165,6 +182,7 @@ streamlit run dashboard.py
 - 选择玩家 ID
 - 选择要预测的单词
 - 查看预测结果和可视化
+- 比较模型性能
 
 ### 4. 生成模型结构可视化
 
@@ -172,57 +190,88 @@ streamlit run dashboard.py
 python structure_visualization.py
 ```
 
+该脚本会生成：
+- 模型架构平面图：`structure/*_architecture_flat.png`
+- 模型结构文本：`structure/*_structure.txt`
+
 ## 模型评估
 
+### 评估指标
+
 模型评估指标包括：
+
 - **回归任务**：
   - 平均绝对误差 (MAE)
-  - 平均平方误差 (MSE)
+  - 均方根误差 (RMSE)
   - 大误差比例（误差 > 1.5 步）
 
 - **分类任务**：
   - 准确率
-  - ROC 曲线
+  - AUC-ROC
   - 混淆矩阵
+  - 精确率、召回率、F1值
+  - 失败漏报率
+
+### 最新实验结果
+
+#### Transformer 模型 - 测试集结果
+
+| 指标 | 数值 |
+|------|------|
+| 平均绝对误差 (MAE) | 0.8208 |
+| 均方根误差 (RMSE) | 1.0268 |
+| 大误差比例 | 14.04% |
+| 准确率 | 87.11% |
+| AUC | 0.8792 |
+| 失败漏报率 | 30.06% |
+| 负类召回率 | 69.94% |
+| 负类精确率 | 0.1388 |
+
+#### 混淆矩阵
+
+```
+                       Predicted Loss (0)    Predicted Win (1)
+------------------------------------------------------------
+Actual Loss (0)      |  TN: 121   ( 1.94%) |  FP: 52    ( 0.83%)
+Actual Win  (1)      |  FN: 751   (12.05%) |  TP: 5306  (85.17%)
+```
 
 ## 依赖库
 
-- **tensorflow**: 深度学习框架
-- **pandas**: 数据处理
-- **numpy**: 数值计算
-- **scikit-learn**: 机器学习评估工具
-- **matplotlib**: 可视化
-- **wandb**: 实验跟踪
-- **streamlit**: 交互式仪表盘
+| 库名 | 用途 | 版本要求 |
+|------|------|----------|
+| tensorflow | 深度学习框架 | >=2.16.0 |
+| pandas | 数据处理 | >=2.2.0 |
+| numpy | 数值计算 | >=1.26.0 |
+| scikit-learn | 机器学习评估工具 | >=1.4.0 |
+| matplotlib | 数据可视化 | >=3.8.0 |
+| graphviz | 模型结构可视化 | >=0.20.3 |
+| wandb | 实验跟踪和可视化 | >=0.16.0 |
+| streamlit | 交互式仪表盘 | >=1.30.0 |
 
-## 实验结果
+## 项目特色
 
-### LSTM 模型结果
-- 训练集 MAE: ~0.75
-- 验证集 MAE: ~0.85
-- 测试集 MAE: ~0.88
-- 成功预测准确率: ~85%
-
-### Transformer 模型结果
-- 训练集 MAE: ~0.72
-- 验证集 MAE: ~0.83
-- 测试集 MAE: ~0.86
-- 成功预测准确率: ~87%
+1. **双模型架构**：同时实现了 LSTM 和 Transformer 两种先进的深度学习模型，便于比较不同模型的性能
+2. **多输入设计**：结合了多种特征，包括历史表现、单词难度、用户偏差等，提高了预测准确性
+3. **双输出头**：同时预测步数和成功概率，满足不同场景的需求
+4. **交互式仪表盘**：提供直观的可视化界面，便于用户理解和使用
+5. **完整的评估体系**：包含多种评估指标和可视化结果，便于模型优化和比较
 
 ## 结论
 
-- Transformer 模型在预测准确率上略优于 LSTM 模型
-- 单词难度对玩家表现有显著影响
-- 玩家历史表现是预测未来表现的重要因素
-- 模型可以有效地预测玩家在 Wordle 游戏中的表现
+- Transformer 模型在预测准确率上略优于 LSTM 模型，MAE 为 0.8208，准确率为 87.11%
+- 单词难度对玩家表现有显著影响，是重要的预测特征
+- 玩家历史表现是预测未来表现的关键因素，LSTM 和 Transformer 都能有效捕获历史依赖关系
+- 模型可以有效地预测玩家在 Wordle 游戏中的表现，具有实际应用价值
 
 ## 未来改进方向
 
-1. 引入更多玩家特征，如游戏频率、时间分布等
-2. 尝试更复杂的模型架构，如 GPT 或 BERT 变种
-3. 增加实时数据更新功能
-4. 优化模型训练过程，减少训练时间
-5. 增加更多可视化图表，展示模型学习过程
+1. 引入更多玩家特征，如游戏频率、时间分布等，进一步提高预测准确性
+2. 尝试更复杂的模型架构，如 GPT 或 BERT 变种，探索预训练模型在该任务上的表现
+3. 增加实时数据更新功能，支持模型的持续学习和更新
+4. 优化模型训练过程，减少训练时间，提高训练效率
+5. 增加更多可视化图表，展示模型学习过程和特征重要性
+6. 扩展到其他类似的文字游戏，如 Wordle 的变种或其他语言版本
 
 ## 许可证
 
@@ -230,7 +279,7 @@ python structure_visualization.py
 
 ## 贡献
 
-欢迎提交 Issue 和 Pull Request！
+欢迎提交 Issue 和 Pull Request！我们鼓励社区贡献，共同改进和扩展这个项目。
 
 ## 联系方式
 
@@ -240,4 +289,4 @@ python structure_visualization.py
 
 ## 致谢
 
-感谢所有为 Wordle 游戏和深度学习社区做出贡献的开发者和研究者！
+感谢所有为 Wordle 游戏和深度学习社区做出贡献的开发者和研究者！特别感谢 TensorFlow 和 Keras 团队提供的优秀深度学习框架，以及 Streamlit 团队提供的便捷可视化工具。

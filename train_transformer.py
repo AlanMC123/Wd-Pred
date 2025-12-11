@@ -1,12 +1,7 @@
 """
-Transformer 多输入预测脚本 - "保底准确率"激进策略版
+Transformer 模型训练程序
 直接运行即开始训练。
 
-核心修改：
-- [Threshold Strategy] 采用 "Accuracy Constrained Recall Maximization" 策略。
-  逻辑：在保证总体准确率 >= 85% (MIN_ACCURACY) 的前提下，寻找负类召回率最高的阈值。
-- [Loss] 保持 Focal Loss 以优化训练目标。
-- [Metrics] 包含 RMSE 和 负类精/召率。
 """
 
 import os
@@ -35,7 +30,6 @@ from predict import plot_roc_curve, plot_scatter
 # ==========================================================
 
 # 核心参数：总体准确率的底线
-# 只要准确率高于这个数，我们就尽可能提高阈值去抓失败局
 MIN_ACCEPTABLE_ACCURACY = 0.85 
 
 # 数据集和特征文件路径
@@ -164,7 +158,7 @@ def encode_guess_sequence(grid_cell):
     return feature_sequence
 
 # --------------------------
-# Tokenizer & Features
+# Tokenizer & 特征附加
 # --------------------------
 def fit_tokenizer(train_df):
     tokenizer = Tokenizer(oov_token=OOV_TOKEN, filters='', lower=True)
@@ -192,6 +186,10 @@ def attach_features(df, tokenizer, user_map, diff_map):
     else:
         df["guess_seq_feat"] = [np.zeros((MAX_TRIES, GRID_FEAT_LEN), dtype=np.float32) for _ in range(len(df))]
     return df
+
+# --------------------------
+# 历史序列、创建样本
+# --------------------------
 
 def build_history(df) -> Dict[str, List[Tuple]]:
     hist = {}
@@ -281,6 +279,9 @@ class TransformerBlock(tf.keras.layers.Layer):
     def from_config(cls, config):
         return cls(**config)
 
+# ==========================================================
+# Transformer 模型构建
+# ==========================================================
 def build_model(look_back, vocab_size, project_dim=PROJECT_DIM, num_heads=NUM_HEADS, ff_dim=FF_DIM, n_layers=TRANSFORMER_LAYERS, dropout_rate=DROPOUT_RATE):
     h_in = Input((look_back, 2), name="input_history")
     x = Dense(project_dim, activation="relu")(h_in)
@@ -328,9 +329,8 @@ def build_model(look_back, vocab_size, project_dim=PROJECT_DIM, num_heads=NUM_HE
     return model
 
 # ==========================================================
-# 激进阈值寻优 (Aggressive Threshold Strategy)
+# 激进阈值寻优
 # ==========================================================
-
 def find_optimal_threshold(y_true, y_prob):
     """
     [保底激进版] 
@@ -378,6 +378,9 @@ def find_optimal_threshold(y_true, y_prob):
         best_candidate = max(candidates, key=lambda x: x[1])
         return best_candidate[0]
 
+# ==========================================================
+# 计算漏报率
+# ==========================================================
 def calculate_failure_miss_rate(y_true_steps, pred_prob, threshold):
     y_true_steps = y_true_steps.flatten()
     pred_prob = pred_prob.flatten()
@@ -386,6 +389,10 @@ def calculate_failure_miss_rate(y_true_steps, pred_prob, threshold):
     if total_failures == 0: return 0.0
     false_wins = (pred_prob[actual_failures_mask] > threshold)
     return np.sum(false_wins) / total_failures
+
+# ==========================================================
+# 评估函数
+# ==========================================================
 
 def evaluate_model(model, Xs, fixed_threshold=None):
     X_seq, X_wid, X_bias, X_diff, X_guess_seq, y_steps, y_succ = Xs
@@ -398,32 +405,35 @@ def evaluate_model(model, Xs, fixed_threshold=None):
     pred_steps = pred_steps.flatten()
     pred_prob = pred_prob.flatten()
 
+    # 1. 基础回归指标
     mae = mean_absolute_error(y_steps, np.clip(pred_steps, 0, 7))
-    # [Restored] RMSE
     rmse = np.sqrt(mean_squared_error(y_steps, np.clip(pred_steps, 0, 7)))
 
+    # 2. AUC
     from predict import calculate_auc_best
     auc, used_prob, _ = calculate_auc_best(y_succ, pred_prob)
 
+    # 3. 智能阈值逻辑
     if fixed_threshold is None:
+        # 在验证阶段自动寻优
         print("   > Finding optimal threshold (Accuracy Constrained)...")
         used_threshold = find_optimal_threshold(y_succ, pred_prob)
     else:
         print(f"   > Using provided fixed threshold: {fixed_threshold:.4f}")
         used_threshold = fixed_threshold
 
-    # Predictions based on threshold
+    # 4. 计算指标
     y_pred_smart = (pred_prob >= used_threshold).astype(int)
     y_pred_naive = (pred_prob >= 0.5).astype(int)
 
-    # Metrics
+    # 5. 指标计算
     naive_acc = accuracy_score(y_succ.astype(int), y_pred_naive)
     smart_acc = accuracy_score(y_succ.astype(int), y_pred_smart)
     
     naive_fmr = calculate_failure_miss_rate(y_steps, pred_prob, 0.5)
     smart_fmr = calculate_failure_miss_rate(y_steps, pred_prob, used_threshold)
 
-    # [NEW] Negative Class Metrics (Class 0 = Failure/Loss)
+    # 6. 负类指标 (Class 0 = Failure)
     neg_precision = precision_score(y_succ.astype(int), y_pred_smart, pos_label=0, zero_division=0)
     neg_recall = recall_score(y_succ.astype(int), y_pred_smart, pos_label=0, zero_division=0)
 
@@ -458,7 +468,7 @@ class WandbEpochLogger(Callback):
             wandb.log({k: float(v) for k, v in logs.items()}, step=epoch)
 
 # ==========================================================
-# Main
+# 主函数
 # ==========================================================
 def main_train():
     set_seed(SEED)
@@ -471,11 +481,13 @@ def main_train():
     except Exception:
         pass
 
+    # 1. 加载数据
     use_cols_list = ["Game", "Trial", "Username", "target", "processed_text"]
     train_df = safe_read_csv(TRAIN_FILE, usecols=use_cols_list)
     val_df = safe_read_csv(VAL_FILE, usecols=use_cols_list)
     test_df = safe_read_csv(TEST_FILE, usecols=use_cols_list)
 
+    # 2. 用户偏置和单词难度映射
     user_map = {}
     if os.path.exists(PLAYER_FILE):
         pdf = pd.read_csv(PLAYER_FILE)
@@ -486,6 +498,7 @@ def main_train():
         df_diff = pd.read_csv(DIFFICULTY_FILE)
         diff_map = dict(zip(df_diff["word"], df_diff["avg_trial"]))
 
+    # 3. 其他特征附加
     tokenizer = fit_tokenizer(train_df)
     train_df = attach_features(train_df, tokenizer, user_map, diff_map)
     val_df = attach_features(val_df, tokenizer, user_map, diff_map)
@@ -499,6 +512,7 @@ def main_train():
     X_val = create_samples(hist_val, LOOK_BACK)
     X_test = create_samples(hist_test, LOOK_BACK)
 
+    # 4. 模型训练
     vocab_size = len(tokenizer.word_index) + 1
     model = build_model(LOOK_BACK, vocab_size)
     model.summary()
@@ -521,23 +535,15 @@ def main_train():
     model.save(MODEL_SAVE_PATH)
     print(f"Model saved to {MODEL_SAVE_PATH}")
 
-    # Validation
+    # 5. 验证集数据评估
     print("\n=== Validation Evaluation (Finding Aggressive Threshold) ===")
     val_mae, val_rmse, val_acc, val_auc, optimal_thresh, val_sfmr, val_nfmr, val_nprec, val_nrec = evaluate_model(model, X_val, fixed_threshold=None)
-
-    # Plotting
-    val_pred_steps, val_pred_prob = model.predict({
-        "input_history": X_val[0], "input_word_id": X_val[1],
-        "input_user_bias": X_val[2], "input_difficulty": X_val[3],
-        "input_guess_sequence": X_val[4]
-    }, batch_size=1024, verbose=0)
-    plot_roc_curve(X_val[6], val_pred_prob.flatten(), "visualization/Transformer_validation_roc_curve.png")
-    plot_scatter(X_val[5], np.clip(val_pred_steps.flatten(), 0, 7), "visualization/Transformer_validation_scatter.png", model_name="Transformer")
-
-    # Test
+    
+    # 6. 测试集数据评估
     print(f"\n=== Test Evaluation (Applying Threshold {optimal_thresh:.4f}) ===")
     test_mae, test_rmse, test_acc, test_auc, _, test_sfmr, test_nfmr, test_nprec, test_nrec = evaluate_model(model, X_test, fixed_threshold=optimal_thresh)
 
+    # 7. 验证集和测试集的大错误率计算
     test_pred_steps, test_pred_prob = model.predict({
         "input_history": X_test[0], "input_word_id": X_test[1],
         "input_user_bias": X_test[2], "input_difficulty": X_test[3],
@@ -549,6 +555,7 @@ def main_train():
     val_large_err = compute_large_error_rate(X_val[5], np.clip(val_pred_steps.flatten(), 0, 7), LARGE_ERROR_THRESHOLD)
     test_large_err = compute_large_error_rate(X_test[5], np.clip(test_pred_steps.flatten(), 0, 7), LARGE_ERROR_THRESHOLD)
 
+    # 8. 最终报告
     report = f"""
 ========================================
  Transformer Model Report (Acc Constraint)

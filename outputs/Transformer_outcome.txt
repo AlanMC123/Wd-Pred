@@ -1,0 +1,31 @@
+
+============================================================
+           Transformer Model Evaluation Report
+============================================================
+Optimal Threshold Used: 0.6850
+Total Samples: 6230
+
+[1] Confusion Matrix (With Proportions)
+------------------------------------------------------------
+                       Predicted Loss (0)    Predicted Win (1)
+------------------------------------------------------------
+Actual Loss (0)      |  TN: 121   ( 1.94%) |  FP: 52    ( 0.83%)
+Actual Win  (1)      |  FN: 751   (12.05%) |  TP: 5306  (85.17%)
+------------------------------------------------------------
+* TN = True Negative (Correctly predicted failure)
+* FP = False Positive (Predicted win, actually failed) -> Missed Risk!
+
+[2] Regression Metrics
+------------------------------------------------------------
+MAE (Mean Abs Error) : 0.8208
+RMSE                 : 1.0268
+Large Error Rate     : 14.04% (> 1.5 steps)
+
+[3] Classification Metrics
+------------------------------------------------------------
+Accuracy             : 87.11%
+AUC                  : 0.8792
+Failure Miss Rate    : 30.06% (Lower is better)
+Negative Recall      : 69.94% (Actual failures detected)
+Negative Precision   : 0.1388
+============================================================

@@ -1,13 +1,4 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-
 import pandas as pd
-import numpy as np
-import tensorflow as tf
-from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Embedding, LSTM, Dense
-from tensorflow.keras.preprocessing.sequence import pad_sequences
-from sklearn.model_selection import train_test_split
 
 FILE_PATH = 'dataset/cleaned_dataset.csv'
 

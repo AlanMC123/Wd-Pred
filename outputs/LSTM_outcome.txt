@@ -1,0 +1,31 @@
+
+============================================================
+           LSTM Model Evaluation Report
+============================================================
+Optimal Threshold Used: 0.6900
+Total Samples: 6230
+
+[1] Confusion Matrix (With Proportions)
+------------------------------------------------------------
+                       Predicted Loss (0)    Predicted Win (1)
+------------------------------------------------------------
+Actual Loss (0)      |  TN: 105   ( 1.69%) |  FP: 68    ( 1.09%)
+Actual Win  (1)      |  FN: 685   (11.00%) |  TP: 5372  (86.23%)
+------------------------------------------------------------
+* TN = True Negative (Correctly predicted failure)
+* FP = False Positive (Predicted win, actually failed) -> Missed Risk!
+
+[2] Regression Metrics
+------------------------------------------------------------
+MAE (Mean Abs Error) : 0.8153
+RMSE                 : 1.0254
+Large Error Rate     : 14.45% (> 1.5 steps)
+
+[3] Classification Metrics
+------------------------------------------------------------
+Accuracy             : 87.91%
+AUC                  : 0.8617
+Failure Miss Rate    : 39.31% (Lower is better)
+Negative Recall      : 60.69% (Actual failures detected)
+Negative Precision   : 0.1329
+============================================================

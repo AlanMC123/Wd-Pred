@@ -1,11 +1,7 @@
 """
-LSTM 多输入预测脚本 - "保底准确率"激进策略版
+LSTM 模型训练程序
 直接运行即开始训练。
 
-核心修改：
-- [Threshold Strategy] 采用 "Accuracy Constrained Recall Maximization" 策略。
-  逻辑：在保证总体准确率 >= 85% (MIN_ACCURACY) 的前提下，寻找负类召回率最高的阈值。
-  这能最大限度地提升预警能力，同时防止模型“烂掉”。
 """
 
 import os
@@ -34,7 +30,6 @@ from predict import calculate_auc_best
 # ==========================================================
 
 # 核心参数：总体准确率的底线
-# 只要准确率高于这个数，我们就尽可能提高阈值去抓失败局
 MIN_ACCEPTABLE_ACCURACY = 0.85 
 
 # 数据集和特征文件路径
@@ -155,7 +150,7 @@ def encode_guess_sequence(grid_cell):
     return feature_sequence
 
 # --------------------------
-# Tokenizer & Features
+# Tokenizer & 特征附加
 # --------------------------
 def fit_tokenizer(train_df):
     tokenizer = Tokenizer(oov_token=OOV_TOKEN, filters='', lower=True)
@@ -205,7 +200,7 @@ def focal_loss(gamma=2.0, alpha=0.25):
     return focal_loss_fixed
 
 # --------------------------
-# History & Samples
+# 历史序列、创建样本
 # --------------------------
 def build_history(df) -> Dict[str, List[Tuple]]:
     hist = {}
@@ -294,7 +289,7 @@ def build_model(look_back, vocab_size):
     return model
 
 # ==========================================================
-# 激进阈值寻优 (Aggressive Threshold Strategy)
+# 激进阈值寻优
 # ==========================================================
 
 def find_optimal_threshold(y_true, y_prob):
@@ -344,6 +339,10 @@ def find_optimal_threshold(y_true, y_prob):
         best_candidate = max(candidates, key=lambda x: x[1])
         return best_candidate[0]
 
+# ==========================================================
+# 计算漏报率
+# ==========================================================
+
 def calculate_failure_miss_rate(y_true_steps, pred_prob, threshold):
     """计算实际失败样本的漏报率"""
     y_true_steps = y_true_steps.flatten()
@@ -354,6 +353,9 @@ def calculate_failure_miss_rate(y_true_steps, pred_prob, threshold):
     false_wins = (pred_prob[actual_failures_mask] > threshold)
     return np.sum(false_wins) / total_failures
 
+# ==========================================================
+# 评估函数
+# ==========================================================
 def evaluate_model(model, Xs, fixed_threshold=None):
     X_seq, X_wid, X_bias, X_diff, X_grid_seq, y_steps, y_succ = Xs
     pred_steps, pred_prob = model.predict({
@@ -403,6 +405,10 @@ def compute_large_error_rate(y_true, y_pred, threshold):
     errors = np.abs(y_true - y_pred)
     return np.mean(errors > threshold)
 
+# ==========================================================
+# 损失曲线绘制
+# ==========================================================
+
 def plot_loss(history, save_path_base):
     save_dir = os.path.dirname(save_path_base) or "."
     plt.figure(figsize=(6, 6))
@@ -451,13 +457,13 @@ def main_train():
     except Exception:
         pass
 
-    # 1. Load Data
+    # 1. 加载数据
     use_cols = ["Game", "Trial", "Username", "target", "processed_text"]
     train_df = safe_read_csv(TRAIN_FILE, use_cols)
     val_df = safe_read_csv(VAL_FILE, use_cols)
     test_df = safe_read_csv(TEST_FILE, use_cols)
 
-    # 2. Maps
+    # 2. 用户偏置和单词难度映射
     user_map = {}
     if os.path.exists(PLAYER_FILE):
         pdf = pd.read_csv(PLAYER_FILE)
@@ -468,7 +474,7 @@ def main_train():
         df_diff = pd.read_csv(DIFFICULTY_FILE)
         diff_map = dict(zip(df_diff["word"], df_diff["avg_trial"]))
 
-    # 3. Features
+    # 3. 其他特征附加
     tokenizer = fit_tokenizer(train_df)
     train_df = attach_features(train_df, tokenizer, user_map, diff_map)
     val_df = attach_features(val_df, tokenizer, user_map, diff_map)
@@ -484,7 +490,7 @@ def main_train():
 
     print(f"Train={len(X_train[0])}, Val={len(X_val[0])}, Test={len(X_test[0])}")
 
-    # 4. Model
+    # 4. 模型训练
     vocab_size = len(tokenizer.word_index) + 1
     model = build_model(LOOK_BACK, vocab_size)
     model.summary()
@@ -507,15 +513,15 @@ def main_train():
     model.save(MODEL_SAVE_PATH)
     print(f"Model saved to {MODEL_SAVE_PATH}")
 
-    # 5. Validation Eval (Find Best Threshold)
+    # 5. 验证集数据评估
     print("\n=== Validation Evaluation (Finding Aggressive Threshold) ===")
     val_mae, val_rmse, val_acc, val_auc, optimal_thresh, val_sfmr, val_nfmr, val_nprec, val_nrec = evaluate_model(model, X_val, fixed_threshold=None)
     
-    # 6. Test Eval (Apply Threshold)
+    # 6. 测试集数据评估
     print(f"\n=== Test Evaluation (Applying Threshold {optimal_thresh:.4f}) ===")
     test_mae, test_rmse, test_acc, test_auc, _, test_sfmr, test_nfmr, test_nprec, test_nrec = evaluate_model(model, X_test, fixed_threshold=optimal_thresh)
 
-    # 7. Large Error Rate
+    # 7. 验证集和测试集的大错误率计算
     val_pred_steps, _ = model.predict({
         "input_history": X_val[0], "input_word_id": X_val[1], "input_user_bias": X_val[2], "input_difficulty": X_val[3], "input_grid_sequence": X_val[4]
     }, batch_size=1024, verbose=0)
@@ -526,7 +532,7 @@ def main_train():
     }, batch_size=1024, verbose=0)
     test_large_err = compute_large_error_rate(X_test[5], np.clip(test_pred_steps.flatten(), 0, 7), LARGE_ERROR_THRESHOLD)
 
-    # 8. Reporting
+    # 8. 最终报告
     report = f"""
 ========================================
    LSTM Model Report (Acc Constrained)
