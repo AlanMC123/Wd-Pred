@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 import os
-import concurrent.futures
+import concurrent.futures 
 import time
 from sklearn.model_selection import StratifiedShuffleSplit  # 用于分层抽样
 import random
@@ -81,12 +81,6 @@ class MultiThreadedDataProcessor:
         # test_size=0.2, val_size=0.25 (占剩余 80% 的 25%，即总体的 20%)
         # 如果 test_size 和 val_size 设定为 0.2，那么 val_size 应该是 0.5 (temp_data 的一半)
         
-        sss_val_test = StratifiedShuffleSplit(
-            n_splits=1, 
-            test_size=val_size / (1 - test_size), # 确保 val_size 是相对于剩余数据的比例
-            random_state=42
-        )
-        
         # 检查并确保 val_size / (1 - test_size) 不超过 1
         val_test_ratio = val_size / (1 - test_size)
         if val_test_ratio >= 1.0:
@@ -123,7 +117,7 @@ class MultiThreadedDataProcessor:
 
 
         print(f"\n    耗时: {time.time() - start_time:.2f} 秒")
-        return train_data
+        return train_data, val_data, test_data
     
     def calculate_word_difficulty(self, train_data):
         """
